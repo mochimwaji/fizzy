@@ -41,7 +41,7 @@ class BubblesController < ApplicationController
     end
 
     def bubble_params
-      params.require(:bubble).permit(:title, :body, :color, :image, :remove_image, tag_ids: [])
+      params.require(:bubble).permit(:title, :body, :color, :due_on, :image, :remove_image, tag_ids: [])
     end
 
     def remove_image

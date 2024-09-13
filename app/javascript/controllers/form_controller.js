@@ -14,4 +14,10 @@ export default class extends Controller {
   preventAttachment(event) {
     event.preventDefault()
   }
+
+  showPicker(event) {
+    if ("showPicker" in HTMLInputElement.prototype) {
+      event.target.showPicker()
+    }
+  }
 }

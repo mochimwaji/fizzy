@@ -136,6 +136,23 @@
   &.bubble__date {
     aspect-ratio: 1;
     inset: 2cqi 2cqi auto auto;
+
+    label {
+      display: grid;
+      place-items: center;
+
+      > * {
+        grid-area: 1/1;
+      }
+    }
+  }
+
+  &.bubble__date--new {
+    padding: 0.7em;
+
+    .windshield & {
+      display: none;
+    }
   }
 
   &:where(.bubble__meta) {
@@ -157,7 +174,7 @@
     white-space: nowrap;
     z-index: 1;
 
-    &:has(.input:not([type="file"])) {
+    &:has(.input:not([type="file"], [type="date"])) {
       border-radius: 2em;
       padding: 0.2em 0.5em;
 
