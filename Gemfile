@@ -8,6 +8,7 @@ gem "importmap-rails"
 gem "propshaft"
 gem "stimulus-rails"
 gem "turbo-rails"
+gem "local_time"
 
 # Deployment and drivers
 gem "bootsnap", require: false
