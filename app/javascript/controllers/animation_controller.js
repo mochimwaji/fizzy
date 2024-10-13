@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { nextFrame } from "helpers"
+import { nextFrame } from "helpers/timing_helpers"
 
 export default class extends Controller {
   static classes = [ "play" ]

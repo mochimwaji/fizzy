@@ -1,4 +1,4 @@
-<div id="<%= dom_id(comment) %>" class="comment flex align-start full-width" data-creator-id="<%= comment.creator.id %>">
+<%= tag.div id: dom_id(comment), class: [ "comment flex align-start full-width", { "comment--mine": Current.user == comment.creator } ] do %>
   <figure class="comment__avatar flex-item-no-shrink">
     <%= avatar_tag comment.creator, loading: :lazy %>
   </figure>
@@ -16,4 +16,4 @@
       <%= simple_format comment.body %>
     </div>
   </div>
-</div>
+<% end %>

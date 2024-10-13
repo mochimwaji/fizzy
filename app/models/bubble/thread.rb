@@ -13,10 +13,6 @@ class Bubble::Thread
     "bubbles/threads/thread"
   end
 
-  def cache_key
-    ActiveSupport::Cache.expand_cache_key bubble, :thread
-  end
-
   private
     delegate :events, :comments, to: :bubble, private: true
 

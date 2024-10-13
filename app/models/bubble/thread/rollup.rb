@@ -13,14 +13,10 @@ class Bubble::Thread::Rollup
     "bubbles/threads/rollup"
   end
 
-  def cache_key
-    ActiveSupport::Cache.expand_cache_key [ thread, entries.first, entries.last ], "rollup"
-  end
-
   private
     attr_reader :thread, :entries, :first_position
 
-    delegate :local_time_ago, to: "ApplicationController.helpers", private: true
+    delegate :time_ago_in_words, to: "ApplicationController.helpers", private: true
 
     def first_position?
       first_position
@@ -47,10 +43,10 @@ class Bubble::Thread::Rollup
     def summarize(entry, chunk_size)
       case entry.action
       when "created"
-        "added by #{entry.creator.name}&nbsp;#{local_time_ago(entry.created_at)}"
+        "added by #{entry.creator.name} #{time_ago_in_words(entry.created_at)} ago"
       when "assigned"
         summary = "assigned to #{entry.assignee_names.to_sentence}"
-        summary += "&nbsp;#{local_time_ago(entry.created_at)}" unless first_position?
+        summary += " #{time_ago_in_words(entry.created_at)} ago" unless first_position?
         summary
       when "boosted"
         "#{entry.creator.name} +#{chunk_size}"
