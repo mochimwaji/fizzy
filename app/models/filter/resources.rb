@@ -5,6 +5,7 @@ module Filter::Resources
     has_and_belongs_to_many :tags
     has_and_belongs_to_many :buckets
     has_and_belongs_to_many :assignees, class_name: "User", join_table: "assignees_filters", association_foreign_key: "assignee_id"
+    has_and_belongs_to_many :assigners, class_name: "User", join_table: "assigners_filters", association_foreign_key: "assigner_id"
   end
 
   def resource_removed(resource)

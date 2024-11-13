@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.0].define(version: 2024_11_08_205445) do
+ActiveRecord::Schema[8.0].define(version: 2024_11_13_185136) do
   create_table "accesses", force: :cascade do |t|
     t.integer "bucket_id", null: false
     t.integer "user_id", null: false
@@ -63,6 +63,13 @@ ActiveRecord::Schema[8.0].define(version: 2024_11_08_205445) do
     t.integer "assignee_id", null: false
     t.index ["assignee_id"], name: "index_assignees_filters_on_assignee_id"
     t.index ["filter_id"], name: "index_assignees_filters_on_filter_id"
+  end
+
+  create_table "assigners_filters", id: false, force: :cascade do |t|
+    t.integer "filter_id", null: false
+    t.integer "assigner_id", null: false
+    t.index ["assigner_id"], name: "index_assigners_filters_on_assigner_id"
+    t.index ["filter_id"], name: "index_assigners_filters_on_filter_id"
   end
 
   create_table "assignments", force: :cascade do |t|
