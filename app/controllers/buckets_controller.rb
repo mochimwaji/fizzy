@@ -24,7 +24,7 @@ class BucketsController < ApplicationController
     @bucket.update! bucket_params
     @bucket.accesses.revise granted: grantees, revoked: revokees
 
-    redirect_to bubbles_path(bucket_ids: [ @bucket ])
+    redirect_to edit_bucket_path(@bucket)
   end
 
   def destroy
