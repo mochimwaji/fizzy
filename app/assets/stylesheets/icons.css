@@ -20,8 +20,8 @@
   .icon--arrow-right { --svg: url("arrow-right.svg "); }
   .icon--art { --svg: url("art.svg "); }
   .icon--assigned { --svg: url("assigned.svg "); }
-  .icon--bell-off { --svg: url("bell-off.svg "); }
   .icon--bell { --svg: url("bell.svg "); }
+  .icon--bell-off { --svg: url("bell-off.svg "); }
   .icon--blob { --svg: url("blob.svg "); }
   .icon--bolt { --svg: url("bolt.svg "); }
   .icon--bookmark-outline { --svg: url("bookmark-outline.svg "); }
@@ -49,6 +49,9 @@
   .icon--inbox { --svg: url("inbox.svg "); }
   .icon--logout { --svg: url("logout.svg "); }
   .icon--menu-dots-horizontal { --svg: url("menu-dots-horizontal.svg "); }
+  .icon--notification-bell-access-only { --svg: url("notification-bell-access-only.svg "); }
+  .icon--notification-bell-everything { --svg: url("notification-bell-everything.svg "); }
+  .icon--notification-bell-watching { --svg: url("notification-bell-watching.svg "); }
   .icon--minus { --svg: url("minus.svg "); }
   .icon--password { --svg: url("password.svg "); }
   .icon--pencil { --svg: url("pencil.svg "); }
