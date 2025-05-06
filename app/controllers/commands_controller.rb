@@ -11,9 +11,9 @@ class CommandsController < ApplicationController
 
       case result
       when Command::Result::Redirection
-          redirect_to result.url
+        redirect_to result.url
       else
-          redirect_back_or_to root_path
+        redirect_back_or_to root_path
       end
     else
       render turbo_stream: turbo_stream.replace("commands_form", partial: "commands/form", locals: { error: true })
