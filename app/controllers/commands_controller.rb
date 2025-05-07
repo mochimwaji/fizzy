@@ -1,6 +1,6 @@
 class CommandsController < ApplicationController
   def index
-    @commands = Current.user.commands.order(created_at: :desc).limit(20)
+    @commands = Current.user.commands.order(created_at: :desc).limit(20).reverse
   end
 
   def create
