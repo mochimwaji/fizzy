@@ -144,4 +144,19 @@
     caret-color: var(--color-negative);
     color: var(--color-negative);
   }
+
+  /* @TODO: Review these. */
+  .terminal--output {
+    overflow: scroll;
+    max-height: 400px;
+    display: none;
+
+    .terminal--showing-output & {
+      display: block;
+    }
+  }
+
+  .terminal--busy {
+    border: 5px solid orange;
+  }
 }
