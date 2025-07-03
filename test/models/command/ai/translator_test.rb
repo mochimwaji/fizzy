@@ -152,6 +152,11 @@ class Command::Ai::TranslatorTest < ActionDispatch::IntegrationTest
     assert_command({ commands: [ "/user kevin" ] }, "view kevin")
   end
 
+  test "filter by closed by" do
+    assert_command({ context: { closer_ids: [ users(:david).to_gid.to_s ], indexed_by: "closed" } }, "cards closed by me")
+    assert_command({ context: { closure: "thisweek", closer_ids: [ "Jorge", "Kevin" ], indexed_by: "closed" } }, "cards closed by Jorge or Kevin this week")
+  end
+
   private
     def assert_command(expected, query, context: :list)
       assert_equal expected, translate(query, context:)

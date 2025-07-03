@@ -55,6 +55,7 @@ class Command::Ai::Parser
         if query_context = query_json[:context].presence
           query_context[:assignee_ids] = query_context[:assignee_ids]&.filter_map { |name| context.find_user(name)&.id }
           query_context[:creator_ids] = query_context[:creator_ids]&.filter_map { |name| context.find_user(name)&.id }
+          query_context[:closer_ids] = query_context[:closer_ids]&.filter_map { |name| context.find_user(name)&.id }
           query_context[:collection_ids] = query_context[:collection_ids]&.filter_map { |name| context.find_collection(name)&.id }
           query_context[:tag_ids] = query_context[:tag_ids]&.filter_map { |name| context.find_tag(name)&.id }
           query_context.compact!

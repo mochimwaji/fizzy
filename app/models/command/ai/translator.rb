@@ -16,9 +16,15 @@ class Command::Ai::Translator
   end
 
   private
+    # We don't inject +user.to_gid+ directly in the prompts because of testing and VCR. The URL changes
+    # depending on the tenant, which is not deterministic during tests with parallel tests.
+    ME_REFERENCE = "<fizzy:ME>"
+
     def translate_query_with_llm(query)
       response = Rails.cache.fetch(cache_key_for(query)) { chat.ask query }
-      response.content
+      response
+        .content
+        .gsub(ME_REFERENCE, user.to_gid.to_s)
     end
 
     def cache_key_for(query)
@@ -45,6 +51,7 @@ class Command::Ai::Translator
             "assignment_status": "unassigned",
             "card_ids": number[],
             "creator_ids": string[],
+            "closer_ids": string[],
             "collection_ids": string[],
             "tag_ids": string[],
             "creation": "today" | "yesterday" | "thisweek" | "thismonth" | "thisyear"
@@ -86,6 +93,7 @@ class Command::Ai::Translator
           * assignment_status — "unassigned". Important: ONLY when the user asks for unassigned cards.
           * card_ids — array of card IDs
           * creator_ids — array of creator’s names
+          * closer_ids  — array of closer’s names (people who closed the card)
           * collection_ids — array of collections
           * tag_ids — array of tag names
           * creation — relative range when the card was **created** (values listed above). Use it only
@@ -131,13 +139,15 @@ class Command::Ai::Translator
           - User can reference with numbers to a single card or to a group of cards. E.g:
             - "close 123 and 456" → context: { card_ids: [123, 456] }, commands: [ "/close" ]
             - "assign 789 to jz" → context: { card_ids: [789] }, commands: [ "/assign jz" ]
+            - "assign 3 and 4 to myself" → context: { card_ids: [3, 4] }, commands: [ "/assign #{ME_REFERENCE}" ]
             - "reopen 789" → context: { card_ids: [789] }, commands: [ "/reopen" ]
+            - "close 321" → context: { card_ids: [321] }, commands: [ "/close" ]
             - "assign 5, 82 and 9 to jz" → context: { card_ids: [5, 82 and 9] }, commands: [ "/assign jz" ]
         * "Unassigned cards" (or “not assigned”, “with no assignee”) → assignment_status: "unassigned".
           – IMPORTANT: Only set assignment_status when the user **explicitly** asks for an unassigned state
           – Do NOT infer unassigned just because an assignment follows.
         * **Possessive “my” in front of “card” or “cards”***
-          → assignee_ids: [ #{user.to_gid} ] — applies **even when other filters are present***
+          → assignee_ids: [ #{ME_REFERENCE} ] — applies **even when other filters are present***
           (e.g., “my cards closing soon”, “my stalled cards”, “my cards created yesterday”, "cards assigned to me").
         * “Recent cards” (i.e., newly created) → indexed_by: "newest"
         * “Cards with recent activity”, “recently updated cards” → indexed_by: "latest"
@@ -150,10 +160,6 @@ class Command::Ai::Translator
 
         * If cards are described as state ("assigned to X") and later an action ("assign X"), only the first is a filter.
         * ❗ Once you produce a valid context **or** command list, do not add a fallback /search.
-
-        ---------------------- RESOLVE COMMAND ARGUMENTS ----------------------
-        * A person can be expressed by its name or via a global ID URL like gid://fizzy/User/1234?tenant=37signals.
-        * A tag can be expressed by its text or via a global ID URL like gid://fizzy/Tag/5678?tenant=37signals.
 
         -------------------- COMMAND INTERPRETATION RULES --------------------
         * /user <Name>           → open that person’s profile or activity feed.
@@ -195,6 +201,7 @@ class Command::Ai::Translator
           • visit user mike   → /user mike*
           • view user kevin   → /user kevin*
           • see mike’s profile → /user mike
+          • what david has been up to → /user david
 
         ---------------------------- CRUCIAL DON’TS ---------------------------
 
@@ -203,6 +210,7 @@ class Command::Ai::Translator
         * Never use names, tags, or stage names mentioned **inside commands** (like /assign, /tag, /stage) as filters.
         * Never duplicate the assignee in both commands and context.
         * Never add properties tied to UI view ("card", "list", etc.).
+        * When using /user DON'T add a filter "assignee_ids" with the same user.
         * To filter completed or closed cards, use "indexed_by: closed"; don't set a "closure" filter unless the user is asking for cards completed in a specific window of time.
         * When you see a word with a # prefix, assume it refers to a tag (either a filter or a command argument, but don't search for it).
         * All filters, including terms, must live **inside** context.
@@ -239,7 +247,7 @@ class Command::Ai::Translator
         User: assign to me
         Output:
         {
-          "commands": ["/assign #{user.to_gid}"]
+          "commands": ["/assign #{ME_REFERENCE}"]
         }
 
         User: reopen cards closed this week
@@ -325,7 +333,7 @@ class Command::Ai::Translator
 
     def custom_context
       <<~PROMPT
-        The user making requests is "#{user.to_gid}".
+        The user making requests is "#{ME_REFERENCE}".
 
         ## Current view:
 
