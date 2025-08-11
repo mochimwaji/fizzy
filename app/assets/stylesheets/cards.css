@@ -105,10 +105,7 @@
 
   .card__content {
     contain: inline-size;
-    display: flex;
     flex: 2 1 auto;
-    flex-direction: column;
-    gap: 1ch;
     max-inline-size: 100%;
   }
 
