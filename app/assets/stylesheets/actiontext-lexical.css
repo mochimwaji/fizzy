@@ -139,6 +139,10 @@
       &:is(:active) {
         background-color: var(--color-selected);
       }
+
+      &[aria-pressed="true"] {
+        background-color: var(--color-selected);
+      }
     }
   }
 
