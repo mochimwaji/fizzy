@@ -1,0 +1,34 @@
+<%= turbo_frame_tag dom_id(@conversation, :messages_container) do %>
+  <%= tag.div \
+        id: dom_id(@conversation, :messages),
+        class: "conversation__messages",
+        data: {
+          controller: "conversation--messages",
+          conversation__messages_failed_message_class: "conversation__message--failed",
+          conversation__messages_emoji_message_class: "conversation__message--emoji",
+          action: "turbo:before-stream-render@document->conversation--messages#beforeStreamRender" } do %>
+    <%= tag.div \
+          id: dom_id(@conversation, :transcript),
+          class: "conversation__transcript",
+          data: {
+            conversation__messages_target: "messages" } do %>
+      <%= conversation_previous_page_link(@messages.first, class: "conversation__messages__previous-page") %>
+      <%= render collection: @messages, partial: "conversations/messages/message", cached: true %>
+    <% end %>
+
+    <template data-conversation--messages-target="messageTemplate">
+      <%= render(
+        partial: "conversations/messages/message",
+        locals: {
+          extra_classes: "$extraClasses$",
+          message: Conversation::Message.new(
+            conversation: @conversation,
+            role: :user,
+            client_message_id: "$clientMessageId$",
+            content: "$content$"
+          )
+        }
+      ) %>
+    </template>
+  <% end %>
+<% end %>

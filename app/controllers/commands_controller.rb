@@ -45,6 +45,8 @@ class CommandsController < ApplicationController
         respond_with_composite_response(result)
       when Command::Result::Redirection
         redirect_to result.url
+      when Command::Result::ShowModal
+        respond_with_turbo_frame_modal(result.turbo_frame, result.url)
       else
         redirect_back_or_to root_path
       end
@@ -66,6 +68,10 @@ class CommandsController < ApplicationController
 
     def respond_with_insight_response(chat_response)
       render json: { message: chat_response.content }, status: :accepted
+    end
+
+    def respond_with_turbo_frame_modal(turbo_frame, url)
+      render json: { turbo_frame: turbo_frame, url: url }, status: :accepted
     end
 
     def respond_with_error(command)

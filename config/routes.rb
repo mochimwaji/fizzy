@@ -115,6 +115,12 @@ Rails.application.routes.draw do
     end
   end
 
+  resource :conversation, only: %i[ show ] do
+    scope module: :conversations do
+      resources :messages, only: %i[ index create ]
+    end
+  end
+
   namespace :my do
     resources :pins
   end

@@ -1,0 +1,23 @@
+<%= form_with model: Conversation::Message.new, local: true, 
+      id: dom_id(conversation, :composer), 
+      class: "conversation__composer",
+      data: {
+        action: "turbo:submit-end->conversation--composer#submitEnd",
+        controller: "conversation--composer",
+        conversation__composer_conversation__messages_outlet: "##{dom_id(conversation, :messages)}" } do |form| %>
+
+  <%= form.hidden_field :client_message_id, data: { conversation__composer_target: "clientMessageIdInput" } %>
+
+  <div class="conversation__input">
+    <%= form.text_area :content, autofocus: "on", placeholder: "Ask something…", rows: 1, 
+          class: "input input--textarea", data: { action: "keydown.enter->conversation--composer#submit keydown.ctrl+enter->conversation--composer#submit", conversation__composer_target: "textInput" } %>
+  </div>
+
+  <div class="conversation__submit">
+    <%= form.button type: "submit", class: "btn btn--link txt-small", 
+          data: { conversation__composer_target: "submitButton", action: "click->conversation--composer#submit"} do %>
+      <%= icon_tag "arrow-up" %>
+      <span class="for-screen-reader">Send message</span>
+    <% end %>
+  </div>
+<% end %>

@@ -13,6 +13,7 @@ class Prompts::CommandsController < ApplicationController
       [ "/user", "Open user profile", "/user " ],
       [ "/tag", "Tag selected cards", "/tag #" ],
       [ "/stage", "Move cards to a Workflow Stage", "/stage " ],
+      [ "/ask", "Ask a question about cards", "/ask" ],
       [ "/help", "Show help menu", "/help" ]
     ]
 

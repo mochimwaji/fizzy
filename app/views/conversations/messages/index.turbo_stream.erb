@@ -1,0 +1,8 @@
+<% if @messages.any? %>
+  <%= turbo_stream.prepend dom_id(@conversation, :transcript) do %>
+    <%= conversation_previous_page_link(@messages.first, class: "conversation__messages__previous-page") %>
+    <%= render collection: @messages, partial: "conversations/messages/message", cached: true %>
+  <% end %>
+<% else %>
+  <%= turbo_stream.remove dom_id(@conversation, :load_more) %>
+<% end %>

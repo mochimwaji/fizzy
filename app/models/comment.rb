@@ -9,6 +9,8 @@ class Comment < ApplicationRecord
   searchable_by :body, using: :comments_search_index
 
   scope :chronologically, -> { order created_at: :asc, id: :desc }
+  scope :by_system, -> { joins(:creator).where(creator: { role: "system" }) }
+  scope :by_user, -> { joins(:creator).where.not(creator: { role: "system" }) }
 
   after_create_commit :watch_card_by_creator
 

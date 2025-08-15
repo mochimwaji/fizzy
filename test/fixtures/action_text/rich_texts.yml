@@ -13,4 +13,17 @@ layout_overflowing_david:
   name: body
   body: The text is overflowing the container.
 
+kevins_conversation_question:
+  record: kevins_question (Conversation::Message)
+  name: content
+  body: "Who is on a hot-streak?"
 
+kevins_conversation_answer:
+  record: kevins_answer (Conversation::Message)
+  name: content
+  body: "<b>David</b> is on a hot-streak. He has recently added many cards to Writebook."
+
+davids_conversation_question:
+  record: davids_question (Conversation::Message)
+  name: content
+  body: "What is the meaning of life, the Universe, and everything else?"

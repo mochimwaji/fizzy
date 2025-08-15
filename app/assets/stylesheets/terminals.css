@@ -192,6 +192,14 @@
     }
   }
 
+  .terminal__modal {
+    --panel-border-radius: 1.5em;
+    --panel-padding: var(--block-space-half);
+
+    max-block-size: calc(100dvh - var(--block-space-double) - 2 * var(--footer-height));
+    overflow: clip;
+  }
+
   .terminal__item {
     &[aria-selected] {
       --btn-color: var(--color-terminal-bg);

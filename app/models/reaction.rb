@@ -6,9 +6,7 @@ class Reaction < ApplicationRecord
 
   after_create :register_card_activity
 
-  def all_emoji?
-    content.match? /\A(\p{Emoji_Presentation}|\p{Extended_Pictographic}|\uFE0F)+\z/u
-  end
+  delegate :all_emoji?, to: :content
 
   private
     def register_card_activity

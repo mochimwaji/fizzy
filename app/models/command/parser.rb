@@ -67,6 +67,8 @@ class Command::Parser
         Command::VisitUrl.new(url: command_arguments.first)
       when "/tag"
         Command::Tag.new(tag_title: tag_title_from(combined_arguments), card_ids: cards.ids)
+      when "/ask"
+        Command::Ask.new(question: combined_arguments, card_ids: cards.ids)
       when /^gid:\/\//
         parse_gid command_name
       else

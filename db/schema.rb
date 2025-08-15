@@ -208,6 +208,30 @@ ActiveRecord::Schema[8.1].define(version: 2025_08_12_195130) do
     t.index ["card_id"], name: "index_comments_on_card_id"
   end
 
+  create_table "conversation_messages", force: :cascade do |t|
+    t.string "client_message_id", null: false
+    t.integer "conversation_id", null: false
+    t.bigint "cost_microcents"
+    t.datetime "created_at", null: false
+    t.bigint "input_cost_microcents"
+    t.bigint "input_tokens"
+    t.string "model_id"
+    t.bigint "output_cost_microcents"
+    t.bigint "output_tokens"
+    t.string "role", null: false
+    t.datetime "updated_at", null: false
+    t.index ["conversation_id"], name: "index_conversation_messages_on_conversation_id"
+  end
+
+  create_table "conversations", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "state"
+    t.string "string"
+    t.datetime "updated_at", null: false
+    t.integer "user_id", null: false
+    t.index ["user_id"], name: "index_conversations_on_user_id", unique: true
+  end
+
   create_table "creators_filters", id: false, force: :cascade do |t|
     t.integer "creator_id", null: false
     t.integer "filter_id", null: false
@@ -438,6 +462,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_08_12_195130) do
   add_foreign_key "commands", "commands", column: "parent_id"
   add_foreign_key "commands", "users"
   add_foreign_key "comments", "cards"
+  add_foreign_key "conversation_messages", "conversations"
+  add_foreign_key "conversations", "users"
   add_foreign_key "events", "collections"
   add_foreign_key "mentions", "users", column: "mentionee_id"
   add_foreign_key "mentions", "users", column: "mentioner_id"

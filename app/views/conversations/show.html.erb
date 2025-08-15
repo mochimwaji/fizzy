@@ -1,0 +1,18 @@
+<%= turbo_frame_tag "conversation", target: "_top" do %>
+  <%= turbo_stream_from Current.user, :conversation %>
+  <div class="conversation">
+    <div class="conversation__header">
+      <span class="txt-medium font-weight-black margin-inline-start-half">Fizzy /Ask</span>
+      <form method="dialog">
+        <button class="btn txt-x-small">
+          <%= icon_tag "remove-med" %>
+          <span class="for-screen-reader">Close</span>
+        </button>
+      </form>
+    </div>
+    <%= turbo_frame_tag dom_id(@conversation, :messages_container), src: conversation_messages_path, target: "_top" %>
+    <%= render partial: "conversations/show/thinking_indicator", locals: { conversation: @conversation } %>
+    <%= render partial: "conversations/show/composer", locals: { conversation: @conversation } %>
+  </div>
+<% end %>
+

@@ -5,9 +5,10 @@ import { marked } from "marked"
 import { nextFrame } from "helpers/timing_helpers";
 
 export default class extends Controller {
-  static targets = [ "input", "form", "output", "confirmation", "recentCommands" ]
+  static targets = [ "input", "form", "output", "confirmation", "recentCommands", "modalTurboFrame" ]
   static classes = [ "error", "confirmation", "help", "output", "busy" ]
   static values = { originalInput: String, waitingForConfirmation: Boolean }
+  static outlets = [ "dialog" ]
 
   connect() {
     if (this.waitingForConfirmationValue) { this.focus() }
@@ -141,7 +142,7 @@ export default class extends Controller {
   }
 
   #handleJsonResponse(responseJson) {
-    const { confirmation, message, redirect_to } = responseJson
+    const { confirmation, message, redirect_to, turbo_frame, url } = responseJson
 
     if (message) {
       this.#showOutput(message)
@@ -153,6 +154,10 @@ export default class extends Controller {
 
     if (redirect_to) {
       Turbo.visit(redirect_to)
+    }
+
+    if (turbo_frame && url) {
+      this.#showTurboFrameModal(turbo_frame, url)
     }
   }
 
@@ -203,5 +208,12 @@ export default class extends Controller {
 
   #hideOutput(html) {
     this.element.classList.remove(this.outputClass)
+  }
+
+  #showTurboFrameModal(name, url) {
+    this.inputTarget.blur()
+    this.modalTurboFrameTarget.id = name
+    this.modalTurboFrameTarget.src = url
+    this.dialogOutlet.open()
   }
 }

@@ -3,6 +3,7 @@
       class: "terminal full-width flex flex-column justify-end",
       data: {
         controller: "toggle-class terminal navigable-list",
+        terminal_dialog_outlet: "#terminal-modal",
         terminal_error_class: "terminal--error",
         terminal_confirmation_class: "terminal--confirmation",
         terminal_help_class: "terminal--showing-help",
@@ -13,6 +14,16 @@
         action: "keydown->terminal#handleKeyPress keydown->navigable-list#navigate focusin->navigable-list#select keydown.esc->toggle-class#remove:stop keydown.esc->terminal#focus keydown.esc->navigable-list#selectLast keydown.esc@document->terminal#hideMenus" } do %>
   <%= turbo_frame_tag :recent_commands, src: commands_path, data: { terminal_target: "recentCommands" } %>
   <div class="terminal__output" data-terminal-target="output"></div>
+  <%= tag.dialog \
+    id: "terminal-modal",
+    class: "terminal__modal panel shadow",
+    data: {
+      controller: "dialog",
+      dialog_target: "dialog",
+      dialog_modal_value: "true",
+      action: "keydown.esc->dialog#close click@document->dialog#closeOnClickOutside" } do %>
+    <%= turbo_frame_tag nil, refresh: :morph, data: { terminal_target: "modalTurboFrame" }, target: "_top" %>
+  <% end %>
 
   <%= render "commands/form" %>
 <% end %>

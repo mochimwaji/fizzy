@@ -1,0 +1,20 @@
+kevins_question:
+  conversation: kevin
+  role: user
+  client_message_id: djtawmq4vnp9f8es
+  model_id: "gpt-4.1-2025-04-14"
+  input_tokens: 3765
+  output_tokens: 331
+  input_cost_microcents: 753
+  output_cost_microcents: 300
+  cost_microcents: 1053
+
+kevins_answer:
+  conversation: kevin
+  role: assistant
+  client_message_id: rhwno26j4o
+
+davids_question:
+  conversation: david
+  role: user
+  client_message_id: ixmw4nni

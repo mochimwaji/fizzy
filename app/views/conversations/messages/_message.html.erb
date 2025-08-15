@@ -1,0 +1,10 @@
+<% cache message do %>
+  <%= tag.div id: "message_#{message.client_message_id}",
+        class: token_list(
+          "conversation__message",
+          "conversation__message--#{message.role}",
+          message.all_emoji? && "conversation__message--emoji",
+          local_assigns[:extra_classes]) do %>
+    <%= message.content %>
+  <% end %>
+<% end %>

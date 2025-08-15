@@ -634,6 +634,125 @@ columns:
   - *24
   - *6
   - *9
+  conversation_messages:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: client_message_id
+    cast_type: *7
+    sql_type_metadata: *8
+    'null': false
+    default:
+    default_function:
+    collation:
+    comment:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: conversation_id
+    cast_type: *3
+    sql_type_metadata: *4
+    'null': false
+    default:
+    default_function:
+    collation:
+    comment:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: cost_microcents
+    cast_type: *11
+    sql_type_metadata: *12
+    'null': true
+    default:
+    default_function:
+    collation:
+    comment:
+  - *5
+  - *6
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: input_cost_microcents
+    cast_type: *11
+    sql_type_metadata: *12
+    'null': true
+    default:
+    default_function:
+    collation:
+    comment:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: input_tokens
+    cast_type: *11
+    sql_type_metadata: *12
+    'null': true
+    default:
+    default_function:
+    collation:
+    comment:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: model_id
+    cast_type: *7
+    sql_type_metadata: *8
+    'null': true
+    default:
+    default_function:
+    collation:
+    comment:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: output_cost_microcents
+    cast_type: *11
+    sql_type_metadata: *12
+    'null': true
+    default:
+    default_function:
+    collation:
+    comment:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: output_tokens
+    cast_type: *11
+    sql_type_metadata: *12
+    'null': true
+    default:
+    default_function:
+    collation:
+    comment:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: role
+    cast_type: *7
+    sql_type_metadata: *8
+    'null': false
+    default:
+    default_function:
+    collation:
+    comment:
+  - *9
+  conversations:
+  - *5
+  - *6
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: state
+    cast_type: *7
+    sql_type_metadata: *8
+    'null': true
+    default:
+    default_function:
+    collation:
+    comment:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::SQLite3::Column
+    auto_increment:
+    name: string
+    cast_type: *7
+    sql_type_metadata: *8
+    'null': true
+    default:
+    default_function:
+    collation:
+    comment:
+  - *9
+  - *25
   creators_filters:
   - *24
   - *19
@@ -1201,6 +1320,8 @@ primary_keys:
   collections_filters:
   commands: id
   comments: id
+  conversation_messages: id
+  conversations: id
   creators_filters:
   entropy_configurations: id
   event_activity_summaries: id
@@ -1248,6 +1369,8 @@ data_sources:
   collections_filters: true
   commands: true
   comments: true
+  conversation_messages: true
+  conversations: true
   creators_filters: true
   entropy_configurations: true
   event_activity_summaries: true
@@ -1938,6 +2061,40 @@ indexes:
     unique: false
     columns:
     - card_id
+    lengths: {}
+    orders: {}
+    opclasses: {}
+    where:
+    type:
+    using:
+    include:
+    nulls_not_distinct:
+    comment:
+    valid: true
+  conversation_messages:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::IndexDefinition
+    table: conversation_messages
+    name: index_conversation_messages_on_conversation_id
+    unique: false
+    columns:
+    - conversation_id
+    lengths: {}
+    orders: {}
+    opclasses: {}
+    where:
+    type:
+    using:
+    include:
+    nulls_not_distinct:
+    comment:
+    valid: true
+  conversations:
+  - !ruby/object:ActiveRecord::ConnectionAdapters::IndexDefinition
+    table: conversations
+    name: index_conversations_on_user_id
+    unique: true
+    columns:
+    - user_id
     lengths: {}
     orders: {}
     opclasses: {}

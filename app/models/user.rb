@@ -20,6 +20,8 @@ class User < ApplicationRecord
   has_many :push_subscriptions, class_name: "Push::Subscription", dependent: :delete_all
   has_many :period_activity_summaries, dependent: :destroy
 
+  has_one :conversation, dependent: :destroy
+
   normalizes :email_address, with: ->(value) { value.strip.downcase }
 
   def deactivate
