@@ -27,7 +27,10 @@ export default class extends Controller {
     if (event.detail.success) {
       this.#reset()
     } else {
-      this.conversationMessagesOutlet.failPendingMessage(this.clientMessageIdInputTarget.value)
+      this.#failPendingMessage(
+        this.clientMessageIdInputTarget.value, 
+        event.detail.fetchResponse
+      )
     }
   }
 
@@ -59,5 +62,19 @@ export default class extends Controller {
   #reset() {
     this.textInputTarget.value = ""
     this.clientMessageIdInputTarget.value = ""
+  }
+
+  async #failPendingMessage(clientMessageId, response) {
+    let errorMessage = null
+
+    if (response?.contentType?.includes('application/json')) {
+      const error = JSON.parse(await response.responseText)
+      errorMessage = error.error
+    }
+
+    this.conversationMessagesOutlet.failPendingMessage(
+      this.clientMessageIdInputTarget.value,
+      errorMessage
+    )
   }
 }

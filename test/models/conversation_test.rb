@@ -61,21 +61,31 @@ class ConversationTest < ActiveSupport::TestCase
     assert conversation.ready?, "The conversation should switch back to ready after a response is made"
   end
 
-  test "clearing conversation messages" do
-    conversation = conversations(:kevin)
-
-    assert conversation.messages.any?, "The conversation should have messages before clearing"
-
-    original_updated_at = conversation.updated_at
-    conversation.clear
-    assert conversation.updated_at > original_updated_at, "The conversation's updated_at timestamp should change after clearing messages"
-
-    assert conversation.messages.empty?, "All messages should be deleted when clearing the conversation"
-  end
-
   test "cost calculation" do
     conversation = conversations(:kevin)
 
-    assert_equal "0.01053".to_d, conversation.cost
+    assert_equal "0.00001053".to_d, conversation.cost
+  end
+
+  test "cost limits" do
+    conversation = conversations(:kevin)
+
+    conversation.ask("Where does the planning office keep demolition notices?")
+    conversation.respond(
+      "In a locked filing cabinet in a disused lavatory",
+      cost_microcents: Conversation::Cost.convert_to_microcents("$3")
+    )
+
+    conversation.ask("What's the meaning of life?")
+    conversation.respond("42", cost_microcents: Conversation::Cost.convert_to_microcents("$120"))
+
+    assert_raises Conversation::CostExceededError do
+      conversation.ask("Should you leave a house without a towel?")
+    end
+
+    travel 1.month
+
+    conversation.ask("Should you leave a house without a towel?")
+    conversation.respond("Never", cost_microcents: Conversation::Cost.convert_to_microcents("$0.01"))
   end
 end

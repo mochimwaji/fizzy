@@ -20,6 +20,7 @@
 
   .conversation__message {
     display: flex;
+    flex-direction: column;
 
     .action-text-content {
       border-radius: 0.5rem;
@@ -51,7 +52,7 @@
   }
 
   .conversation__message--assistant {
-    justify-content: flex-start;
+    align-items: flex-start;
 
     .action-text-content {
       margin-inline-end: 15%;
@@ -67,8 +68,15 @@
     color: var(--color-negative);
   }
 
+  .conversation__message--failed[data-error]::after {
+    color: var(--color-negative);
+    content: attr(data-error);
+    display: block;
+    padding: var(--inline-space);
+  }
+
   .conversation__message--user {
-    justify-content: flex-end;
+    align-items: flex-end;
 
     .action-text-content {
       background-color: var(--color-selected);

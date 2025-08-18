@@ -12,11 +12,15 @@ export default class extends Controller {
     this.scrollToBottom()
   }
 
-  failPendingMessage(clientMessageId) {
+  failPendingMessage(clientMessageId, errorMessage) {
     const message = this.element.querySelector(`#message_${clientMessageId}`)
 
     if (message) {
       message.classList.add(this.failedMessageClass)
+
+      if (errorMessage) {
+        message.dataset.error = errorMessage
+      }
     }
   }
 

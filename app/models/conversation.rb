@@ -1,23 +1,17 @@
 class Conversation < ApplicationRecord
   class InvalidStateError < StandardError; end
+  class CostExceededError < StandardError; end
 
-  include Broadcastable
+  include Broadcastable, CostLimited
 
   belongs_to :user, class_name: "User"
   has_many :messages, dependent: :destroy
 
   enum :state, %w[ ready thinking ].index_by(&:itself), default: :ready
 
-  def cost
-    messages.where.not(cost_microcents: nil).sum(:cost_microcents).to_d / 100_000
-  end
-
-  def clear
-    messages.delete_all
-    touch
-  end
-
   def ask(question, **attributes)
+    limit_cost to: "$100", within: 7.days
+
     create_message_with_state_change(**attributes, role: :user, content: question) do
       raise(InvalidStateError, "Can't ask questions while thinking") if thinking?
       thinking!

@@ -11,7 +11,7 @@ class Conversation::Message::ResponseGenerator::Response
   end
 
   def cost
-    cost_microcents.to_d / MICROCENTS_PER_DOLLAR
+    Conversation::Cost.convert_to_decimal(cost_microcents)
   end
 
   def cost_microcents
@@ -49,6 +49,6 @@ class Conversation::Message::ResponseGenerator::Response
   private
     def price_per_million_tokens_to_microcents(price)
       single_token_price = price.to_d / 1_000_000
-      single_token_price * MICROCENTS_PER_DOLLAR
+      Conversation::Cost.convert_to_microcents(single_token_price)
     end
 end
