@@ -17,7 +17,7 @@ export default class extends Controller {
   }
 
   async ask() {
-    post(this.askUrlValue)
+    this.#initializeConversation()
     this.#openInTurboFrame(this.askTurboFrameNameValue, this.askUrlValue)
     this.dialogOutlet.open()
   }
@@ -25,5 +25,9 @@ export default class extends Controller {
   #openInTurboFrame(name, url) {
     this.modalTurboFrameTarget.id = name
     this.modalTurboFrameTarget.src = url
+  }
+
+  #initializeConversation() {
+    post(this.askUrlValue)
   }
 }
