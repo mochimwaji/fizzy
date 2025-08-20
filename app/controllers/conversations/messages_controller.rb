@@ -7,7 +7,7 @@ class Conversations::MessagesController < ApplicationController
 
   def create
     @conversation.ask(question, **message_params)
-  rescue Conversation::CostExceededError
+  rescue Ai::Quota::UsageExceedsQuotaError
     render json: { error: "You've asked too many questions this week" }, status: :too_many_requests
   rescue Conversation::InvalidStateError
     render json: { error: "Fizzy is still working on an answer to your last question" }, status: :conflict

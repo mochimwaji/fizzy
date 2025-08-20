@@ -1,6 +1,4 @@
 class Conversation::Message::ResponseGenerator::Response
-  MICROCENTS_PER_DOLLAR = 100_000
-
   attr_reader :answer, :input_tokens, :output_tokens, :model_id, :tool_calls, :tool_call_id
 
   def initialize(answer:, input_tokens:, output_tokens:, model_id:)
@@ -8,10 +6,6 @@ class Conversation::Message::ResponseGenerator::Response
     @input_tokens = input_tokens
     @output_tokens = output_tokens
     @model_id = model_id
-  end
-
-  def cost
-    Conversation::Cost.convert_to_decimal(cost_microcents)
   end
 
   def cost_microcents
@@ -27,7 +21,7 @@ class Conversation::Message::ResponseGenerator::Response
   def input_token_price_microcents
     return unless model_info
 
-    price_per_million_tokens_to_microcents(model_info.input_price_per_million)
+    price_per_million_tokens_in_microcents(model_info.input_price_per_million)
   end
 
   def output_cost_microcents
@@ -39,7 +33,7 @@ class Conversation::Message::ResponseGenerator::Response
   def output_token_price_microcents
     return unless model_info
 
-    price_per_million_tokens_to_microcents(model_info.output_price_per_million)
+    price_per_million_tokens_in_microcents(model_info.output_price_per_million)
   end
 
   def model_info
@@ -47,8 +41,8 @@ class Conversation::Message::ResponseGenerator::Response
   end
 
   private
-    def price_per_million_tokens_to_microcents(price)
+    def price_per_million_tokens_in_microcents(price)
       single_token_price = price.to_d / 1_000_000
-      Conversation::Cost.convert_to_microcents(single_token_price)
+      Ai::Quota::Money.wrap(single_token_price).in_microcents
     end
 end

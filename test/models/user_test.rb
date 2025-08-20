@@ -60,4 +60,13 @@ class UserTest < ActiveSupport::TestCase
     assert user.conversation
     assert_equal user.conversation, conversation
   end
+
+  test "AI quota" do
+    user = users(:jz)
+
+    assert_nil user.ai_quota
+    quota = user.fetch_or_create_ai_quota
+    assert user.ai_quota
+    assert_equal user.ai_quota, quota
+  end
 end

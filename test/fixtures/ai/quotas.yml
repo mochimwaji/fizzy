@@ -1,0 +1,11 @@
+kevin:
+  user: kevin
+  limit: 100_00_000_000
+  used: 1053
+  reset_at: <%= 7.days.from_now %>
+
+david:
+  user: david
+  limit: 20_00_000_000
+  used: 0
+  reset_at: <%= 3.days.from_now %>

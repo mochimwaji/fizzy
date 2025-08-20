@@ -12,7 +12,10 @@ class Conversation::Message < ApplicationRecord
   validates :client_message_id, presence: true
 
   scope :ordered, -> { order(created_at: :asc, id: :asc) }
-  scope :with_cost, -> { where.not(cost_microcents: nil) }
+
+  def cost
+    cost_microcents && Ai::Quota::Money.new(cost_microcents)
+  end
 
   def all_emoji?
     content.to_plain_text.all_emoji?

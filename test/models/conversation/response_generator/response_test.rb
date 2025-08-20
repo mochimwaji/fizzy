@@ -28,8 +28,5 @@ class Conversation::Message::ResponseGenerator::ResponseTest < ActiveSupport::Te
 
     # So the total is 594000 + 12000 micro-cents
     assert_equal 606000, response.cost_microcents
-
-    # If we convert that to a decimal value we get 0.00606 cents
-    assert_equal "0.00606".to_d, response.cost
   end
 end
