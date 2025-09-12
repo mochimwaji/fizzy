@@ -24,7 +24,11 @@ module FilterScoped
     end
 
     def set_user_filtering
-      @user_filtering = User::Filtering.new(Current.user, @filter, expanded: params[:expand_all])
+      @user_filtering = User::Filtering.new(Current.user, @filter, expanded: expanded_param)
+    end
+
+    def expanded_param
+      ActiveRecord::Type::Boolean.new.cast(params[:expand_all])
     end
 
     def enable_collection_filtering

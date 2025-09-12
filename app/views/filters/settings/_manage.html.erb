@@ -1,0 +1,21 @@
+<% filter = user_filtering.filter %>
+
+<% if user_filtering.any? %>
+  <% if filter.persisted? %>
+    <%= button_to filter_path(filter), method: :delete, class: "btn txt-x-small btn--reversed", form_class: "inline" do %>
+      <%= icon_tag "bookmark-outline" %>
+      <span class="for-screen-reader">Remove saved filter</span>
+    <% end %>
+  <% else %>
+    <% filter_params = filter.as_params.transform_values { |v| v.respond_to?(:to_str) ? v.to_str : v } %>
+    <%= button_to filters_path, method: :post, params: filter_params, class: "btn txt-x-small", form_class: "inline" do %>
+      <%= icon_tag "bookmark-outline" %>
+      <span class="for-screen-reader">Save filter</span>
+    <% end %>
+  <% end %>
+
+  <%= link_to cards_path(filter.as_params.except(:assignee_ids, :assignment_status, :card_ids, :creator_ids, :closer_ids, :stage_ids, :tag_ids, :terms, :indexed_by, :sorted_by, :creation, :closure)), class: "btn btn--remove txt-x-small" do %>
+    <%= icon_tag "close" %>
+    <span class="for-screen-reader">Clear all</span>
+  <% end %>
+<% end %>

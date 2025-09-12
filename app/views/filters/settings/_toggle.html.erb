@@ -1,12 +1,12 @@
 <% filter = user_filtering.filter %>
 
 <% if user_filtering.expanded? %>
-  <%= link_to cards_path(filter.as_params), class: "btn txt-x-small btn--reversed", aria: { selected: true } do %>
+  <%= link_to my_filter_expansion_path(**filter.as_params, expand_all: false), class: "btn txt-x-small btn--reversed", aria: { selected: true }, data: { turbo_method: "post" } do %>
     <%= icon_tag "filter" %>
     <span class="for-screen-reader">Close filter options</span>
   <% end %>
 <% else %>
-  <%= link_to cards_path(filter.as_params.merge(expand_all: true)), class: "btn txt-x-small" do %>
+  <%= link_to my_filter_expansion_path(**filter.as_params, expand_all: true), class: "btn txt-x-small", data: { turbo_method: "post" } do %>
     <%= icon_tag "filter" %>
     <span class="for-screen-reader">Expand filter options</span>
   <% end %>
