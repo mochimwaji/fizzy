@@ -138,17 +138,11 @@
     padding: var(--inline-space-half) var(--popup-item-padding-inline);
     text-align: start;
 
-    &:has(input:checked)  {
-      --btn-color: var(--color-ink);
+    .icon.checked {
+      display: none;
 
-      .icon.checked {
+      .popup__item--current & {
         display: block;
-      }
-
-      @media (any-hover: hover) {
-        &:where(:not(:active):hover) {
-          --btn-background: var(--color-selected);
-        }
       }
     }
   }
