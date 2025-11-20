@@ -37,15 +37,8 @@ export default class extends Controller {
 
   navigate(event) {
     this.#keyHandlers[event.key]?.call(this, event)
-
-    const parentNavigableList = this.element.parentElement?.closest('[data-controller~="navigable-list"]')
-    if (parentNavigableList) {
-      const parentController = this.application.getControllerForElementAndIdentifier(parentNavigableList, "navigable-list")
-      if (parentController) {
-        parentNavigableList.focus()
-        parentController.navigate(event)
-      }
-    }
+    // Stimulus won't let you handle keydown events with different handlers for the same (nested) stimulus controllers.
+    this.#relayNavigationToParentNavigableList(event)
   }
 
   select({ target }) {
@@ -178,6 +171,17 @@ export default class extends Controller {
       return this.application.getControllerForElementAndIdentifier(nestedElement, "navigable-list")
     }
     return null
+  }
+
+  #relayNavigationToParentNavigableList(event) {
+    const parentNavigableList = this.element.parentElement?.closest('[data-controller~="navigable-list"]')
+    if (parentNavigableList) {
+      const parentController = this.application.getControllerForElementAndIdentifier(parentNavigableList, "navigable-list")
+      if (parentController) {
+        parentNavigableList.focus()
+        parentController.navigate(event)
+      }
+    }
   }
 
   #keyHandlers = {
