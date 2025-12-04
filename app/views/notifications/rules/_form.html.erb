@@ -1,0 +1,67 @@
+<%= form_with model: notification_rule, url: notification_rule.persisted? ? notifications_rule_path(notification_rule) : notifications_rules_path, class: "flex flex-column gap" do |form| %>
+  <% if notification_rule.errors.any? %>
+    <div class="error-messages panel fill-negative txt-negative pad">
+      <ul>
+        <% notification_rule.errors.full_messages.each do |message| %>
+          <li><%= message %></li>
+        <% end %>
+      </ul>
+    </div>
+  <% end %>
+
+  <div class="flex flex-column gap-half">
+    <%= form.label :name, "Rule Name", class: "txt-uppercase txt-small txt-bold" %>
+    <%= form.text_field :name, class: "input", placeholder: "e.g., Weekly design review" %>
+  </div>
+
+  <div class="flex flex-column gap-half">
+    <%= form.label :frequency, "Email Frequency", class: "txt-uppercase txt-small txt-bold" %>
+    <%= form.select :frequency, [["Daily", "daily"], ["Weekly", "weekly"]], {}, class: "input input--select" %>
+  </div>
+
+  <div class="flex flex-column gap-half">
+    <%= form.label :due_in_days, "Due Date Filter", class: "txt-uppercase txt-small txt-bold" %>
+    <%= form.select :due_in_days, 
+        [["Cards with any due date", nil], ["Due today", 0], ["Due tomorrow", 1], ["Due in 2 days", 2], ["Due in 3 days", 3], ["Due in 7 days", 7], ["Due in 14 days", 14]], 
+        { include_blank: false }, 
+        class: "input input--select" %>
+    <p class="txt-x-small txt-muted">Only cards due on this specific day will be included.</p>
+  </div>
+
+  <fieldset class="flex flex-column gap-half border-none pad-none">
+    <legend class="txt-uppercase txt-small txt-bold">Boards (optional)</legend>
+    <p class="txt-x-small txt-muted margin-block-end-half">Leave empty to include cards from all boards you have access to.</p>
+    <div class="flex flex-wrap gap-half">
+      <% Current.user.boards.each do |board| %>
+        <label class="flex align-center gap-quarter pad-half border rounded cursor-pointer">
+          <%= check_box_tag "notification_rule[board_ids][]", board.id, notification_rule.board_ids.include?(board.id), id: "board_#{board.id}" %>
+          <span class="txt-small"><%= board.name %></span>
+        </label>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <fieldset class="flex flex-column gap-half border-none pad-none">
+    <legend class="txt-uppercase txt-small txt-bold">Tags (optional)</legend>
+    <p class="txt-x-small txt-muted margin-block-end-half">Leave empty to include cards with any tags.</p>
+    <div class="flex flex-wrap gap-half">
+      <% Current.account.tags.each do |tag| %>
+        <label class="flex align-center gap-quarter pad-half border rounded cursor-pointer">
+          <%= check_box_tag "notification_rule[tag_ids][]", tag.id, notification_rule.tag_ids.include?(tag.id), id: "tag_#{tag.id}" %>
+          <span class="txt-small"><%= tag.title %></span>
+        </label>
+      <% end %>
+    </div>
+  </fieldset>
+
+  <div class="flex align-center gap-half">
+    <%= form.check_box :active, class: "checkbox" %>
+    <%= form.label :active, "Active", class: "txt-small" %>
+    <span class="txt-x-small txt-muted">(Uncheck to pause this rule without deleting it)</span>
+  </div>
+
+  <div class="flex justify-space-between margin-block-start">
+    <%= link_to "Cancel", notifications_rules_path, class: "btn" %>
+    <%= form.submit notification_rule.persisted? ? "Update Rule" : "Create Rule", class: "btn btn--primary" %>
+  </div>
+<% end %>

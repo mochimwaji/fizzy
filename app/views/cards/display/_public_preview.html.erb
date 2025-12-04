@@ -9,6 +9,11 @@
         <span class="card__board-name">
             <span class="overflow-ellipsis"><%= card.board.name %></span>
           </span>
+        <% if card.due? %>
+          <span class="card__due-date <%= card_due_date_header_class(card) %>">
+            <span class="overflow-ellipsis"><%= card.due_on.strftime("%-m/%-d") %></span>
+          </span>
+        <% end %>
       </div>
 
       <%= render "cards/display/preview/tags", card: card %>

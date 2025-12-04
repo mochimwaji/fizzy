@@ -1,0 +1,32 @@
+<% @page_title = "Notification Rules" %>
+
+<% content_for :header do %>
+  <div class="header__actions header__actions--start">
+    <%= back_link_to "Settings", notifications_settings_path, "keydown.left@document->hotkey#click keydown.esc@document->hotkey#click" %>
+  </div>
+  <h1 class="header__title"><%= @page_title %></h1>
+  <div class="header__actions header__actions--end">
+    <%= link_to new_notifications_rule_path, class: "btn btn--primary" do %>
+      <%= icon_tag "add" %>
+      <span>New Rule</span>
+    <% end %>
+  </div>
+<% end %>
+
+<section class="settings">
+  <div class="settings__panel panel shadow center">
+    <% if @notification_rules.any? %>
+      <div class="flex flex-column gap">
+        <%= render partial: "notifications/rules/rule", collection: @notification_rules %>
+      </div>
+    <% else %>
+      <div class="txt-align-center pad">
+        <p class="txt-muted">No notification rules yet.</p>
+        <p class="txt-small txt-muted margin-block-start">
+          Create rules to receive email notifications for cards matching specific criteria.
+        </p>
+        <%= link_to "Create your first rule", new_notifications_rule_path, class: "btn btn--primary margin-block-start" %>
+      </div>
+    <% end %>
+  </div>
+</section>

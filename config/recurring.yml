@@ -10,6 +10,16 @@ production: &production
     class: Card::DueDateReminderJob
     schedule: every day at 08:00
 
+  process_daily_notification_rules:
+    class: NotificationRule::ProcessJob
+    args: [{ frequency: "daily" }]
+    schedule: every day at 08:30
+
+  process_weekly_notification_rules:
+    class: NotificationRule::ProcessJob
+    args: [{ frequency: "weekly" }]
+    schedule: every Monday at 08:30
+
   # Application cleanup
   auto_postpone_all_due:
     command: "Card.auto_postpone_all_due"

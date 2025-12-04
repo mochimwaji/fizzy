@@ -1,0 +1,36 @@
+<p>Hi <%= @user.familiar_name %>,</p>
+
+<p>Here are the cards matching your "<%= @rule.name %>" notification rule:</p>
+
+<table style="width: 100%; border-collapse: collapse; margin: 1em 0;">
+  <% @cards.each do |card| %>
+    <tr style="border-bottom: 1px solid #eee;">
+      <td style="padding: 1em;">
+        <p class="card__title" style="margin: 0;">
+          <a href="<%= card_url(card) %>"><%= card.title %></a>
+          <span style="color: #666;">(#<%= card.number %>)</span>
+        </p>
+        <p style="margin: 0.5em 0 0; font-size: 0.9em; color: #666;">
+          <strong>Board:</strong> <%= card.board.name %>
+          &nbsp;|&nbsp;
+          <strong>Due:</strong>
+          <span style="<%= 'color: #c0392b; font-weight: bold;' if card.overdue? %><%= 'color: #e67e22; font-weight: bold;' if card.due_today? %>">
+            <%= card.due_on.strftime("%B %-d, %Y") %>
+            <% if card.overdue? %>(OVERDUE)<% elsif card.due_today? %>(TODAY)<% end %>
+          </span>
+        </p>
+        <% if card.tags.any? %>
+          <p style="margin: 0.5em 0 0; font-size: 0.8em;">
+            <% card.tags.each do |tag| %>
+              <span style="background: #eee; padding: 0.2em 0.5em; border-radius: 3px; margin-right: 0.3em;"><%= tag.title %></span>
+            <% end %>
+          </p>
+        <% end %>
+      </td>
+    </tr>
+  <% end %>
+</table>
+
+<p class="footer">
+  <a href="<%= notifications_rules_url %>">Manage your notification rules</a>
+</p>

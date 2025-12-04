@@ -1,0 +1,14 @@
+Hi <%= @user.familiar_name %>,
+
+Here are the cards matching your "<%= @rule.name %>" notification rule:
+
+<% @cards.each do |card| %>
+* <%= card.title %> (#<%= card.number %>)
+  Board: <%= card.board.name %>
+  Due: <%= card.due_on.strftime("%B %-d, %Y") %><% if card.overdue? %> (OVERDUE)<% elsif card.due_today? %> (TODAY)<% end %>
+  <%= card_url(card) %>
+
+<% end %>
+
+---
+Manage your notification rules: <%= notifications_rules_url %>

@@ -1,0 +1,25 @@
+<div class="notification-rule flex justify-space-between align-center pad border-bottom" id="<%= dom_id(rule) %>">
+  <div class="flex flex-column gap-quarter">
+    <div class="flex align-center gap-half">
+      <strong><%= rule.name %></strong>
+      <% unless rule.active? %>
+        <span class="badge badge--muted txt-xx-small">Paused</span>
+      <% end %>
+    </div>
+    <span class="txt-small txt-muted"><%= rule.description %></span>
+    <span class="txt-x-small txt-muted">
+      Emails sent <strong><%= rule.frequency %></strong>
+    </span>
+  </div>
+
+  <div class="flex gap-half">
+    <%= link_to edit_notifications_rule_path(rule), class: "btn btn--small" do %>
+      <%= icon_tag "pencil" %>
+      <span class="for-screen-reader">Edit</span>
+    <% end %>
+    <%= button_to notifications_rule_path(rule), method: :delete, class: "btn btn--small txt-negative", data: { turbo_confirm: "Are you sure you want to delete this rule?" } do %>
+      <%= icon_tag "trash" %>
+      <span class="for-screen-reader">Delete</span>
+    <% end %>
+  </div>
+</div>

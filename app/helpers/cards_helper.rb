@@ -51,6 +51,15 @@ module CardsHelper
     end
   end
 
+  def card_due_date_header_class(card)
+    case card.due_status
+    when :overdue then "card__due-date--overdue"
+    when :due_today then "card__due-date--today"
+    when :due_soon then "card__due-date--soon"
+    else ""
+    end
+  end
+
   def card_due_date_tag(card)
     return unless card.due?
 

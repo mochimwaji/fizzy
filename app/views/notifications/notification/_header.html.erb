@@ -7,6 +7,11 @@
     <span class="card__board-name">
     <span class="overflow-ellipsis"><%= notification.card.board.name %></span>
   </span>
+  <% if notification.card.due? %>
+    <span class="card__due-date <%= card_due_date_header_class(notification.card) %>">
+      <span class="overflow-ellipsis"><%= notification.card.due_on.strftime("%-m/%-d") %></span>
+    </span>
+  <% end %>
   </div>
 
   <div class="card__notification-meta overflow-ellipsis flex-item-grow flex-item-no-shrink txt-align-end">

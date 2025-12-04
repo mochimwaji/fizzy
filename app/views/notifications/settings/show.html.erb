@@ -14,6 +14,19 @@
 
   <div class="settings__panel panel shadow center">
     <%= render "notifications/settings/push_notifications" %>
-    <%= render "notifications/settings/email", settings: @settings %>
+
+    <section class="panel unpad borderless center flex flex-column gap-half margin-block-start">
+      <h2 class="txt-medium txt-uppercase divider margin-none-block-end">Email Notification Rules</h2>
+      <p class="margin-none">Create rules to receive email notifications for cards matching specific criteria like boards, tags, or due dates.</p>
+      <div class="flex gap-half margin-block-start-half">
+        <%= link_to notifications_rules_path, class: "btn btn--primary" do %>
+          <%= icon_tag "settings" %>
+          <span>Manage Rules</span>
+        <% end %>
+        <span class="txt-small txt-muted align-self-center">
+          <%= pluralize(Current.user.notification_rules.active.count, "active rule") %>
+        </span>
+      </div>
+    </section>
   </div>
 </section>

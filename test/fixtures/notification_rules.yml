@@ -1,0 +1,24 @@
+# Notification rules for test fixtures
+daily_due_today:
+  account: thirty_seven_signals
+  user: david
+  name: Daily Due Today
+  frequency: daily
+  due_in_days: 0
+  active: true
+
+weekly_board_check:
+  account: thirty_seven_signals
+  user: david
+  name: Weekly Board Check
+  frequency: weekly
+  due_in_days: 7
+  active: true
+
+inactive_rule:
+  account: thirty_seven_signals
+  user: kevin
+  name: Inactive Rule
+  frequency: daily
+  due_in_days: 1
+  active: false

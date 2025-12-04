@@ -4,6 +4,7 @@ module User::Notifiable
   included do
     has_many :notifications, dependent: :destroy
     has_many :notification_bundles, class_name: "Notification::Bundle", dependent: :destroy
+    has_many :notification_rules, dependent: :destroy
 
     generates_token_for :unsubscribe, expires_in: 1.month
   end

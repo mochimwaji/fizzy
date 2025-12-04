@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_01_100607) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_03_100000) do
   create_table "accesses", id: :uuid, force: :cascade do |t|
     t.datetime "accessed_at"
     t.uuid "account_id", null: false
@@ -359,6 +359,36 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_01_100607) do
     t.index ["ends_at", "status"], name: "index_notification_bundles_on_ends_at_and_status"
     t.index ["user_id", "starts_at", "ends_at"], name: "idx_on_user_id_starts_at_ends_at_7eae5d3ac5"
     t.index ["user_id", "status"], name: "index_notification_bundles_on_user_id_and_status"
+  end
+
+  create_table "notification_rules", id: :uuid, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.boolean "active", default: true, null: false
+    t.datetime "created_at", null: false
+    t.integer "due_in_days"
+    t.string "frequency", limit: 255, default: "daily", null: false
+    t.string "name", limit: 255, null: false
+    t.datetime "updated_at", null: false
+    t.uuid "user_id", null: false
+    t.index ["account_id"], name: "index_notification_rules_on_account_id"
+    t.index ["user_id", "active"], name: "index_notification_rules_on_user_id_and_active"
+    t.index ["user_id"], name: "index_notification_rules_on_user_id"
+  end
+
+  create_table "boards_notification_rules", id: false, force: :cascade do |t|
+    t.uuid "board_id", null: false
+    t.uuid "notification_rule_id", null: false
+    t.index ["board_id"], name: "index_boards_notification_rules_on_board_id"
+    t.index ["notification_rule_id", "board_id"], name: "idx_notification_rules_boards_unique", unique: true
+    t.index ["notification_rule_id"], name: "index_boards_notification_rules_on_notification_rule_id"
+  end
+
+  create_table "notification_rules_tags", id: false, force: :cascade do |t|
+    t.uuid "notification_rule_id", null: false
+    t.uuid "tag_id", null: false
+    t.index ["notification_rule_id", "tag_id"], name: "idx_notification_rules_tags_unique", unique: true
+    t.index ["notification_rule_id"], name: "index_notification_rules_tags_on_notification_rule_id"
+    t.index ["tag_id"], name: "index_notification_rules_tags_on_tag_id"
   end
 
   create_table "notifications", id: :uuid, force: :cascade do |t|

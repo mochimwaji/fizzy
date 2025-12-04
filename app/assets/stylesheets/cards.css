@@ -103,6 +103,29 @@
     text-transform: uppercase;
   }
 
+  .card__due-date {
+    border-inline-start: 1px solid color-mix(in hsl, transparent 75%, currentColor);
+    color: currentColor;
+    display: flex;
+    margin-inline-start: var(--card-header-space);
+    max-inline-size: 100%;
+    min-inline-size: 0;
+    padding-inline-start: var(--card-header-space);
+    text-transform: uppercase;
+  }
+
+  .card__due-date--overdue {
+    color: var(--color-negative);
+  }
+
+  .card__due-date--today {
+    color: var(--color-alert);
+  }
+
+  .card__due-date--soon {
+    color: var(--color-alert);
+  }
+
   .card__tags {
     --btn-color: var(--card-color);
 
