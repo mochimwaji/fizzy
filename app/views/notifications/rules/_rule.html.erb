@@ -4,19 +4,19 @@
     <% unless rule.active? %>
       <span class="badge badge--muted txt-xx-small">Paused</span>
     <% end %>
-    <span class="txt-muted txt-small">|</span>
-    <span class="txt-muted txt-small"><%= rule.frequency.capitalize %></span>
-    <span class="txt-muted txt-small">|</span>
-    <span class="txt-muted txt-small"><%= rule.send_time&.strftime("%l:%M %p")&.strip || "9:00 AM" %></span>
-    <span class="txt-muted txt-small">|</span>
-    <span class="txt-muted txt-small"><%= rule.due_in_days.present? ? "Due in #{rule.due_in_days}d" : "Any due date" %></span>
+    <span class="txt-small" style="color: var(--color-ink-light);">|</span>
+    <span class="txt-small" style="color: var(--color-ink-light);"><%= rule.frequency.capitalize %></span>
+    <span class="txt-small" style="color: var(--color-ink-light);">|</span>
+    <span class="txt-small" style="color: var(--color-ink-light);"><%= rule.send_time&.strftime("%l:%M %p")&.strip || "9:00 AM" %></span>
+    <span class="txt-small" style="color: var(--color-ink-light);">|</span>
+    <span class="txt-small" style="color: var(--color-ink-light);"><%= rule.due_in_days.present? ? "Due in #{rule.due_in_days}d" : "Any due date" %></span>
     <% if rule.boards.any? %>
-      <span class="txt-muted txt-small">|</span>
-      <span class="txt-muted txt-small"><%= rule.boards.map(&:name).to_sentence(two_words_connector: ", ", last_word_connector: ", ") %></span>
+      <span class="txt-small" style="color: var(--color-ink-light);">|</span>
+      <span class="txt-small" style="color: var(--color-ink-light);"><%= rule.boards.map(&:name).to_sentence(two_words_connector: ", ", last_word_connector: ", ") %></span>
     <% end %>
     <% if rule.tags.any? %>
-      <span class="txt-muted txt-small">|</span>
-      <span class="txt-muted txt-small"><%= rule.tags.map(&:title).to_sentence(two_words_connector: ", ", last_word_connector: ", ") %></span>
+      <span class="txt-small" style="color: var(--color-ink-light);">|</span>
+      <span class="txt-small" style="color: var(--color-ink-light);"><%= rule.tags.map(&:title).to_sentence(two_words_connector: ", ", last_word_connector: ", ") %></span>
     <% end %>
   <% end %>
 
