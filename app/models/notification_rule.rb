@@ -27,10 +27,10 @@ class NotificationRule < ApplicationRecord
       scope = scope.joins(:taggings).where(taggings: { tag_id: tags.pluck(:id) }).distinct
     end
 
-    # Filter by due date if specified
+    # Filter by due date if specified (cards due within X days from now)
     if due_in_days.present?
       target_date = due_in_days.days.from_now.to_date
-      scope = scope.where(due_on: target_date)
+      scope = scope.where(due_on: ..target_date)
     end
 
     scope
@@ -49,11 +49,9 @@ class NotificationRule < ApplicationRecord
 
     if due_in_days.present?
       if due_in_days == 0
-        parts << "due today"
-      elsif due_in_days == 1
-        parts << "due tomorrow"
+        parts << "due today or earlier"
       else
-        parts << "due in #{due_in_days} days"
+        parts << "due within #{due_in_days} #{'day'.pluralize(due_in_days)}"
       end
     else
       parts << "with any due date"

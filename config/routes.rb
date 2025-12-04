@@ -103,7 +103,9 @@ Rails.application.routes.draw do
   namespace :notifications do
     resource :settings
     resource :unsubscribe
-    resources :rules
+    resources :rules do
+      post :test, on: :collection
+    end
   end
 
   resources :notifications do

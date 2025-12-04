@@ -104,4 +104,55 @@ class Notifications::RulesControllerTest < ActionDispatch::IntegrationTest
     get edit_notifications_rule_path(other_rule)
     assert_response :not_found
   end
+
+  test "test action sends email for active rules with matching cards" do
+    # Create card with due date that matches the rule
+    card = cards(:logo)
+    card.update!(due_on: Date.current)
+
+    rule = @user.notification_rules.create!(name: "Active Rule", frequency: :daily, due_in_days: 0, active: true)
+
+    assert_enqueued_with(job: ActionMailer::MailDeliveryJob) do
+      post test_notifications_rules_path
+    end
+
+    assert_redirected_to notifications_rules_path
+    assert_match(/Test email sent/, flash[:notice])
+  end
+
+  test "test action shows alert when no cards match active rules" do
+    # Create rule that won't match any cards
+    rule = @user.notification_rules.create!(name: "Active Rule", frequency: :daily, due_in_days: 0, active: true)
+    # Clear all due dates
+    Card.update_all(due_on: nil)
+
+    post test_notifications_rules_path
+
+    assert_redirected_to notifications_rules_path
+    assert_equal "No cards match your active rules.", flash[:alert]
+  end
+
+  test "test action shows alert when no active rules" do
+    @user.notification_rules.destroy_all
+
+    post test_notifications_rules_path
+
+    assert_redirected_to notifications_rules_path
+    assert_equal "No active rules to test.", flash[:alert]
+  end
+
+  test "create rule with send_time" do
+    post notifications_rules_path, params: {
+      notification_rule: {
+        name: "Timed Rule",
+        frequency: "daily",
+        send_time: "14:30",
+        active: true
+      }
+    }
+
+    assert_redirected_to notifications_rules_path
+    rule = @user.notification_rules.last
+    assert_equal "14:30", rule.send_time.strftime("%H:%M")
+  end
 end

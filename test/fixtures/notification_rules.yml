@@ -5,6 +5,7 @@ daily_due_today:
   name: Daily Due Today
   frequency: daily
   due_in_days: 0
+  send_time: "09:00:00"
   active: true
 
 weekly_board_check:
@@ -13,6 +14,7 @@ weekly_board_check:
   name: Weekly Board Check
   frequency: weekly
   due_in_days: 7
+  send_time: "08:00:00"
   active: true
 
 inactive_rule:
@@ -21,4 +23,5 @@ inactive_rule:
   name: Inactive Rule
   frequency: daily
   due_in_days: 1
+  send_time: "10:00:00"
   active: false

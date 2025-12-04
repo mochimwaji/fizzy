@@ -42,6 +42,9 @@ class NotificationRuleTest < ActiveSupport::TestCase
     card_due_tomorrow = cards(:layout)
     card_due_tomorrow.update!(due_on: Date.tomorrow)
 
+    card_due_next_week = cards(:text)
+    card_due_next_week.update!(due_on: 7.days.from_now.to_date)
+
     rule = @user.notification_rules.create!(
       name: "Due today",
       frequency: :daily,
@@ -50,8 +53,38 @@ class NotificationRuleTest < ActiveSupport::TestCase
 
     matching = rule.matching_cards
 
+    # "Due within 0 days" means due today or earlier
     assert_includes matching, card_due_today
     assert_not_includes matching, card_due_tomorrow
+    assert_not_includes matching, card_due_next_week
+  end
+
+  test "matching_cards returns cards due within X days" do
+    card_due_today = cards(:logo)
+    card_due_today.update!(due_on: Date.current)
+
+    card_due_tomorrow = cards(:layout)
+    card_due_tomorrow.update!(due_on: Date.tomorrow)
+
+    card_due_in_3_days = cards(:text)
+    card_due_in_3_days.update!(due_on: 3.days.from_now.to_date)
+
+    card_due_next_week = cards(:shipping)
+    card_due_next_week.update!(due_on: 7.days.from_now.to_date)
+
+    rule = @user.notification_rules.create!(
+      name: "Due within 3 days",
+      frequency: :daily,
+      due_in_days: 3
+    )
+
+    matching = rule.matching_cards
+
+    # "Due within 3 days" includes today through 3 days from now
+    assert_includes matching, card_due_today
+    assert_includes matching, card_due_tomorrow
+    assert_includes matching, card_due_in_3_days
+    assert_not_includes matching, card_due_next_week
   end
 
   test "matching_cards filters by board" do
@@ -127,13 +160,13 @@ class NotificationRuleTest < ActiveSupport::TestCase
       frequency: :daily,
       due_in_days: 0
     )
-    assert_includes rule.description, "due today"
+    assert_includes rule.description, "due today or earlier"
 
     rule.update!(due_in_days: 1)
-    assert_includes rule.description, "due tomorrow"
+    assert_includes rule.description, "due within 1 day"
 
     rule.update!(due_in_days: 7)
-    assert_includes rule.description, "due in 7 days"
+    assert_includes rule.description, "due within 7 days"
 
     rule.update!(due_in_days: nil)
     assert_includes rule.description, "with any due date"

@@ -20,12 +20,19 @@
   </div>
 
   <div class="flex flex-column gap-half">
+    <%= form.label :send_time, "Send Time", class: "txt-uppercase txt-small txt-bold" %>
+    <%= form.time_field :send_time, class: "input", value: notification_rule.send_time&.strftime("%H:%M") || "09:00" %>
+    <p class="txt-x-small txt-muted">What time of day you'd like to receive the notification email.</p>
+  </div>
+
+  <div class="flex flex-column gap-half">
     <%= form.label :due_in_days, "Due Date Filter", class: "txt-uppercase txt-small txt-bold" %>
-    <%= form.select :due_in_days, 
-        [["Cards with any due date", nil], ["Due today", 0], ["Due tomorrow", 1], ["Due in 2 days", 2], ["Due in 3 days", 3], ["Due in 7 days", 7], ["Due in 14 days", 14]], 
-        { include_blank: false }, 
-        class: "input input--select" %>
-    <p class="txt-x-small txt-muted">Only cards due on this specific day will be included.</p>
+    <div class="flex align-center gap-half">
+      <span class="txt-small">Cards due within</span>
+      <%= form.number_field :due_in_days, class: "input", style: "width: 5rem;", min: 0, placeholder: "any" %>
+      <span class="txt-small">days</span>
+    </div>
+    <p class="txt-x-small txt-muted">Leave blank to include cards with any due date. Enter 0 for cards due today, 1 for cards due today or tomorrow, etc.</p>
   </div>
 
   <fieldset class="flex flex-column gap-half border-none pad-none">

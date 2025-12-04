@@ -5,28 +5,28 @@
     <%= back_link_to "Settings", notifications_settings_path, "keydown.left@document->hotkey#click keydown.esc@document->hotkey#click" %>
   </div>
   <h1 class="header__title"><%= @page_title %></h1>
-  <div class="header__actions header__actions--end">
-    <%= link_to new_notifications_rule_path, class: "btn btn--primary" do %>
+<% end %>
+
+<%= tag.section class: "panel panel--wide shadow center" do %>
+  <% if @notification_rules.any? %>
+    <ul class="flex flex-column align-start gap margin-none-block-start unpad">
+      <%= render partial: "notifications/rules/rule", collection: @notification_rules %>
+    </ul>
+  <% else %>
+    <p>Create rules to receive email notifications for cards matching specific criteria like boards, tags, or due dates.</p>
+  <% end %>
+
+  <div class="flex gap-half margin-block-start">
+    <%= link_to new_notifications_rule_path, class: "btn btn--link" do %>
       <%= icon_tag "add" %>
-      <span>New Rule</span>
+      <span>Create a new rule</span>
+    <% end %>
+
+    <% if @notification_rules.active.any? %>
+      <%= button_to test_notifications_rules_path, method: :post, class: "btn btn--link" do %>
+        <%= icon_tag "email" %>
+        <span>Test active rules</span>
+      <% end %>
     <% end %>
   </div>
 <% end %>
-
-<section class="settings">
-  <div class="settings__panel panel shadow center">
-    <% if @notification_rules.any? %>
-      <div class="flex flex-column gap">
-        <%= render partial: "notifications/rules/rule", collection: @notification_rules %>
-      </div>
-    <% else %>
-      <div class="txt-align-center pad">
-        <p class="txt-muted">No notification rules yet.</p>
-        <p class="txt-small txt-muted margin-block-start">
-          Create rules to receive email notifications for cards matching specific criteria.
-        </p>
-        <%= link_to "Create your first rule", new_notifications_rule_path, class: "btn btn--primary margin-block-start" %>
-      </div>
-    <% end %>
-  </div>
-</section>

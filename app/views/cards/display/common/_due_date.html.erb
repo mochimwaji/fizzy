@@ -2,7 +2,7 @@
     data-controller="dialog"
     data-action="keydown.esc->dialog#close click@document->dialog#closeOnClickOutside mouseenter->dialog#loadLazyFrames" <%= "hidden" if card.closed? %>>
   <button class="btn card__due-date-trigger" style="--btn-background: var(--card-bg-color);" data-action="click->dialog#open:stop keydown.d@document->hotkey#click" data-controller="tooltip hotkey" tabindex=<%= (local_assigns.key?(:preview) && local_assigns[:preview]) ? -1 : 0 %>>
-    <%= icon_tag "calendar" %>
+    <span class="icon icon--calendar" aria-hidden="true"></span>
     <span class="<%= card.due? ? '' : 'for-screen-reader' %>">
       <% if card.due? %>
         <%= card.due_on.strftime("%-m/%-d") %>

@@ -8,7 +8,7 @@
     </div>
     <span class="txt-small txt-muted"><%= rule.description %></span>
     <span class="txt-x-small txt-muted">
-      Emails sent <strong><%= rule.frequency %></strong>
+      Emails sent <strong><%= rule.frequency %></strong> at <strong><%= rule.send_time&.strftime("%l:%M %p")&.strip || "9:00 AM" %></strong>
     </span>
   </div>
 
