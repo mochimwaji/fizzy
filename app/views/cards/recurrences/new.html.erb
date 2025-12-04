@@ -1,0 +1,70 @@
+<%= turbo_frame_tag @card, :recurrence do %>
+  <div class="flex-column full-width">
+    <div class="flex align-start justify-space-between">
+      <strong class="popup__title"><%= @card.recurring? ? "Edit recurrence" : "Make recurring" %></strong>
+      <kbd class="txt-xx-small hide-on-touch">r</kbd>
+    </div>
+
+    <%= form_with url: @card.recurring? ? card_recurrence_path(@card) : card_recurrence_path(@card),
+                  method: @card.recurring? ? :patch : :post,
+                  class: "flex flex-column gap-half full-width margin-block-half" do |form| %>
+
+      <div class="flex flex-column gap-quarter">
+        <label class="txt-small txt-muted">Frequency</label>
+        <%= form.select :frequency,
+            options_for_select([
+              ["Daily", "daily"],
+              ["Weekly", "weekly"],
+              ["Every 2 weeks", "biweekly"],
+              ["Monthly", "monthly"]
+            ], @recurrence&.frequency || "weekly"),
+            {},
+            class: "select txt-small full-width",
+            data: { controller: "recurrence-form", action: "change->recurrence-form#updateOptions" } %>
+      </div>
+
+      <div class="flex flex-column gap-quarter" data-recurrence-form-target="weeklyOptions">
+        <label class="txt-small txt-muted">Day of week</label>
+        <%= form.select :day_of_week,
+            options_for_select([
+              ["Sunday", 0],
+              ["Monday", 1],
+              ["Tuesday", 2],
+              ["Wednesday", 3],
+              ["Thursday", 4],
+              ["Friday", 5],
+              ["Saturday", 6]
+            ], @recurrence&.day_of_week || Date.current.wday),
+            {},
+            class: "select txt-small full-width" %>
+      </div>
+
+      <div class="flex flex-column gap-quarter hide" data-recurrence-form-target="monthlyOptions">
+        <label class="txt-small txt-muted">Day of month</label>
+        <%= form.select :day_of_month,
+            options_for_select((1..31).map { |d| [d.ordinalize, d] }, @recurrence&.day_of_month || 1),
+            {},
+            class: "select txt-small full-width" %>
+      </div>
+
+      <% if @card.recurring? %>
+        <div class="flex align-center gap-half margin-block-start-half">
+          <%= form.check_box :active, checked: @recurrence.active?, class: "checkbox" %>
+          <label class="txt-small">Active</label>
+        </div>
+
+        <p class="txt-x-small txt-muted margin-none">
+          Next occurrence: <%= @recurrence.next_occurrence_at&.strftime("%B %d, %Y at %I:%M %p") || "Not scheduled" %>
+        </p>
+      <% end %>
+
+      <div class="flex gap-half margin-block-start-half">
+        <%= form.submit @card.recurring? ? "Update" : "Set up recurrence", class: "btn btn--primary" %>
+
+        <% if @card.recurring? %>
+          <%= button_to "Remove", card_recurrence_path(@card), method: :delete, class: "btn btn--negative" %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+<% end %>

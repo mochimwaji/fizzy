@@ -81,6 +81,7 @@ Rails.application.routes.draw do
       resource :pin
       resource :publish
       resource :reading
+      resource :recurrence
       resource :triage
       resource :watch
       resource :reading

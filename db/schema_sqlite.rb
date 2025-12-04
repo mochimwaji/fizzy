@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.2].define(version: 2025_12_04_041728) do
+ActiveRecord::Schema[8.2].define(version: 2025_12_04_054743) do
   create_table "accesses", id: :uuid, force: :cascade do |t|
     t.datetime "accessed_at"
     t.uuid "account_id", null: false
@@ -205,6 +205,22 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_04_041728) do
     t.index ["account_id"], name: "index_card_not_nows_on_account_id"
     t.index ["card_id"], name: "index_card_not_nows_on_card_id", unique: true
     t.index ["user_id"], name: "index_card_not_nows_on_user_id"
+  end
+
+  create_table "card_recurrences", id: :uuid, force: :cascade do |t|
+    t.uuid "account_id", null: false
+    t.boolean "active", default: true, null: false
+    t.uuid "card_id", null: false
+    t.datetime "created_at", null: false
+    t.integer "day_of_month"
+    t.integer "day_of_week"
+    t.string "frequency", limit: 255, default: "weekly", null: false
+    t.datetime "last_occurred_at"
+    t.datetime "next_occurrence_at"
+    t.datetime "updated_at", null: false
+    t.index ["account_id"], name: "index_card_recurrences_on_account_id"
+    t.index ["active", "next_occurrence_at"], name: "index_card_recurrences_on_active_and_next"
+    t.index ["card_id"], name: "index_card_recurrences_on_card_id"
   end
 
   create_table "cards", id: :uuid, force: :cascade do |t|
@@ -586,6 +602,9 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_04_041728) do
     t.index ["account_id"], name: "index_webhooks_on_account_id"
     t.index ["board_id", "subscribed_actions"], name: "index_webhooks_on_board_id_and_subscribed_actions"
   end
+
+  add_foreign_key "card_recurrences", "accounts"
+  add_foreign_key "card_recurrences", "cards"
   execute "CREATE VIRTUAL TABLE search_records_fts USING fts5(\n        title,\n        content,\n        tokenize='porter'\n      )"
 
 end

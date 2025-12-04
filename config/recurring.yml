@@ -20,6 +20,10 @@ production: &production
     args: [{ frequency: "weekly" }]
     schedule: every Monday at 08:30
 
+  process_recurring_cards:
+    class: Card::Recurrence::ProcessJob
+    schedule: every hour at minute 5
+
   # Application cleanup
   auto_postpone_all_due:
     command: "Card.auto_postpone_all_due"

@@ -1,0 +1,18 @@
+<div id="<%= dom_id(card, :recurrence) %>" class="position-relative margin-inline-end-half"
+    data-controller="dialog"
+    data-action="keydown.esc->dialog#close click@document->dialog#closeOnClickOutside mouseenter->dialog#loadLazyFrames" <%= "hidden" if card.closed? %>>
+  <button class="btn <%= card.recurring? ? (card.recurrence_active? ? 'btn--positive' : 'btn--muted') : '' %>" style="--btn-background: var(--card-bg-color);" data-action="click->dialog#open:stop keydown.shift+r@document->hotkey#click" data-controller="tooltip hotkey" tabindex="0">
+    <%= icon_tag "refresh" %>
+    <span class="<%= card.recurring? ? '' : 'for-screen-reader' %>">
+      <% if card.recurring? %>
+        <%= card.recurrence.frequency.capitalize %>
+      <% else %>
+        Recurrence
+      <% end %>
+    </span>
+  </button>
+
+  <dialog class="popup panel flex-column align-start gap-half fill-white shadow" data-dialog-target="dialog" data-action="turbo:before-morph-attribute->dialog#preventCloseOnMorphing turbo:submit-end->dialog#close">
+    <%= turbo_frame_tag card, :recurrence, src: new_card_recurrence_path(card), loading: :lazy, refresh: "morph" %>
+  </dialog>
+</div>

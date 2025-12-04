@@ -1,0 +1,20 @@
+test_rule:
+  id: <%= ActiveRecord::FixtureSet.identify("test_rule", :uuid) %>
+  card_id: <%= ActiveRecord::FixtureSet.identify("logo", :uuid) %>
+  account_id: <%= ActiveRecord::FixtureSet.identify("37s", :uuid) %>
+  frequency: weekly
+  day_of_week: 1
+  active: true
+  next_occurrence_at: <%= 3.days.from_now.to_fs(:db) %>
+  created_at: <%= Time.now.to_fs(:db) %>
+  updated_at: <%= Time.now.to_fs(:db) %>
+
+inactive_recurrence:
+  id: <%= ActiveRecord::FixtureSet.identify("inactive_recurrence", :uuid) %>
+  card_id: <%= ActiveRecord::FixtureSet.identify("layout", :uuid) %>
+  account_id: <%= ActiveRecord::FixtureSet.identify("37s", :uuid) %>
+  frequency: daily
+  active: false
+  next_occurrence_at: <%= 1.day.from_now.to_fs(:db) %>
+  created_at: <%= Time.now.to_fs(:db) %>
+  updated_at: <%= Time.now.to_fs(:db) %>
