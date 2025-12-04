@@ -115,15 +115,28 @@
   }
 
   .card__due-date--overdue {
+    --btn-color: var(--color-negative);
+    --btn-border-color: var(--color-negative);
     color: var(--color-negative);
   }
 
   .card__due-date--today {
+    --btn-color: var(--color-alert);
+    --btn-border-color: var(--color-alert);
     color: var(--color-alert);
   }
 
   .card__due-date--soon {
+    --btn-color: var(--color-alert);
+    --btn-border-color: var(--color-alert);
     color: var(--color-alert);
+  }
+
+  /* Inline SVG in buttons */
+  .btn svg {
+    block-size: 1em;
+    inline-size: 1em;
+    flex-shrink: 0;
   }
 
   .card__tags {

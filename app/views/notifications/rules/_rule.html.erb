@@ -1,25 +1,24 @@
-<div class="notification-rule flex justify-space-between align-center pad border-bottom" id="<%= dom_id(rule) %>">
-  <div class="flex flex-column gap-quarter">
-    <div class="flex align-center gap-half">
-      <strong><%= rule.name %></strong>
-      <% unless rule.active? %>
-        <span class="badge badge--muted txt-xx-small">Paused</span>
-      <% end %>
+<li class="list-style-none margin-none flex align-center gap full-width" id="<%= dom_id(rule) %>">
+  <%= link_to edit_notifications_rule_path(rule), class: "txt-ink flex gap-half align-center min-width txt-medium" do %>
+    <div class="flex flex-column">
+      <div class="flex align-center gap-half">
+        <strong class="overflow-ellipsis"><%= rule.name %></strong>
+        <% unless rule.active? %>
+          <span class="badge badge--muted txt-xx-small">Paused</span>
+        <% end %>
+      </div>
+      <span class="txt-x-small txt-muted txt-normal-case"><%= rule.description %></span>
+      <span class="txt-xx-small txt-muted txt-normal-case">
+        <%= rule.frequency.capitalize %> at <%= rule.send_time&.strftime("%l:%M %p")&.strip || "9:00 AM" %>
+      </span>
     </div>
-    <span class="txt-small txt-muted"><%= rule.description %></span>
-    <span class="txt-x-small txt-muted">
-      Emails sent <strong><%= rule.frequency %></strong> at <strong><%= rule.send_time&.strftime("%l:%M %p")&.strip || "9:00 AM" %></strong>
-    </span>
-  </div>
+  <% end %>
 
-  <div class="flex gap-half">
-    <%= link_to edit_notifications_rule_path(rule), class: "btn btn--small" do %>
-      <%= icon_tag "pencil" %>
-      <span class="for-screen-reader">Edit</span>
-    <% end %>
-    <%= button_to notifications_rule_path(rule), method: :delete, class: "btn btn--small txt-negative", data: { turbo_confirm: "Are you sure you want to delete this rule?" } do %>
-      <%= icon_tag "trash" %>
-      <span class="for-screen-reader">Delete</span>
-    <% end %>
-  </div>
-</div>
+  <hr class="separator--horizontal flex-item-grow" style="--border-color: var(--color-ink-medium); --border-style: dashed" aria-hidden="true">
+
+  <%= button_to notifications_rule_path(rule), method: :delete, class: "btn btn--circle btn--negative txt-xx-small flex-item-no-shrink",
+        data: { turbo_confirm: "Are you sure you want to delete this rule?" } do %>
+    <%= icon_tag "minus" %>
+    <span class="for-screen-reader">Remove <%= rule.name %></span>
+  <% end %>
+</li>

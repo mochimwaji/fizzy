@@ -1,18 +1,18 @@
 <%= turbo_frame_tag @card, :due_date do %>
   <div class="flex-column full-width">
     <div class="flex align-start justify-space-between">
-      <strong class="popup__title">Set due date</strong>
-      <kbd class="txt-xx-small hide-on-touch">d</kbd>
+      <strong class="popup__title"><%= @card.due? ? "Update due date" : "Set due date" %></strong>
+      <kbd class="txt-xx-small hide-on-touch">u</kbd>
     </div>
 
-    <%= form_with url: card_due_date_path(@card), method: :post, class: "flex flex-column gap-half full-width margin-block-half" do |form| %>
-      <%= form.date_field :due_on, name: "due_date[due_on]", value: @card.due_on, class: "input txt-small full-width", autofocus: true, min: Date.current %>
+    <%= form_with url: card_due_date_path(@card), method: :post, class: "flex flex-column gap-half full-width margin-block-half", data: { turbo_frame: "_top" } do |form| %>
+      <%= form.date_field :due_on, name: "due_date[due_on]", value: @card.due_on || Date.current, class: "input txt-small full-width", autofocus: true %>
 
       <div class="flex gap-half margin-block-start-half">
-        <%= form.submit "Set due date", class: "btn btn--primary" %>
+        <%= form.submit @card.due? ? "Update" : "Set due date", class: "btn btn--primary" %>
 
         <% if @card.due? %>
-          <%= button_to "Remove", card_due_date_path(@card), method: :delete, class: "btn btn--danger" %>
+          <%= button_to "Remove", card_due_date_path(@card), method: :delete, class: "btn btn--negative" %>
         <% end %>
       </div>
     <% end %>

@@ -1,8 +1,8 @@
-<div id="<%= dom_id(card, :due_date) %>" class="position-relative"
+<div id="<%= dom_id(card, :due_date) %>" class="position-relative margin-inline-end-half"
     data-controller="dialog"
     data-action="keydown.esc->dialog#close click@document->dialog#closeOnClickOutside mouseenter->dialog#loadLazyFrames" <%= "hidden" if card.closed? %>>
-  <button class="btn card__due-date-trigger" style="--btn-background: var(--card-bg-color);" data-action="click->dialog#open:stop keydown.d@document->hotkey#click" data-controller="tooltip hotkey" tabindex=<%= (local_assigns.key?(:preview) && local_assigns[:preview]) ? -1 : 0 %>>
-    <span class="icon icon--calendar" aria-hidden="true"></span>
+  <button class="btn <%= card_due_date_header_class(card) %>" style="--btn-background: var(--card-bg-color);" data-action="click->dialog#open:stop keydown.u@document->hotkey#click" data-controller="tooltip hotkey" tabindex=<%= (local_assigns.key?(:preview) && local_assigns[:preview]) ? -1 : 0 %>>
+    <%= inline_svg("calendar") %>
     <span class="<%= card.due? ? '' : 'for-screen-reader' %>">
       <% if card.due? %>
         <%= card.due_on.strftime("%-m/%-d") %>
