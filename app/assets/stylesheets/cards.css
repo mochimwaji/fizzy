@@ -233,6 +233,7 @@
   .card__meta-text--author { grid-area: text-author; }
   .card__meta-text--updated { grid-area: text-updated; }
   .card__meta-text--assignees { grid-area: text-assignees; }
+  .card__meta-text--due-date { grid-area: text-due-date; }
 
   .card__meta-avatars {
     align-self: center;

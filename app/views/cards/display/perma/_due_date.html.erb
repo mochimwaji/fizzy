@@ -1,0 +1,3 @@
+<%= render "cards/display/common/due_date", card: card do %>
+  <%= turbo_frame_tag card, :due_date, src: new_card_due_date_path(card), loading: :lazy, refresh: "morph" %>
+<% end %>

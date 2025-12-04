@@ -75,6 +75,18 @@ class Event::Description
         triaged_sentence(creator, card_title)
       when "card_sent_back_to_triage"
         %(#{creator} moved #{card_title} back to "Maybe?")
+      when "card_due_date_set"
+        due_date_set_sentence(creator, card_title)
+      when "card_due_date_changed"
+        due_date_changed_sentence(creator, card_title)
+      when "card_due_date_removed"
+        "#{creator} removed the due date from #{card_title}"
+      when "card_due_today_reminder"
+        "#{card_title} is due today"
+      when "card_due_tomorrow_reminder"
+        "#{card_title} is due tomorrow"
+      when "card_overdue_reminder"
+        "#{card_title} is now overdue"
       end
     end
 
@@ -104,5 +116,17 @@ class Event::Description
     def triaged_sentence(creator, card_title)
       column = event.particulars.dig("particulars", "column")
       %(#{creator} moved #{card_title} to "#{h column}")
+    end
+
+    def due_date_set_sentence(creator, card_title)
+      due_on = event.particulars.dig("particulars", "due_on")
+      formatted_date = Date.parse(due_on).strftime("%B %-d, %Y") rescue due_on
+      "#{creator} set #{card_title} due #{formatted_date}"
+    end
+
+    def due_date_changed_sentence(creator, card_title)
+      due_on = event.particulars.dig("particulars", "due_on")
+      formatted_date = Date.parse(due_on).strftime("%B %-d, %Y") rescue due_on
+      "#{creator} changed the due date of #{card_title} to #{formatted_date}"
     end
 end

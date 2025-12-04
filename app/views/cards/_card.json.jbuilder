@@ -3,6 +3,7 @@ json.cache! [ card, card.column&.color ] do
   json.image_url card.image.presence && url_for(card.image)
 
   json.golden card.golden?
+  json.due_on card.due_on
   json.last_active_at card.last_active_at.utc
   json.created_at card.created_at.utc
 

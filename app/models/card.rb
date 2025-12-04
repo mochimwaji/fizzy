@@ -1,5 +1,5 @@
 class Card < ApplicationRecord
-  include Assignable, Attachments, Broadcastable, Closeable, Colored, Entropic, Eventable,
+  include Assignable, Attachments, Broadcastable, Closeable, Colored, Dueable, Entropic, Eventable,
     Exportable, Golden, Mentions, Multistep, Pinnable, Postponable, Promptable,
     Readable, Searchable, Stallable, Statuses, Taggable, Triageable, Watchable
 
@@ -33,6 +33,9 @@ class Card < ApplicationRecord
     when "not_now" then postponed.latest
     when "golden" then golden
     when "draft" then drafted
+    when "overdue" then overdue
+    when "due_today" then due_today
+    when "due_this_week" then due_this_week
     else all
     end
   end

@@ -30,6 +30,7 @@ module CardsHelper
       "in #{card.board.name}"
     ]
     title << "assigned to #{card.assignees.map(&:name).to_sentence}" if card.assignees.any?
+    title << "due #{card.due_on.strftime('%B %-d, %Y')}" if card.due?
     title.join(" ")
   end
 
@@ -47,6 +48,31 @@ module CardsHelper
   def button_to_remove_card_image(card)
     button_to(card_image_path(card), method: :delete, class: "btn", data: { controller: "tooltip", action: "dialog#close" }) do
       icon_tag("trash") + tag.span("Remove background image", class: "for-screen-reader")
+    end
+  end
+
+  def card_due_date_tag(card)
+    return unless card.due?
+
+    css_class = case card.due_status
+    when :overdue then "txt-negative"
+    when :due_today then "txt-alert"
+    when :due_soon then "txt-alert"
+    else ""
+    end
+
+    status_text = case card.due_status
+    when :overdue then "Overdue"
+    when :due_today then "Due today"
+    else "Due"
+    end
+
+    tag.span class: "card__meta-text card__meta-text--due-date overflow-ellipsis #{css_class}" do
+      concat(icon_tag("calendar", aria: { label: status_text }))
+      concat(" ")
+      concat(status_text)
+      concat(" ")
+      concat(local_datetime_tag(card.due_on.to_datetime, style: :shortdate))
     end
   end
 end

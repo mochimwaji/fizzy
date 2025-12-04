@@ -1,7 +1,7 @@
 module Filter::Fields
   extend ActiveSupport::Concern
 
-  INDEXES = %w[ all closed not_now stalled postponing_soon golden ]
+  INDEXES = %w[ all closed not_now stalled postponing_soon golden overdue due_today due_this_week ]
   SORTED_BY = %w[ newest oldest latest ]
 
   delegate :default_value?, to: :class
@@ -23,6 +23,12 @@ module Filter::Fields
         "Done"
       when "all"
         "Open"
+      when "overdue"
+        "Overdue"
+      when "due_today"
+        "Due today"
+      when "due_this_week"
+        "Due this week"
       else
         index.humanize
       end

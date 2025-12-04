@@ -6,6 +6,10 @@ production: &production
     command: "Notification::Bundle.deliver_all_later"
     schedule: every 30 minutes
 
+  send_due_date_reminders:
+    class: Card::DueDateReminderJob
+    schedule: every day at 08:00
+
   # Application cleanup
   auto_postpone_all_due:
     command: "Card.auto_postpone_all_due"
