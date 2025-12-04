@@ -8,11 +8,11 @@ module User::EmailAddressChangeable
     parsed_token = SignedGlobalID.parse(token, for: EMAIL_CHANGE_TOKEN_PURPOSE)
 
     if parsed_token.nil?
-      raise ArgumentError, "The token is invalid"
+      false
     elsif parsed_token.find != self
-      raise ArgumentError, "The token was generated for a different user"
+      false
     elsif identity.email_address != parsed_token.params.fetch("old_email_address")
-      raise ArgumentError, "The token was generated for a different email address"
+      false
     else
       new_email_address = parsed_token.params.fetch("new_email_address")
       change_email_address(new_email_address)

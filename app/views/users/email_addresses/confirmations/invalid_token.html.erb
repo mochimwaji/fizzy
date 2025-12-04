@@ -1,0 +1,12 @@
+<section class="panel panel--narrow shadow center margin-block-start">
+  <h1 class="txt-center margin-none margin-block-end">Link expired</h1>
+
+  <p class="txt-muted txt-center">
+    This email change link has expired or is no longer valid.
+  </p>
+
+  <div class="txt-center">
+    <%= link_to "Return to settings", edit_user_path(Current.user), class: "btn btn--primary" if Current.user %>
+    <%= link_to "Return home", root_path, class: "btn btn--primary" unless Current.user %>
+  </div>
+</section>

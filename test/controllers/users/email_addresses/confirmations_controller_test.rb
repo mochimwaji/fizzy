@@ -22,8 +22,7 @@ class Users::EmailAddresses::ConfirmationsControllerTest < ActionDispatch::Integ
   end
 
   test "create with invalid token" do
-    assert_raises(ArgumentError) do
-      post user_email_address_confirmation_path(user_id: @user.id, email_address_token: "invalid", script_name: @user.account.slug)
-    end
+    post user_email_address_confirmation_path(user_id: @user.id, email_address_token: "invalid", script_name: @user.account.slug)
+    assert_response :unprocessable_entity
   end
 end

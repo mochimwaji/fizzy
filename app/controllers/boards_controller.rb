@@ -13,7 +13,7 @@ class BoardsController < ApplicationController
   end
 
   def new
-    @board = Board.new
+    @board = Board.new(name: Current.user.accessible_boards.one? ? Current.user.accessible_boards.sole.name : nil)
   end
 
   def create

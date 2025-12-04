@@ -4,7 +4,7 @@ module MagicLink::Code
 
   class << self
     def generate(length)
-      length.times.map { CODE_ALPHABET.sample }.join
+      length.times.map { CODE_ALPHABET[SecureRandom.random_number(CODE_ALPHABET.size)] }.join
     end
 
     def sanitize(code)
