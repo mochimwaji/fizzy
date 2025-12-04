@@ -1,0 +1,37 @@
+<% @page_title = "Calendar - #{l(@date, format: :month_year)}" %>
+
+<% content_for :header do %>
+  <h1 class="header__title">
+    <span>Calendar</span>
+  </h1>
+
+  <div class="header__actions header__actions--end">
+    <div class="flex gap">
+      <%= link_to calendar_path(date: @date.prev_month), class: "btn btn--plain" do %>
+        <%= icon_tag "arrow-back" %>
+        <span class="for-screen-reader">Previous month</span>
+      <% end %>
+
+      <%= link_to l(@date, format: :month_year), calendar_path, class: "btn btn--plain" %>
+
+      <%= link_to calendar_path(date: @date.next_month), class: "btn btn--plain" do %>
+        <%= icon_tag "arrow-forward" %>
+        <span class="for-screen-reader">Next month</span>
+      <% end %>
+    </div>
+  </div>
+<% end %>
+
+<div class="calendar">
+  <div class="calendar__header">
+    <% %w[Sun Mon Tue Wed Thu Fri Sat].each do |day_name| %>
+      <div class="calendar__day-name"><%= day_name %></div>
+    <% end %>
+  </div>
+
+  <div class="calendar__body">
+    <% (@start_date..@end_date).each do |date| %>
+      <%= render "calendars/day", date: date, cards: @cards_by_date[date] || [], current_month: date.month == @date.month %>
+    <% end %>
+  </div>
+</div>

@@ -1,6 +1,8 @@
 Rails.application.routes.draw do
   root "events#index"
 
+  resource :calendar, only: :show
+
   namespace :account do
     resource :join_code
     resource :settings

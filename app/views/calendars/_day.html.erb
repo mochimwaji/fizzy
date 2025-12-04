@@ -1,0 +1,26 @@
+<%= tag.div class: class_names("calendar__day", "calendar__day--other-month": !current_month, "calendar__day--today": date == Date.current) do %>
+  <div class="calendar__date">
+    <% if date == Date.current %>
+      <span class="calendar__date-badge"><%= date.day %></span>
+    <% else %>
+      <%= date.day %>
+    <% end %>
+  </div>
+
+  <% if cards.any? %>
+    <div class="calendar__cards">
+      <% cards.first(3).each do |card| %>
+        <%= link_to card_path(card), class: "calendar__card #{'calendar__card--overdue' if card.overdue?}", title: card.title do %>
+          <span class="calendar__card-board" style="background-color: <%= card.color %>"></span>
+          <span class="calendar__card-title overflow-ellipsis"><%= card.title %></span>
+        <% end %>
+      <% end %>
+
+      <% if cards.size > 3 %>
+        <div class="calendar__more">
+          +<%= cards.size - 3 %> more
+        </div>
+      <% end %>
+    </div>
+  <% end %>
+<% end %>

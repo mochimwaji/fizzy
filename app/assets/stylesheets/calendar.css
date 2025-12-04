@@ -1,0 +1,141 @@
+.calendar {
+  padding: var(--size-m);
+}
+
+.calendar__header {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  margin-bottom: var(--size-xs);
+}
+
+.calendar__day-name {
+  text-align: center;
+  font-weight: var(--weight-semi-bold);
+  color: var(--color-ink-light);
+  padding: var(--size-xs);
+  font-size: var(--size-s);
+}
+
+.calendar__body {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 1px;
+  background-color: var(--color-paper-dark);
+  border: 1px solid var(--color-paper-dark);
+  border-radius: var(--rounded);
+}
+
+.calendar__day {
+  background-color: var(--color-paper);
+  min-height: 120px;
+  padding: var(--size-xs);
+  display: flex;
+  flex-direction: column;
+}
+
+.calendar__day--other-month {
+  background-color: var(--color-paper-light);
+}
+
+.calendar__day--other-month .calendar__date {
+  color: var(--color-ink-light);
+}
+
+.calendar__day--today {
+  background-color: var(--color-highlight-faint);
+}
+
+.calendar__date {
+  font-size: var(--size-s);
+  font-weight: var(--weight-semi-bold);
+  margin-bottom: var(--size-xs);
+}
+
+.calendar__date-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background-color: var(--color-accent);
+  color: var(--color-paper);
+}
+
+.calendar__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  flex-grow: 1;
+  overflow: hidden;
+}
+
+.calendar__card {
+  display: flex;
+  align-items: center;
+  gap: var(--size-xs);
+  padding: 2px var(--size-xs);
+  background-color: var(--color-paper-dark);
+  border-radius: var(--rounded-s);
+  font-size: var(--size-xs);
+  text-decoration: none;
+  color: var(--color-ink);
+  transition: background-color 0.15s ease;
+}
+
+.calendar__card:hover {
+  background-color: var(--color-paper-darker);
+}
+
+.calendar__card--overdue {
+  background-color: var(--color-danger-faint);
+}
+
+.calendar__card--overdue:hover {
+  background-color: var(--color-danger-light);
+}
+
+.calendar__card-board {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.calendar__card-title {
+  flex-grow: 1;
+  min-width: 0;
+}
+
+.calendar__more {
+  font-size: var(--size-xs);
+  color: var(--color-ink-light);
+  padding: 2px var(--size-xs);
+}
+
+@media (max-width: 768px) {
+  .calendar__day {
+    min-height: 80px;
+    padding: 2px;
+  }
+
+  .calendar__day-name {
+    font-size: var(--size-xs);
+    padding: 2px;
+  }
+
+  .calendar__date {
+    font-size: var(--size-xs);
+  }
+
+  .calendar__card {
+    font-size: 10px;
+    padding: 1px 2px;
+  }
+
+  .calendar__card-board {
+    width: 6px;
+    height: 6px;
+  }
+}
