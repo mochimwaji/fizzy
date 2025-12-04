@@ -6,6 +6,7 @@ if [ "${1}" == "./bin/thrust" ] && [ "${2}" == "./bin/rails" ] && [ "${3}" == "s
   ./bin/rails db:create:queue db:migrate:queue 2>/dev/null || true
   ./bin/rails db:create:cache db:migrate:cache 2>/dev/null || true
   ./bin/rails db:create:cable db:migrate:cable 2>/dev/null || true
+  ./bin/rails runner "load 'db/seeds/production.rb'"
 fi
 
 exec "${@}"
