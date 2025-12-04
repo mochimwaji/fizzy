@@ -12,7 +12,7 @@ class Notifications::RulesControllerTest < ActionDispatch::IntegrationTest
 
     get notifications_rules_path
     assert_response :success
-    assert_select "div", text: /Test Rule/
+    assert_select "strong", text: "Test Rule"
   end
 
   test "new renders form" do

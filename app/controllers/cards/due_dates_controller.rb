@@ -9,6 +9,11 @@ class Cards::DueDatesController < ApplicationController
     render_card_replacement
   end
 
+  def update
+    @card.set_due_date(due_date_params[:due_on])
+    render_card_replacement
+  end
+
   def destroy
     @card.remove_due_date
     render_card_replacement
