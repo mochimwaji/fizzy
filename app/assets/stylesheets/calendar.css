@@ -1,3 +1,46 @@
+/* Calendar Navigation */
+.calendar-nav {
+  display: flex;
+  align-items: center;
+  gap: var(--size-xs);
+}
+
+.calendar-nav__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--rounded);
+  background-color: transparent;
+  color: var(--color-ink-light);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.calendar-nav__btn:hover {
+  background-color: var(--color-paper-dark);
+  color: var(--color-ink);
+}
+
+.calendar-nav__btn .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.calendar-nav__current {
+  font-weight: var(--weight-semi-bold);
+  font-size: var(--size-m);
+  color: var(--color-ink);
+  padding: var(--size-xs) var(--size-s);
+  border-radius: var(--rounded);
+  transition: background-color 0.15s ease;
+}
+
+.calendar-nav__current:hover {
+  background-color: var(--color-paper-dark);
+}
+
+/* Calendar Grid */
 .calendar {
   padding: var(--size-m);
 }
@@ -104,8 +147,11 @@
 }
 
 .calendar__card-title {
-  flex-grow: 1;
+  flex: 1;
   min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .calendar__more {
@@ -139,3 +185,129 @@
     height: 6px;
   }
 }
+
+/* Calendar Card Modal */
+.calendar-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+
+.calendar-modal--open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.calendar-modal--closing {
+  opacity: 0;
+}
+
+.calendar-modal__backdrop {
+  position: absolute;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.6);
+  backdrop-filter: blur(2px);
+}
+
+.calendar-modal__container {
+  position: relative;
+  width: 90%;
+  max-width: 800px;
+  max-height: 90vh;
+  background-color: var(--color-paper);
+  border-radius: var(--rounded-l);
+  box-shadow: var(--shadow-l);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  transform: scale(0.95) translateY(10px);
+  transition: transform 0.2s ease;
+}
+
+.calendar-modal--open .calendar-modal__container {
+  transform: scale(1) translateY(0);
+}
+
+.calendar-modal--closing .calendar-modal__container {
+  transform: scale(0.95) translateY(10px);
+}
+
+.calendar-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: var(--size-s) var(--size-m);
+  border-bottom: 1px solid var(--color-paper-dark);
+  background-color: var(--color-paper-light);
+}
+
+.calendar-modal__back .btn--back {
+  display: flex;
+  align-items: center;
+  gap: var(--size-xs);
+  color: var(--color-ink-light);
+  font-size: var(--size-s);
+  transition: color 0.15s ease;
+}
+
+.calendar-modal__back .btn--back:hover {
+  color: var(--color-ink);
+}
+
+.calendar-modal__back .icon {
+  width: 16px;
+  height: 16px;
+}
+
+.calendar-modal__actions {
+  display: flex;
+  gap: var(--size-xs);
+}
+
+.calendar-modal__actions .btn--plain {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: var(--rounded);
+  color: var(--color-ink-light);
+  transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+.calendar-modal__actions .btn--plain:hover {
+  background-color: var(--color-paper-dark);
+  color: var(--color-ink);
+}
+
+.calendar-modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--size-m);
+}
+
+/* Adjust card-perma styles within modal */
+.calendar-modal .card-perma {
+  margin: 0;
+}
+
+@media (max-width: 768px) {
+  .calendar-modal__container {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    border-radius: 0;
+  }
+
+  .calendar-modal__body {
+    padding: var(--size-s);
+  }
+}
+

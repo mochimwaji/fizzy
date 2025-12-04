@@ -6,19 +6,19 @@
   </h1>
 
   <div class="header__actions header__actions--end">
-    <div class="flex gap">
-      <%= link_to calendar_path(date: @date.prev_month), class: "btn btn--plain" do %>
-        <%= icon_tag "arrow-back" %>
+    <nav class="calendar-nav" aria-label="Calendar navigation">
+      <%= link_to calendar_path(date: @date.prev_month), class: "calendar-nav__btn", data: { controller: "tooltip" } do %>
+        <%= icon_tag "arrow-left" %>
         <span class="for-screen-reader">Previous month</span>
       <% end %>
 
-      <%= link_to l(@date, format: :month_year), calendar_path, class: "btn btn--plain" %>
+      <%= link_to l(@date, format: :month_year), calendar_path, class: "calendar-nav__current" %>
 
-      <%= link_to calendar_path(date: @date.next_month), class: "btn btn--plain" do %>
-        <%= icon_tag "arrow-forward" %>
+      <%= link_to calendar_path(date: @date.next_month), class: "calendar-nav__btn", data: { controller: "tooltip" } do %>
+        <%= icon_tag "arrow-right" %>
         <span class="for-screen-reader">Next month</span>
       <% end %>
-    </div>
+    </nav>
   </div>
 <% end %>
 
@@ -31,7 +31,9 @@
 
   <div class="calendar__body">
     <% (@start_date..@end_date).each do |date| %>
-      <%= render "calendars/day", date: date, cards: @cards_by_date[date] || [], current_month: date.month == @date.month %>
+      <%= render "calendars/day", date: date, cards: @cards_by_date[date] || [], current_month: date.month == @date.month, current_date: @date %>
     <% end %>
   </div>
 </div>
+
+<%= turbo_frame_tag "calendar_card_modal" %>

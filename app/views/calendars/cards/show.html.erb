@@ -1,0 +1,31 @@
+<%= turbo_frame_tag "calendar_card_modal" do %>
+  <div class="calendar-modal" data-controller="calendar-modal" data-action="keydown.esc->calendar-modal#close turbo:before-cache@window->calendar-modal#close">
+    <div class="calendar-modal__backdrop" data-action="click->calendar-modal#close"></div>
+    
+    <div class="calendar-modal__container" data-calendar-modal-target="container">
+      <div class="calendar-modal__header">
+        <div class="calendar-modal__back">
+          <%= link_to calendar_path(date: @return_date), class: "btn btn--back", data: { turbo_frame: "calendar_card_modal", action: "click->calendar-modal#close" } do %>
+            <%= icon_tag "arrow-left" %>
+            <span>Back to Calendar</span>
+          <% end %>
+        </div>
+        <div class="calendar-modal__actions">
+          <%= link_to @card, class: "btn btn--plain", target: "_top", data: { controller: "tooltip" }, title: "Open full card view" do %>
+            <%= icon_tag "expand" %>
+            <span class="for-screen-reader">Open full card view</span>
+          <% end %>
+          <button class="btn btn--plain" data-action="calendar-modal#close" data-controller="tooltip" title="Close">
+            <%= icon_tag "close" %>
+            <span class="for-screen-reader">Close</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="calendar-modal__body">
+        <%= turbo_stream_from @card %>
+        <%= render "cards/container", card: @card %>
+      </div>
+    </div>
+  </div>
+<% end %>

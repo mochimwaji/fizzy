@@ -10,9 +10,9 @@
   <% if cards.any? %>
     <div class="calendar__cards">
       <% cards.first(3).each do |card| %>
-        <%= link_to card_path(card), class: "calendar__card #{'calendar__card--overdue' if card.overdue?}", title: card.title do %>
+        <%= link_to calendar_card_path(card, date: current_date), class: "calendar__card #{'calendar__card--overdue' if card.overdue?}", title: card.title, data: { turbo_frame: "calendar_card_modal" } do %>
           <span class="calendar__card-board" style="background-color: <%= card.color %>"></span>
-          <span class="calendar__card-title overflow-ellipsis"><%= card.title %></span>
+          <span class="calendar__card-title"><%= card.title %></span>
         <% end %>
       <% end %>
 
