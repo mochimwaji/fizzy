@@ -1,6 +1,45 @@
-# Fizzy
+# Fizzy (Extended Fork)
 
-This is the source code of [Fizzy](https://fizzy.do/), the Kanban tracking tool for issues and ideas by [37signals](https://37signals.com).
+This is an extended fork of [Fizzy](https://fizzy.do/), the Kanban tracking tool for issues and ideas by [37signals](https://37signals.com).
+
+## Fork Features
+
+This fork adds several enhanced features to the base Fizzy:
+
+### 📅 Due Dates
+- Set due dates on cards with a date picker
+- Color-coded urgency indicators:
+  - 🔴 **Red** - Overdue
+  - 🟠 **Orange** - Due today  
+  - 🟡 **Yellow** - Due within 7 days
+  - 🟢 **Green** - Due later
+- Filter cards by due date status
+- Due date changes tracked in activity feed
+
+### 🔄 Recurring Cards
+- Create cards that automatically regenerate on a schedule
+- Frequencies: Daily, Weekly, Biweekly, Monthly
+- New cards copy title, description, steps, and tags from template
+- Pause/resume recurrence as needed
+
+### 📆 Calendar View
+- Visual monthly calendar showing all cards by due date
+- Navigate between months
+- Quick access from main menu (keyboard shortcut: 2)
+- Overdue cards highlighted
+
+### 📬 Notification Rules
+- Create custom rules to receive email digests
+- Filter by: Boards, Tags, Due date proximity
+- Choose frequency: Daily or Weekly
+- Configurable send time
+- Test button to preview matching cards
+
+### 🔒 Security Enhancements
+- Cryptographically secure magic link codes (SecureRandom)
+- Improved column reordering authorization
+- Better tag scoping to prevent cross-account access
+- Email change error handling improvements
 
 ## Development
 
@@ -33,6 +72,10 @@ The full continuous integration tests can be run with:
 
     bin/ci
 
+For Windows or parallel execution issues:
+
+    PARALLEL_WORKERS=1 bin/rails test
+
 ### Database configuration
 
 Fizzy works with SQLite by default and supports MySQL too. You can switch adapters with the `DATABASE_ADAPTER` environment variable. For example, to develop locally against MySQL:
@@ -54,36 +97,56 @@ You can enable or disable [`letter_opener`](https://github.com/ryanb/letter_open
 
 Under the hood, this will create or remove `tmp/email-dev.txt`.
 
-## Deployment
+## Environment Variables
 
-We recommend [Kamal](https://kamal-deploy.org/) for deploying Fizzy. This project comes with a vanilla Rails template. You can find our production setup in [`fizzy-saas`](https://github.com/basecamp/fizzy-saas).
+For production deployment, configure these environment variables:
+
+### Required
+- `SECRET_KEY_BASE` - Rails secret key
+- `DATABASE_URL` - Database connection string
+
+### Email (SMTP)
+- `SMTP_ADDRESS` - SMTP server address
+- `SMTP_PORT` - SMTP port (default: 587)
+- `SMTP_USERNAME` - SMTP username
+- `SMTP_PASSWORD` - SMTP password
+- `SMTP_DOMAIN` - SMTP domain
+- `MAILER_HOST` - Host for email links
 
 ### Web Push Notifications
+- `VAPID_PRIVATE_KEY` - VAPID private key
+- `VAPID_PUBLIC_KEY` - VAPID public key
 
-Fizzy uses VAPID (Voluntary Application Server Identification) keys to send browser push notifications. You'll need to generate a key pair and set these environment variables:
-
-- `VAPID_PRIVATE_KEY`
-- `VAPID_PUBLIC_KEY`
-
-Generate them with the `web-push` gem:
-
+Generate VAPID keys with:
 ```ruby
 vapid_key = WebPush.generate_key
-
 puts "VAPID_PRIVATE_KEY=#{vapid_key.private_key}"
 puts "VAPID_PUBLIC_KEY=#{vapid_key.public_key}"
 ```
 
-## SaaS gem
+## Deployment
 
-37signals bundles Fizzy with [`fizzy-saas`](https://github.com/basecamp/fizzy-saas), a companion gem that links Fizzy with our billing system and contains our production setup.
+We recommend [Kamal](https://kamal-deploy.org/) for deploying Fizzy. This project comes with a vanilla Rails template. You can find the original production setup in [`fizzy-saas`](https://github.com/basecamp/fizzy-saas).
 
-This gem depends on some private git repositories and it is not meant to be used by third parties. But we hope it can serve as inspiration for anyone wanting to run fizzy on their own infrastructure.
+## Documentation
 
+- [AGENTS.md](AGENTS.md) - AI coding agent guidance
+- [STYLE.md](STYLE.md) - Ruby coding conventions
+- [DESIGN.md](DESIGN.md) - UI/UX design guidelines
+
+## Upstream
+
+This fork is based on [basecamp/fizzy](https://github.com/basecamp/fizzy). To sync with upstream:
+
+```sh
+git remote add upstream https://github.com/basecamp/fizzy.git
+git fetch upstream
+git merge upstream/main
+```
 
 ## Contributing
 
-We welcome contributions! Please read our [style guide](STYLE.md) before submitting code.
+We welcome contributions! Please read our [style guide](STYLE.md) and [design guide](DESIGN.md) before submitting code.
 
 ## License
 
