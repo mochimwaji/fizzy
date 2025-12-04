@@ -5,7 +5,7 @@
       <kbd class="txt-xx-small hide-on-touch">u</kbd>
     </div>
 
-    <%= form_with url: card_due_date_path(@card), method: :post, class: "flex flex-column gap-half full-width margin-block-half", data: { turbo_frame: "_top" } do |form| %>
+    <%= form_with url: card_due_date_path(@card), method: :post, class: "flex flex-column gap-half full-width margin-block-half" do |form| %>
       <%= form.date_field :due_on, name: "due_date[due_on]", value: @card.due_on || Date.current, class: "input txt-small full-width", autofocus: true %>
 
       <div class="flex gap-half margin-block-start-half">

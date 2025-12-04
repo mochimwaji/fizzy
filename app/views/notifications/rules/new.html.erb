@@ -7,8 +7,6 @@
   <h1 class="header__title"><%= @page_title %></h1>
 <% end %>
 
-<section class="settings">
-  <div class="settings__panel panel shadow center">
-    <%= render "form", notification_rule: @notification_rule %>
-  </div>
-</section>
+<%= tag.section class: "panel panel--wide shadow center" do %>
+  <%= render "form", notification_rule: @notification_rule %>
+<% end %>

@@ -56,6 +56,7 @@ module CardsHelper
     when :overdue then "card__due-date--overdue"
     when :due_today then "card__due-date--today"
     when :due_soon then "card__due-date--soon"
+    when :due_later then "card__due-date--later"
     else ""
     end
   end

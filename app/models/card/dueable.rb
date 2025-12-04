@@ -26,7 +26,11 @@ module Card::Dueable
   end
 
   def due_soon?
-    due? && due_on >= Date.current && due_on <= 3.days.from_now.to_date
+    due? && due_on > Date.current && due_on <= 7.days.from_now.to_date
+  end
+
+  def due_later?
+    due? && due_on > 7.days.from_now.to_date
   end
 
   def set_due_date(date, user: Current.user)
@@ -44,6 +48,8 @@ module Card::Dueable
       :due_today
     elsif due_soon?
       :due_soon
+    elsif due_later?
+      :due_later
     elsif due?
       :upcoming
     end

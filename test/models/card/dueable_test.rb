@@ -68,7 +68,8 @@ class Card::DueableTest < ActiveSupport::TestCase
     card.update!(due_on: 10.days.from_now.to_date)
     assert card.due?
     assert_not card.due_soon?
-    assert_equal :upcoming, card.due_status
+    assert card.due_later?
+    assert_equal :due_later, card.due_status
 
     card.update!(due_on: nil)
     assert_not card.due?

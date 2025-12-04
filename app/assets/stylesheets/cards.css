@@ -115,21 +115,27 @@
   }
 
   .card__due-date--overdue {
-    --btn-color: var(--color-negative);
-    --btn-border-color: var(--color-negative);
-    color: var(--color-negative);
+    --btn-color: #dc2626;
+    --btn-border-color: #dc2626;
+    color: #dc2626;
   }
 
   .card__due-date--today {
-    --btn-color: var(--color-alert);
-    --btn-border-color: var(--color-alert);
-    color: var(--color-alert);
+    --btn-color: #f97316;
+    --btn-border-color: #f97316;
+    color: #f97316;
   }
 
   .card__due-date--soon {
-    --btn-color: var(--color-alert);
-    --btn-border-color: var(--color-alert);
-    color: var(--color-alert);
+    --btn-color: #eab308;
+    --btn-border-color: #eab308;
+    color: #eab308;
+  }
+
+  .card__due-date--later {
+    --btn-color: #22c55e;
+    --btn-border-color: #22c55e;
+    color: #22c55e;
   }
 
   /* Inline SVG in buttons */
