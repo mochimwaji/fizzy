@@ -24,10 +24,14 @@ export default class extends Controller {
     
     // Listen for drag events to highlight drop targets
     this.#bindDragHighlighting()
+    
+    // Listen for card removals to close empty categories
+    this.#bindCardRemovalListener()
   }
 
   disconnect() {
     this.#unbindDragHighlighting()
+    this.#unbindCardRemovalListener()
   }
 
   /**
@@ -296,5 +300,56 @@ export default class extends Controller {
     this.categoryTargets.forEach(category => {
       category.classList.remove("mobile-board__category--drag-over")
     })
+  }
+
+  // ========================================
+  // Card Removal Listener (close empty categories)
+  // ========================================
+
+  #bindCardRemovalListener() {
+    // Use MutationObserver to detect when cards are removed from expanded categories
+    this.cardRemovalObserver = new MutationObserver((mutations) => {
+      mutations.forEach(mutation => {
+        if (mutation.type === "childList" && mutation.removedNodes.length > 0) {
+          this.#checkForEmptyExpandedCategory(mutation.target)
+        }
+      })
+    })
+
+    // Observe card list containers in all categories
+    this.categoryTargets.forEach(category => {
+      const cardList = category.querySelector("[data-mobile-board-target='cardList']")
+      if (cardList) {
+        const inner = cardList.querySelector(".mobile-board__category-cards-inner")
+        if (inner) {
+          this.cardRemovalObserver.observe(inner, { childList: true })
+        }
+      }
+    })
+  }
+
+  #unbindCardRemovalListener() {
+    if (this.cardRemovalObserver) {
+      this.cardRemovalObserver.disconnect()
+      this.cardRemovalObserver = null
+    }
+  }
+
+  #checkForEmptyExpandedCategory(target) {
+    // Find the category containing this target
+    const category = target.closest("[data-mobile-board-target='category']")
+    if (!category) return
+
+    // Only care about expanded categories
+    if (!category.classList.contains("mobile-board__category--expanded")) return
+
+    // Check if category is now empty (no card items)
+    const cardItems = category.querySelectorAll(".mobile-card-columns__card, [data-drag-and-drop-target='item']")
+    if (cardItems.length === 0) {
+      // Collapse after a short delay to let animations complete
+      setTimeout(() => {
+        this.#collapseCategory(category)
+      }, 300)
+    }
   }
 }

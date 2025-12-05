@@ -315,9 +315,9 @@
   letter-spacing: -0.01em;
 }
 
-/* Overdue Cards - subtle red tint */
+/* Overdue Cards - no special styling, color already indicates status */
 .calendar__card--overdue:not(.calendar__card--closed) {
-  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.5), 0 1px 2px rgba(0, 0, 0, 0.15);
+  /* Removed red ring as it was visually distracting */
 }
 
 /* ==========================================================================

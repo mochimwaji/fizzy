@@ -323,31 +323,33 @@ export default class extends Controller {
       const targetCardsContainer = targetDay.querySelector(".calendar__cards")
       const sourceCardsContainer = sourceDay?.querySelector(".calendar__cards")
       
-      // Count visible cards in target (max 1 visible per day)
-      const visibleCardsInTarget = targetCardsContainer?.querySelectorAll(".calendar__card:not(.calendar__card--hidden)").length || 0
+      // Get all visible cards in target (not hidden, not the more button)
+      const visibleCardsInTarget = targetCardsContainer?.querySelectorAll(".calendar__card:not(.calendar__card--hidden)") || []
       const moreButton = targetCardsContainer?.querySelector(".calendar__more")
-      const hasMoreButton = moreButton !== null
+      const isExpanded = targetDay.classList.contains("calendar__day--expanded")
       
-      // If target already has a visible card, we should only update the +X more count
-      // Don't add a visible card
-      if (visibleCardsInTarget >= 1 || hasMoreButton) {
-        // Just update the count, don't show the card
-        this.#updateMoreButton(targetCardsContainer, 1, true)
-      } else {
-        // Target is empty or has no visible cards, we can show this card
-        const cardClone = card.cloneNode(true)
-        cardClone.classList.remove("calendar__card--dragging")
+      // Count total cards in target (visible + hidden) for proper counting
+      const allCardsInTarget = targetCardsContainer?.querySelectorAll(".calendar__card") || []
+      const hiddenCardsInTarget = targetCardsContainer?.querySelectorAll(".calendar__card--hidden") || []
+      
+      // Create a clone of the dragged card
+      const cardClone = card.cloneNode(true)
+      cardClone.classList.remove("calendar__card--dragging")
+      
+      // Find the insertion point - before the more button or drop zone
+      const insertBeforeElement = moreButton || targetCardsContainer?.querySelector(".calendar__drop-zone")
+      
+      if (visibleCardsInTarget.length === 0 || isExpanded) {
+        // No visible cards OR we're expanded - show the card
+        cardClone.classList.remove("calendar__card--hidden")
         cardClone.style.transition = "all 0.3s ease"
         cardClone.style.opacity = "0"
         cardClone.style.transform = "scale(0.9)"
         
-        // Find the right insertion point - before the drop zone
-        const dropZone = targetCardsContainer?.querySelector(".calendar__drop-zone")
-        
-        if (targetCardsContainer && dropZone) {
-          targetCardsContainer.insertBefore(cardClone, dropZone)
+        if (insertBeforeElement) {
+          targetCardsContainer.insertBefore(cardClone, insertBeforeElement)
         } else if (targetCardsContainer) {
-          targetCardsContainer.prepend(cardClone)
+          targetCardsContainer.appendChild(cardClone)
         }
         
         // Animate in
@@ -355,16 +357,29 @@ export default class extends Controller {
           cardClone.style.opacity = "1"
           cardClone.style.transform = "scale(1)"
         })
+        
+        // If we're expanded, also increment the +X more count (since when collapsed it will be hidden)
+        if (isExpanded && moreButton) {
+          this.#incrementMoreCount(moreButton, 1)
+        }
+      } else {
+        // Target already has a visible card - add as hidden and update +X more
+        cardClone.classList.add("calendar__card--hidden")
+        // Also mark as a hidden target for the expand controller
+        cardClone.setAttribute("data-calendar-expand-target", "hidden")
+        
+        if (insertBeforeElement) {
+          targetCardsContainer.insertBefore(cardClone, insertBeforeElement)
+        } else if (targetCardsContainer) {
+          targetCardsContainer.appendChild(cardClone)
+        }
+        
+        // Update or create +X more button
+        this.#updateMoreButtonForAdd(targetCardsContainer, moreButton)
       }
       
-      // Remove from source
-      card.style.transition = "all 0.2s ease"
-      card.style.opacity = "0"
-      card.style.transform = "scale(0.8)"
-      setTimeout(() => card.remove(), 200)
-      
-      // Update the source "+X more" button count (decrement)
-      this.#updateMoreButton(sourceCardsContainer, -1, false)
+      // Handle source - remove card and possibly reveal a hidden one
+      this.#removeCardFromSource(card, sourceCardsContainer, sourceDay)
     }
     
     // Send request to server - Turbo Stream will handle any additional updates
@@ -383,40 +398,98 @@ export default class extends Controller {
     }
   }
   
-  #updateMoreButton(container, delta, createIfNeeded = false) {
-    if (!container) return
+  #removeCardFromSource(card, sourceCardsContainer, sourceDay) {
+    const wasHidden = card.classList.contains("calendar__card--hidden")
+    const isExpanded = sourceDay?.classList.contains("calendar__day--expanded")
     
-    const moreButton = container.querySelector(".calendar__more")
-    const moreText = container.querySelector(".calendar__more-text")
+    // Animate and remove the card
+    card.style.transition = "all 0.2s ease"
+    card.style.opacity = "0"
+    card.style.transform = "scale(0.8)"
     
-    if (moreText) {
-      // Parse current count from "+X more" format
-      const match = moreText.textContent.match(/\+(\d+)\s+more/)
-      if (match) {
-        const currentCount = parseInt(match[1]) || 0
-        const newCount = Math.max(0, currentCount + delta)
-        
-        if (newCount > 0) {
-          moreText.textContent = `+${newCount} more`
-        } else if (moreButton) {
-          // Hide the button if count reaches 0
-          moreButton.style.display = "none"
-        }
+    setTimeout(() => {
+      card.remove()
+      
+      // After removal, check if we need to reveal a hidden card
+      if (!wasHidden && sourceCardsContainer) {
+        this.#handleSourceCardRemoval(sourceCardsContainer, sourceDay, isExpanded)
       }
-    } else if (delta > 0 && createIfNeeded) {
-      // Need to create a new "+X more" button
+    }, 200)
+  }
+  
+  #handleSourceCardRemoval(container, day, wasExpanded) {
+    const hiddenCards = container.querySelectorAll(".calendar__card--hidden")
+    const visibleCards = container.querySelectorAll(".calendar__card:not(.calendar__card--hidden)")
+    const moreButton = container.querySelector(".calendar__more")
+    
+    // If no visible cards remain but there are hidden ones, reveal one
+    if (visibleCards.length === 0 && hiddenCards.length > 0) {
+      const cardToReveal = hiddenCards[0]
+      cardToReveal.classList.remove("calendar__card--hidden")
+      cardToReveal.removeAttribute("data-calendar-expand-target")
+      
+      // Animate the reveal
+      cardToReveal.style.transition = "all 0.3s ease"
+      cardToReveal.style.opacity = "0"
+      requestAnimationFrame(() => {
+        cardToReveal.style.opacity = "1"
+      })
+      
+      // Update the +X more count
+      if (moreButton) {
+        this.#decrementMoreCount(moreButton)
+      }
+    } else if (moreButton && !wasExpanded) {
+      // Just decrement the count if we didn't reveal a card
+      this.#decrementMoreCount(moreButton)
+    }
+  }
+  
+  #updateMoreButtonForAdd(container, existingButton) {
+    if (existingButton) {
+      this.#incrementMoreCount(existingButton, 1)
+    } else {
+      // Create a new +1 more button
       const dropZone = container.querySelector(".calendar__drop-zone")
       const newButton = document.createElement("button")
       newButton.className = "calendar__more"
       newButton.dataset.action = "calendar-expand#toggle"
       newButton.dataset.calendarExpandTarget = "toggle"
-      newButton.innerHTML = `<span class="calendar__more-text">+${delta} more</span>`
+      newButton.innerHTML = `<span class="calendar__more-text">+1 more</span>`
       
       if (dropZone) {
         container.insertBefore(newButton, dropZone)
       } else {
         container.appendChild(newButton)
       }
+    }
+  }
+  
+  #incrementMoreCount(moreButton, delta) {
+    const moreText = moreButton.querySelector(".calendar__more-text")
+    if (!moreText) return
+    
+    const match = moreText.textContent.match(/\+(\d+)\s+more/)
+    const currentCount = match ? parseInt(match[1]) : 0
+    const newCount = currentCount + delta
+    
+    moreText.textContent = `+${newCount} more`
+    moreButton.style.display = ""
+  }
+  
+  #decrementMoreCount(moreButton) {
+    const moreText = moreButton.querySelector(".calendar__more-text")
+    if (!moreText) return
+    
+    const match = moreText.textContent.match(/\+(\d+)\s+more/)
+    const currentCount = match ? parseInt(match[1]) : 0
+    const newCount = Math.max(0, currentCount - 1)
+    
+    if (newCount === 0) {
+      // Remove the button entirely
+      moreButton.remove()
+    } else {
+      moreText.textContent = `+${newCount} more`
     }
   }
 }
