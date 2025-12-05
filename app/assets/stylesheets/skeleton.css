@@ -1,0 +1,335 @@
+/* ==========================================================================
+   Skeleton Loading States
+   ========================================================================== */
+
+/* Base skeleton shimmer animation */
+@keyframes skeleton-shimmer {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* Skeleton placeholder styles */
+.skeleton {
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-card) 0%,
+    var(--color-bg-hover) 50%,
+    var(--color-bg-card) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* Dark mode skeleton */
+@media (prefers-color-scheme: dark) {
+  .skeleton {
+    background: linear-gradient(
+      90deg,
+      oklch(var(--lch-ink-darker)) 0%,
+      oklch(var(--lch-ink-dark)) 50%,
+      oklch(var(--lch-ink-darker)) 100%
+    );
+    background-size: 200% 100%;
+  }
+}
+
+/* Skeleton line (for text) */
+.skeleton-line {
+  height: 1em;
+  margin-block: 0.25em;
+}
+
+/* Skeleton title */
+.skeleton-title {
+  height: 1.5em;
+  width: 60%;
+  margin-block-end: 0.5em;
+}
+
+/* Skeleton avatar */
+.skeleton-avatar {
+  width: 2rem;
+  height: 2rem;
+  border-radius: 50%;
+}
+
+/* Skeleton card */
+.skeleton-card {
+  padding: var(--block-space);
+  background: var(--color-bg-card);
+  border-radius: 8px;
+  margin-block-end: var(--block-space);
+}
+
+.skeleton-card__header {
+  display: flex;
+  gap: var(--inline-space);
+  align-items: center;
+  margin-block-end: var(--block-space);
+}
+
+.skeleton-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.skeleton-card__line {
+  height: 0.875em;
+  border-radius: 3px;
+}
+
+.skeleton-card__line:nth-child(1) { width: 100%; }
+.skeleton-card__line:nth-child(2) { width: 85%; }
+.skeleton-card__line:nth-child(3) { width: 70%; }
+
+/* ==========================================================================
+   Turbo Frame Loading States
+   ========================================================================== */
+
+/* Frame loading indicator */
+turbo-frame[busy]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: var(--color-bg-card);
+  opacity: 0.6;
+  z-index: 1;
+}
+
+/* Minimal spinner for small frames */
+turbo-frame[busy].frame-spinner::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 1.5rem;
+  height: 1.5rem;
+  margin: -0.75rem;
+  border: 2px solid var(--color-border);
+  border-top-color: var(--color-link);
+  border-radius: 50%;
+  animation: spinner 0.6s linear infinite;
+  z-index: 2;
+}
+
+@keyframes spinner {
+  to { transform: rotate(360deg); }
+}
+
+/* Frame with skeleton placeholder */
+turbo-frame[busy].frame-skeleton > * {
+  visibility: hidden;
+}
+
+turbo-frame[busy].frame-skeleton::after {
+  content: "";
+  position: absolute;
+  inset: var(--block-space);
+  background: linear-gradient(
+    90deg,
+    var(--color-bg-card) 0%,
+    var(--color-bg-hover) 50%,
+    var(--color-bg-card) 100%
+  );
+  background-size: 200% 100%;
+  animation: skeleton-shimmer 1.5s infinite;
+  border-radius: 4px;
+}
+
+/* ==========================================================================
+   Navigation Loading States
+   ========================================================================== */
+
+/* Navigating class on html element */
+html.is-navigating main {
+  pointer-events: none;
+}
+
+/* Optional: subtle blur during navigation */
+html.is-navigating main > * {
+  filter: blur(0);
+  transition: filter 100ms ease;
+}
+
+/* Instant feedback on link click */
+a:active {
+  opacity: 0.7;
+  transition: opacity 50ms ease;
+}
+
+/* Button active state */
+.btn:active,
+button:active {
+  transform: scale(0.98);
+  transition: transform 50ms ease;
+}
+
+/* ==========================================================================
+   Card List Skeleton
+   ========================================================================== */
+
+.skeleton-cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--block-space);
+  padding: var(--block-space);
+}
+
+.skeleton-card-item {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--inline-space);
+  padding: var(--block-space);
+  background: var(--color-bg-card);
+  border-radius: 8px;
+}
+
+.skeleton-card-item__number {
+  width: 3ch;
+  height: 1.25em;
+  flex-shrink: 0;
+}
+
+.skeleton-card-item__content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5em;
+}
+
+.skeleton-card-item__title {
+  height: 1.125em;
+  width: 80%;
+}
+
+.skeleton-card-item__meta {
+  height: 0.875em;
+  width: 50%;
+}
+
+/* ==========================================================================
+   Column Skeleton
+   ========================================================================== */
+
+.skeleton-column {
+  min-width: 280px;
+  padding: var(--block-space);
+}
+
+.skeleton-column__header {
+  height: 1.5em;
+  width: 120px;
+  margin-block-end: var(--block-space);
+}
+
+.skeleton-column__cards {
+  display: flex;
+  flex-direction: column;
+  gap: var(--block-space-half);
+}
+
+/* ==========================================================================
+   Optimistic UI States
+   ========================================================================== */
+
+/* Pending state - waiting for server response */
+.is-pending {
+  opacity: 0.7;
+  pointer-events: none;
+  position: relative;
+}
+
+.is-pending::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: transparent;
+  cursor: wait;
+}
+
+/* Error state */
+.is-error {
+  animation: shake 400ms ease;
+  border-color: var(--color-danger) !important;
+}
+
+/* Success flash */
+.is-success {
+  animation: success-flash 600ms ease;
+}
+
+@keyframes success-flash {
+  0% { background-color: var(--color-success-subtle); }
+  100% { background-color: transparent; }
+}
+
+/* Optimistic card states */
+.card.is-pending {
+  opacity: 0.5;
+}
+
+.card.is-moving {
+  opacity: 0.6;
+  transform: scale(0.98);
+  transition: opacity 150ms, transform 150ms;
+}
+
+.card.is-added {
+  animation: card-appear 300ms ease-out;
+}
+
+@keyframes card-appear {
+  from {
+    opacity: 0;
+    transform: translateY(-10px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.card.is-removed {
+  animation: card-remove 200ms ease-in forwards;
+}
+
+@keyframes card-remove {
+  to {
+    opacity: 0;
+    transform: scale(0.95);
+    height: 0;
+    padding: 0;
+    margin: 0;
+    overflow: hidden;
+  }
+}
+
+/* Button pending state with spinner */
+.btn.is-pending {
+  color: transparent;
+  pointer-events: none;
+}
+
+.btn.is-pending::after {
+  content: "";
+  position: absolute;
+  width: 1em;
+  height: 1em;
+  border: 2px solid currentColor;
+  border-top-color: transparent;
+  border-radius: 50%;
+  animation: spinner 0.6s linear infinite;
+  color: var(--color-ink);
+}
+
+/* Link pending state */
+a.is-pending {
+  opacity: 0.6;
+  pointer-events: none;
+}
