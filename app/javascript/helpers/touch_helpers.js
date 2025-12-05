@@ -19,10 +19,16 @@ export function isStandalone() {
 
 // Prevent browser context menu on long-press (for draggable elements)
 export function preventContextMenu(element) {
+  // Prevent contextmenu event
   element.addEventListener("contextmenu", (e) => {
     e.preventDefault()
     return false
   }, { passive: false })
+  
+  // Apply CSS to prevent touch callout (iOS Safari)
+  element.style.webkitTouchCallout = "none"
+  element.style.webkitUserSelect = "none"
+  element.style.userSelect = "none"
 }
 
 // Get touch position from event

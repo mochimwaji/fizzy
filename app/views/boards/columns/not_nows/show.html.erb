@@ -13,7 +13,9 @@
 <%= render "boards/columns/mobile_nav", board: @board, column_type: :not_now %>
 
 <section class="cards cards--grid"
-         data-controller="mobile-columns"
+         data-controller="mobile-columns drag-and-drop"
+         data-drag-and-drop-dragged-item-class="drag-and-drop__dragged-item"
+         data-drag-and-drop-hover-container-class="drag-and-drop__hover-container"
          data-mobile-columns-prev-url-value="<%= prev_column_item(@board, :not_now)&.dig(:path) %>"
          data-mobile-columns-next-url-value="<%= next_column_item(@board, :not_now)&.dig(:path) %>">
   <%= turbo_frame_tag :not_now_column do %>
