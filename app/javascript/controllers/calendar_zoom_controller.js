@@ -37,8 +37,12 @@ export default class extends Controller {
 
     // Handle Turbo cache restoration - re-apply scale when page is restored
     this.boundPageShow = this.#handlePageShow.bind(this)
+    this.boundFrameRender = this.#handlePageShow.bind(this)
     window.addEventListener("pageshow", this.boundPageShow)
     document.addEventListener("turbo:render", this.boundPageShow)
+    document.addEventListener("turbo:frame-render", this.boundFrameRender)
+    // Also listen for when the modal closes (frame becomes empty)
+    document.addEventListener("turbo:before-frame-render", this.boundFrameRender)
   }
 
   disconnect() {
@@ -46,17 +50,17 @@ export default class extends Controller {
     if (this.boundPageShow) {
       window.removeEventListener("pageshow", this.boundPageShow)
       document.removeEventListener("turbo:render", this.boundPageShow)
+      document.removeEventListener("turbo:frame-render", this.boundFrameRender)
+      document.removeEventListener("turbo:before-frame-render", this.boundFrameRender)
     }
   }
 
   #handlePageShow() {
     // Re-apply saved scale when page is shown (e.g., from cache or after navigation)
     const savedScale = this.#loadSavedScale()
-    if (savedScale !== this.scale) {
+    if (savedScale !== 1) {
       this.scale = savedScale
-      if (this.scale !== 1) {
-        this.#applyScale(this.scale)
-      }
+      this.#applyScale(this.scale)
     }
   }
 

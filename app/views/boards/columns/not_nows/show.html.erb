@@ -1,16 +1,21 @@
-<% @page_title = "Column: Not Now" %>
+<% @page_title = "Not Now" %>
 
 <% content_for :header do %>
   <div class="header__actions header__actions--start">
     <%= link_back_to_board(@board) %>
   </div>
 
-  <h1 class="header__title divider divider--fade full-width">
+  <h1 class="header__title divider divider--fade">
     <span class="overflow-ellipsis"><%= @page_title %></span>
   </h1>
+
+  <%= render "boards/columns/mobile_nav", board: @board, column_type: :not_now %>
 <% end %>
 
-<section class="cards cards--grid">
+<section class="cards cards--grid"
+         data-controller="mobile-columns"
+         data-mobile-columns-prev-url-value="<%= prev_column_item(@board, :not_now)&.dig(:path) %>"
+         data-mobile-columns-next-url-value="<%= next_column_item(@board, :not_now)&.dig(:path) %>">
   <%= turbo_frame_tag :not_now_column do %>
     <% if @page.used? %>
       <%= with_automatic_pagination :not_now_column, @page do %>

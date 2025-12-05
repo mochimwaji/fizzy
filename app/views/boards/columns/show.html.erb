@@ -1,38 +1,15 @@
-<% @page_title = "Column: #{ @column.name }" %>
+<% @page_title = @column.name %>
 
 <% content_for :header do %>
   <div class="header__actions header__actions--start">
     <%= link_back_to_board(@column.board) %>
   </div>
 
-  <h1 class="header__title divider divider--fade full-width">
+  <h1 class="header__title divider divider--fade">
     <span class="overflow-ellipsis"><%= @page_title %></span>
   </h1>
 
-  <%# Mobile column navigation %>
-  <div class="header__actions header__actions--end mobile-column-nav">
-    <% if (prev_path = prev_column_path(@column)) %>
-      <%= link_to prev_path, class: "btn btn--icon mobile-column-nav__btn" do %>
-        <%= icon_tag("arrow-left") %>
-        <span class="for-screen-reader">Previous column</span>
-      <% end %>
-    <% else %>
-      <span class="btn btn--icon mobile-column-nav__btn" style="visibility: hidden;">
-        <%= icon_tag("arrow-left") %>
-      </span>
-    <% end %>
-    <span class="mobile-column-nav__position"><%= column_position_label(@column) %></span>
-    <% if (next_path = next_column_path(@column)) %>
-      <%= link_to next_path, class: "btn btn--icon mobile-column-nav__btn" do %>
-        <%= icon_tag("arrow-right") %>
-        <span class="for-screen-reader">Next column</span>
-      <% end %>
-    <% else %>
-      <span class="btn btn--icon mobile-column-nav__btn" style="visibility: hidden;">
-        <%= icon_tag("arrow-right") %>
-      </span>
-    <% end %>
-  </div>
+  <%= render "boards/columns/mobile_nav", board: @column.board, column_type: :column, column: @column %>
 <% end %>
 
 <section class="cards cards--grid" 

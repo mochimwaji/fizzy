@@ -93,10 +93,10 @@ export default class extends Controller {
     if (Math.abs(deltaX) >= this.thresholdValue) {
       if (deltaX > 0 && this.hasPrevUrlValue) {
         // Swiped right - go to previous column
-        this.#navigateTo(this.prevUrlValue, "right")
+        this.#navigateTo(this.prevUrlValue)
       } else if (deltaX < 0 && this.hasNextUrlValue) {
         // Swiped left - go to next column
-        this.#navigateTo(this.nextUrlValue, "left")
+        this.#navigateTo(this.nextUrlValue)
       }
     }
 
@@ -104,68 +104,38 @@ export default class extends Controller {
   }
 
   #showSwipeIndicator(deltaX) {
-    // Apply a subtle transform to hint at the swipe direction
-    const maxOffset = 30
+    // Simple visual feedback during swipe
+    const maxOffset = 20
     const progress = Math.min(Math.abs(deltaX) / this.thresholdValue, 1)
     const offset = progress * maxOffset * Math.sign(deltaX)
     
     this.element.style.transform = `translateX(${offset}px)`
     this.element.style.transition = "none"
-
-    // Show directional indicator
-    this.#updateNavigationHint(deltaX, progress)
   }
 
   #hideSwipeIndicator() {
     this.element.style.transform = ""
-    this.element.style.transition = "transform 0.2s ease-out"
-
-    // Hide navigation hints
-    const hints = this.element.querySelectorAll(".swipe-hint")
-    hints.forEach(hint => hint.remove())
+    this.element.style.transition = "transform 0.15s ease-out"
   }
 
-  #updateNavigationHint(deltaX, progress) {
-    const direction = deltaX > 0 ? "prev" : "next"
-    const hasUrl = direction === "prev" ? this.hasPrevUrlValue : this.hasNextUrlValue
-    
-    if (!hasUrl) return
-    if (progress < 0.5) return // Only show when past halfway
-
-    let hint = this.element.querySelector(`.swipe-hint--${direction}`)
-    
-    if (!hint) {
-      hint = document.createElement("div")
-      hint.className = `swipe-hint swipe-hint--${direction}`
-      hint.innerHTML = direction === "prev" 
-        ? '<span class="swipe-hint__arrow">←</span>' 
-        : '<span class="swipe-hint__arrow">→</span>'
-      this.element.appendChild(hint)
-    }
-
-    hint.style.opacity = Math.min((progress - 0.5) * 2, 1)
-  }
-
-  #navigateTo(url, direction) {
-    // Add slide animation class before navigation
-    this.element.classList.add(`slide-out-${direction}`)
-    
-    // Navigate after a brief animation
-    setTimeout(() => {
+  #navigateTo(url) {
+    // Navigate immediately without animation - Turbo handles the transition
+    // Animation was causing jitter due to page replacement
+    if (url) {
       Turbo.visit(url)
-    }, 100)
+    }
   }
 
   // Action methods for button-based navigation
   prev() {
     if (this.hasPrevUrlValue) {
-      this.#navigateTo(this.prevUrlValue, "right")
+      this.#navigateTo(this.prevUrlValue)
     }
   }
 
   next() {
     if (this.hasNextUrlValue) {
-      this.#navigateTo(this.nextUrlValue, "left")
+      this.#navigateTo(this.nextUrlValue)
     }
   }
 }
