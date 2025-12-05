@@ -272,14 +272,21 @@
 
 /* Cards container - hidden by default, animated open */
 .mobile-board__category-cards {
-  height: 0;
+  display: grid;
+  grid-template-rows: 0fr;
   opacity: 0;
-  overflow: hidden;
   padding: 0 0.5rem;
   background: var(--column-color);
   border-radius: 0 0 1.25rem 1.25rem;
+  transition: grid-template-rows 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out;
+  
+  > * {
+    overflow: hidden;
+  }
   
   .mobile-board__category--expanded & {
+    grid-template-rows: 1fr;
+    opacity: 1;
     padding: 0.5rem;
   }
 }

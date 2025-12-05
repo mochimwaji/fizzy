@@ -231,23 +231,21 @@ export default class extends Controller {
     if (this.currentTabTarget) {
       this.wasDropped = true
       hapticFeedback("success")
-      // Hide the dragged item immediately for instant visual feedback
-      if (this.dragItem) {
-        this.dragItem.style.display = "none"
-      }
-      // Submit drop request - Turbo Streams will update the UI
-      await this.#submitTabDropRequest(this.dragItem, this.currentTabTarget)
+      // Animate the preview flying to the drop target, then submit request
+      this.#animateDropAndSubmit(this.currentTabTarget, () => {
+        this.#submitTabDropRequest(this.dragItem, this.currentTabTarget)
+      })
+      return
     }
     // Check if we have a valid container drop target (including mobile board categories)
     else if (this.currentDropTarget && this.currentDropTarget !== this.sourceContainer) {
       this.wasDropped = true
       hapticFeedback("success")
-      // Hide the dragged item immediately for instant visual feedback
-      if (this.dragItem) {
-        this.dragItem.style.display = "none"
-      }
-      // Submit drop request - Turbo Streams will update the UI
-      await this.#submitDropRequest(this.dragItem, this.currentDropTarget)
+      // Animate the preview flying to the drop target, then submit request
+      this.#animateDropAndSubmit(this.currentDropTarget, () => {
+        this.#submitDropRequest(this.dragItem, this.currentDropTarget)
+      })
+      return
     }
 
     this.#endTouchDrag()
@@ -306,6 +304,49 @@ export default class extends Controller {
     this.#clearCategoryHoverClasses()
     removeDragPreview(this.dragPreview)
     this.#cleanupTouch()
+  }
+
+  #animateDropAndSubmit(dropTarget, submitCallback) {
+    // Get the drop target's position for animation
+    const targetRect = dropTarget.getBoundingClientRect()
+    const previewRect = this.dragPreview.getBoundingClientRect()
+    
+    // Calculate center of target header (where count badge is)
+    const targetHeader = dropTarget.querySelector(".mobile-board__category-header") || dropTarget
+    const headerRect = targetHeader.getBoundingClientRect()
+    
+    // Target position: center of the header
+    const targetX = headerRect.left + headerRect.width / 2 - previewRect.width / 2
+    const targetY = headerRect.top + headerRect.height / 2 - previewRect.height / 2
+    
+    // Apply smooth transition animation
+    this.dragPreview.style.transition = "all 0.2s cubic-bezier(0.4, 0, 0.2, 1)"
+    this.dragPreview.style.left = `${targetX}px`
+    this.dragPreview.style.top = `${targetY}px`
+    this.dragPreview.style.transform = "scale(0.3)"
+    this.dragPreview.style.opacity = "0"
+    
+    // Hide the original item immediately (it will be removed by Turbo Stream)
+    if (this.dragItem) {
+      this.dragItem.style.opacity = "0"
+      this.dragItem.style.height = this.dragItem.offsetHeight + "px"
+      this.dragItem.style.transition = "height 0.15s ease-out, opacity 0.1s ease-out"
+      // Collapse height after a brief delay
+      requestAnimationFrame(() => {
+        this.dragItem.style.height = "0"
+        this.dragItem.style.overflow = "hidden"
+        this.dragItem.style.padding = "0"
+        this.dragItem.style.margin = "0"
+      })
+    }
+    
+    // Fire the request immediately (don't wait for animation)
+    submitCallback()
+    
+    // Clean up after animation completes
+    setTimeout(() => {
+      this.#endTouchDrag()
+    }, 200)
   }
 
   #cancelLongPress() {

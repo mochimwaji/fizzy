@@ -3,10 +3,12 @@
 <div class="mobile-board__category-cards" 
      id="mobile-category-stream-cards"
      data-mobile-board-target="cardList">
-  <% board.cards.awaiting_triage.latest.limit(50).each do |card| %>
-    <%= render "cards/display/mobile_preview", card: card, draggable: true %>
-  <% end %>
-  <% if board.cards.awaiting_triage.count == 0 %>
-    <div class="mobile-board__empty">No cards</div>
-  <% end %>
+  <div class="mobile-board__category-cards-inner">
+    <% board.cards.awaiting_triage.latest.limit(50).each do |card| %>
+      <%= render "cards/display/mobile_preview", card: card, draggable: true %>
+    <% end %>
+    <% if board.cards.awaiting_triage.count == 0 %>
+      <div class="mobile-board__empty">No cards</div>
+    <% end %>
+  </div>
 </div>

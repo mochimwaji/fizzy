@@ -158,34 +158,12 @@ export default class extends Controller {
    * Expand a category with smooth animation
    */
   #expandCategory(category) {
-    const cardList = category.querySelector("[data-mobile-board-target='cardList']")
     const header = category.querySelector("[data-mobile-board-target='header']")
     
-    if (!cardList) return
-    
-    // Get the natural height of the content
-    cardList.style.height = "auto"
-    const naturalHeight = cardList.scrollHeight
-    cardList.style.height = "0"
-    
-    // Force reflow
-    cardList.offsetHeight
-    
-    // Animate to natural height
-    cardList.style.transition = "height 0.3s ease-out, opacity 0.3s ease-out"
-    cardList.style.height = `${naturalHeight}px`
-    cardList.style.opacity = "1"
-    
-    // Update state
+    // Update state - CSS handles the animation via the class
     category.classList.add("mobile-board__category--expanded")
     header.setAttribute("aria-expanded", "true")
     this.expandedCategory = category
-    
-    // After animation completes, set height to auto for dynamic content
-    setTimeout(() => {
-      cardList.style.height = "auto"
-      cardList.style.transition = ""
-    }, 300)
     
     // Save state
     this.#saveState(category)
@@ -195,28 +173,9 @@ export default class extends Controller {
    * Collapse a category with smooth animation
    */
   #collapseCategory(category, callback) {
-    const cardList = category.querySelector("[data-mobile-board-target='cardList']")
     const header = category.querySelector("[data-mobile-board-target='header']")
     
-    if (!cardList) {
-      if (callback) callback()
-      return
-    }
-    
-    // Get current height and set it explicitly for animation
-    const currentHeight = cardList.scrollHeight
-    cardList.style.height = `${currentHeight}px`
-    cardList.style.transition = ""
-    
-    // Force reflow
-    cardList.offsetHeight
-    
-    // Animate to 0
-    cardList.style.transition = "height 0.3s ease-out, opacity 0.3s ease-out"
-    cardList.style.height = "0"
-    cardList.style.opacity = "0"
-    
-    // Update state
+    // Update state - CSS handles the animation via the class
     category.classList.remove("mobile-board__category--expanded")
     header.setAttribute("aria-expanded", "false")
     

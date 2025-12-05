@@ -1,10 +1,49 @@
 <%= turbo_stream.replace("closed-cards", partial: "boards/show/closed", method: :morph, locals:{ board: @card.board }) %>
 
-<%# Mobile updates - replace category elements with morph for smooth transition %>
-<%= turbo_stream.replace("mobile-category-not-now", partial: "boards/show/mobile_not_now_category", method: :morph, locals: { board: @card.board }) %>
-<%= turbo_stream.replace("mobile-category-stream", partial: "boards/show/mobile_stream_category", method: :morph, locals: { board: @card.board }) %>
-<%= turbo_stream.replace("mobile-category-closed", partial: "boards/show/mobile_closed_category", method: :morph, locals: { board: @card.board }) %>
+<%# Mobile updates - update counts and card list contents (preserves expansion state) %>
+<%= turbo_stream.update "mobile-category-not-now-count", @card.board.cards.postponed.count.to_s %>
+<%= turbo_stream.update "mobile-category-not-now-cards" do %>
+  <div class="mobile-board__category-cards-inner">
+    <% @card.board.cards.postponed.latest.limit(50).each do |card| %>
+      <%= render "cards/display/mobile_preview", card: card, draggable: true %>
+    <% end %>
+    <% if @card.board.cards.postponed.count == 0 %>
+      <div class="mobile-board__empty">No cards</div>
+    <% end %>
+  </div>
+<% end %>
+<%= turbo_stream.update "mobile-category-stream-count", @card.board.cards.awaiting_triage.count.to_s %>
+<%= turbo_stream.update "mobile-category-stream-cards" do %>
+  <div class="mobile-board__category-cards-inner">
+    <% @card.board.cards.awaiting_triage.latest.limit(50).each do |card| %>
+      <%= render "cards/display/mobile_preview", card: card, draggable: true %>
+    <% end %>
+    <% if @card.board.cards.awaiting_triage.count == 0 %>
+      <div class="mobile-board__empty">No cards</div>
+    <% end %>
+  </div>
+<% end %>
+<%= turbo_stream.update "mobile-category-closed-count", @card.board.cards.closed.count.to_s %>
+<%= turbo_stream.update "mobile-category-closed-cards" do %>
+  <div class="mobile-board__category-cards-inner">
+    <% @card.board.cards.closed.latest.limit(50).each do |card| %>
+      <%= render "cards/display/mobile_preview", card: card, draggable: true %>
+    <% end %>
+    <% if @card.board.cards.closed.count == 0 %>
+      <div class="mobile-board__empty">No cards</div>
+    <% end %>
+  </div>
+<% end %>
 <% @card.board.columns.each do |column| %>
 <%= turbo_stream.update "mobile-category-column-#{column.id}-count", column.cards.active.count.to_s %>
-<%= turbo_stream.replace("mobile-category-column-#{column.id}-cards", partial: "boards/show/mobile_column_cards", method: :morph, locals: { column: column }) %>
+<%= turbo_stream.update "mobile-category-column-#{column.id}-cards" do %>
+  <div class="mobile-board__category-cards-inner">
+    <% column.cards.active.latest.limit(50).each do |card| %>
+      <%= render "cards/display/mobile_preview", card: card, draggable: true %>
+    <% end %>
+    <% if column.cards.active.count == 0 %>
+      <div class="mobile-board__empty">No cards</div>
+    <% end %>
+  </div>
+<% end %>
 <% end %>
