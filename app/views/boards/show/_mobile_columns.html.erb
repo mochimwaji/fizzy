@@ -1,43 +1,137 @@
-<section class="mobile-card-columns">
-  <div class="cards margin-block-end-half">
+<%# Mobile board view with expandable categories %>
+<%# Each category can be clicked to expand/collapse, showing cards inline %>
+<%# Cards can be dragged from one category row to another %>
+
+<section class="mobile-board" 
+         data-controller="mobile-board drag-and-drop"
+         data-drag-and-drop-dragged-item-class="drag-and-drop__dragged-item"
+         data-drag-and-drop-hover-container-class="drag-and-drop__hover-container"
+         data-mobile-board-board-id-value="<%= board.id %>"
+         data-mobile-board-account-id-value="<%= board.account.external_account_id %>">
+  
+  <div class="mobile-board__add-card">
     <%= render "columns/show/add_card_button", board: board %>
   </div>
 
-  <%= link_to board_columns_not_now_path(board), class: "cards cards--on-deck is-collapsed", style: "--card-color: var(--color-card-complete);", data: { turbo_frame: "_top" } do %>
-    <div class="cards__expander btn btn--plain" style="--card-count: <%= board.cards.postponed.count %>">
-      <span class="cards__expander-count"><%= board.cards.postponed.count %></span>
-      <h2 class="cards__expander-title">
-        Not Now
-      </h2>
+  <%# Not Now category %>
+  <div class="mobile-board__category mobile-board__category--not-now" 
+       id="mobile-category-not-now"
+       data-mobile-board-target="category"
+       data-drag-and-drop-target="container"
+       data-drag-and-drop-url="<%= card_not_now_path('__id__') %>"
+       data-category-type="not_now"
+       data-category-id="not_now"
+       style="--category-color: var(--color-card-1);">
+    <button class="mobile-board__category-header" 
+            data-action="click->mobile-board#toggle"
+            data-mobile-board-target="header"
+            aria-expanded="false"
+            aria-controls="mobile-category-not-now-cards">
+      <span class="mobile-board__category-count"><%= board.cards.postponed.count %></span>
+      <span class="mobile-board__category-title">Not Now</span>
+      <span class="mobile-board__category-chevron">›</span>
+    </button>
+    <div class="mobile-board__category-cards" 
+         id="mobile-category-not-now-cards"
+         data-mobile-board-target="cardList">
+      <% board.cards.postponed.latest.limit(50).each do |card| %>
+        <%= render "cards/display/preview", card: card, draggable: true %>
+      <% end %>
+      <% if board.cards.postponed.count == 0 %>
+        <div class="mobile-board__empty">No cards</div>
+      <% end %>
     </div>
-  <% end %>
+  </div>
 
-  <%= link_to board_columns_stream_path(board), class: "cards cards--considering is-collapsed", data: { turbo_frame: "_top" } do %>
-    <div class="cards__expander btn btn--plain" style="--card-count: <%= board.cards.awaiting_triage.count %>">
-      <span class="cards__expander-count"><%= board.cards.awaiting_triage.count %></span>
-      <h2 class="cards__expander-title">
-        Maybe?
-      </h2>
+  <%# Maybe/Stream category %>
+  <div class="mobile-board__category mobile-board__category--stream" 
+       id="mobile-category-stream"
+       data-mobile-board-target="category"
+       data-drag-and-drop-target="container"
+       data-drag-and-drop-url="<%= columns_card_drops_stream_path('__id__') %>"
+       data-category-type="stream"
+       data-category-id="stream"
+       style="--category-color: var(--color-card-2);">
+    <button class="mobile-board__category-header" 
+            data-action="click->mobile-board#toggle"
+            data-mobile-board-target="header"
+            aria-expanded="false"
+            aria-controls="mobile-category-stream-cards">
+      <span class="mobile-board__category-count"><%= board.cards.awaiting_triage.count %></span>
+      <span class="mobile-board__category-title">Maybe?</span>
+      <span class="mobile-board__category-chevron">›</span>
+    </button>
+    <div class="mobile-board__category-cards" 
+         id="mobile-category-stream-cards"
+         data-mobile-board-target="cardList">
+      <% board.cards.awaiting_triage.latest.limit(50).each do |card| %>
+        <%= render "cards/display/preview", card: card, draggable: true %>
+      <% end %>
+      <% if board.cards.awaiting_triage.count == 0 %>
+        <div class="mobile-board__empty">No cards</div>
+      <% end %>
     </div>
-  <% end %>
+  </div>
 
+  <%# Column categories %>
   <% board.columns.sorted.each do |column| %>
-    <%= link_to board_column_path(column.board, column), class: "cards cards--doing is-collapsed", style: "--card-color: #{column.color}", data: { turbo_frame: "_top" } do %>
-      <div class="cards__expander btn btn--plain" style="--card-count: <%= column.cards.active.count %>">
-        <span class="cards__expander-count"><%= column.cards.active.count %></span>
-        <h2 class="cards__expander-title">
-          <%= column.name %>
-        </h2>
+    <div class="mobile-board__category mobile-board__category--column" 
+         id="mobile-category-column-<%= column.id %>"
+         data-mobile-board-target="category"
+         data-drag-and-drop-target="container"
+         data-drag-and-drop-url="<%= columns_card_drops_column_path('__id__', column_id: column.id) %>"
+         data-category-type="column"
+         data-category-id="<%= column.id %>"
+         style="--category-color: <%= column.color %>;">
+      <button class="mobile-board__category-header" 
+              data-action="click->mobile-board#toggle"
+              data-mobile-board-target="header"
+              aria-expanded="false"
+              aria-controls="mobile-category-column-<%= column.id %>-cards">
+        <span class="mobile-board__category-count"><%= column.cards.active.count %></span>
+        <span class="mobile-board__category-title"><%= column.name %></span>
+        <span class="mobile-board__category-chevron">›</span>
+      </button>
+      <div class="mobile-board__category-cards" 
+           id="mobile-category-column-<%= column.id %>-cards"
+           data-mobile-board-target="cardList">
+        <% column.cards.active.latest.limit(50).each do |card| %>
+          <%= render "cards/display/preview", card: card, draggable: true %>
+        <% end %>
+        <% if column.cards.active.count == 0 %>
+          <div class="mobile-board__empty">No cards</div>
+        <% end %>
       </div>
-    <% end %>
-  <% end %>
-
-  <%= link_to board_columns_closed_path(board), class: "cards cards--closed is-collapsed", style: "--card-color: var(--color-card-complete);", data: { turbo_frame: "_top" } do %>
-    <div class="cards__expander btn btn--plain" style="--card-count: <%= board.cards.closed.count %>">
-      <span class="cards__expander-count"><%= board.cards.closed.count %></span>
-      <h2 class="cards__expander-title">
-        Done
-      </h2>
     </div>
   <% end %>
+
+  <%# Done category %>
+  <div class="mobile-board__category mobile-board__category--closed" 
+       id="mobile-category-closed"
+       data-mobile-board-target="category"
+       data-drag-and-drop-target="container"
+       data-drag-and-drop-url="<%= card_closure_path('__id__') %>"
+       data-category-type="closed"
+       data-category-id="closed"
+       style="--category-color: var(--color-card-complete);">
+    <button class="mobile-board__category-header" 
+            data-action="click->mobile-board#toggle"
+            data-mobile-board-target="header"
+            aria-expanded="false"
+            aria-controls="mobile-category-closed-cards">
+      <span class="mobile-board__category-count"><%= board.cards.closed.count %></span>
+      <span class="mobile-board__category-title">Done</span>
+      <span class="mobile-board__category-chevron">›</span>
+    </button>
+    <div class="mobile-board__category-cards" 
+         id="mobile-category-closed-cards"
+         data-mobile-board-target="cardList">
+      <% board.cards.closed.latest.limit(50).each do |card| %>
+        <%= render "cards/display/preview", card: card, draggable: true %>
+      <% end %>
+      <% if board.cards.closed.count == 0 %>
+        <div class="mobile-board__empty">No cards</div>
+      <% end %>
+    </div>
+  </div>
 </section>

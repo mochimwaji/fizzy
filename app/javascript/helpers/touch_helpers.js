@@ -95,8 +95,8 @@ export function createDragPreview(element, options = {}) {
     zIndex: "10000",
     pointerEvents: "none",
     opacity: options.opacity || "0.9",
-    transform: options.transform || "scale(1.05) rotate(2deg)",
-    boxShadow: "0 8px 24px rgba(0, 0, 0, 0.25)",
+    transform: options.transform || "scale(1.01) rotate(0.5deg)",
+    boxShadow: "0 4px 16px rgba(0, 0, 0, 0.2)",
     transition: "transform 0.15s ease, box-shadow 0.15s ease",
     ...options.styles
   })

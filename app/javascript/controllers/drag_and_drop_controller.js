@@ -180,15 +180,24 @@ export default class extends Controller {
     
     // Also check for mobile tab drop targets
     const tab = this.#findTabUnderTouch(elementUnder)
+    
+    // Check for mobile board category drop targets
+    const category = this.#findCategoryUnderTouch(elementUnder)
 
     this.#clearContainerHoverClasses()
     this.#clearTabHoverClasses()
+    this.#clearCategoryHoverClasses()
 
     if (tab) {
       // Prioritize tab if found
       tab.classList.add("mobile-column-tabs__tab--drag-over")
       this.currentDropTarget = null
       this.currentTabTarget = tab
+    } else if (category && category !== this.sourceContainer) {
+      // Mobile board category highlighting
+      category.classList.add("mobile-board__category--drag-over")
+      this.currentDropTarget = category
+      this.currentTabTarget = null
     } else if (container && container !== this.sourceContainer) {
       container.classList.add(this.hoverContainerClass)
       this.currentDropTarget = container
@@ -200,7 +209,7 @@ export default class extends Controller {
 
     // Auto-scroll if near container edges
     if (this.sourceContainer) {
-      autoScrollNearEdge(this.sourceContainer.closest(".cards__list, .mobile-card-columns"), position)
+      autoScrollNearEdge(this.sourceContainer.closest(".cards__list, .mobile-card-columns, .mobile-board"), position)
     }
   }
 
@@ -256,7 +265,7 @@ export default class extends Controller {
     // Create floating preview
     this.dragPreview = createDragPreview(item, {
       opacity: "0.95",
-      transform: "scale(1.03) rotate(1deg)"
+      transform: "scale(1.01) rotate(0.5deg)"
     })
 
     // Style the original item
@@ -283,6 +292,7 @@ export default class extends Controller {
 
     this.#clearContainerHoverClasses()
     this.#clearTabHoverClasses()
+    this.#clearCategoryHoverClasses()
     removeDragPreview(this.dragPreview)
     this.#cleanupTouch()
   }
@@ -389,6 +399,23 @@ export default class extends Controller {
   #clearTabHoverClasses() {
     const tabs = document.querySelectorAll(".mobile-column-tabs__tab--drag-over")
     tabs.forEach(tab => tab.classList.remove("mobile-column-tabs__tab--drag-over"))
+  }
+
+  #findCategoryUnderTouch(element) {
+    if (!element) return null
+    
+    // Check if element itself is a category
+    if (element.classList?.contains("mobile-board__category")) {
+      return element
+    }
+    
+    // Check parent elements
+    return element.closest?.(".mobile-board__category")
+  }
+
+  #clearCategoryHoverClasses() {
+    const categories = document.querySelectorAll(".mobile-board__category--drag-over")
+    categories.forEach(cat => cat.classList.remove("mobile-board__category--drag-over"))
   }
 
   async #submitTabDropRequest(item, tab) {
