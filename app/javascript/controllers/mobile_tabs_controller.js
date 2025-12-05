@@ -109,18 +109,23 @@ export default class extends Controller {
     let url
     switch (columnType) {
       case "not_now":
-        url = `/${accountId}/columns/cards/${cardNumber}/drops/not_nows`
+        // POST /cards/:card_id/not_now
+        url = `/${accountId}/cards/${cardNumber}/not_now`
         break
       case "stream":
-        url = `/${accountId}/columns/cards/${cardNumber}/drops/streams`
+        // POST /columns/cards/:card_id/drops/stream
+        url = `/${accountId}/columns/cards/${cardNumber}/drops/stream`
         break
       case "closed":
-        url = `/${accountId}/columns/cards/${cardNumber}/drops/closures`
+        // POST /cards/:card_id/closure
+        url = `/${accountId}/cards/${cardNumber}/closure`
         break
       case "column":
-        url = `/${accountId}/columns/cards/${cardNumber}/drops/columns?column_id=${columnId}`
+        // POST /columns/cards/:card_id/drops/column?column_id=:column_id
+        url = `/${accountId}/columns/cards/${cardNumber}/drops/column?column_id=${columnId}`
         break
       default:
+        console.error("Unknown column type for move:", columnType)
         return
     }
     

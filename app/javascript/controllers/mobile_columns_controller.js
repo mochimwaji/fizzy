@@ -5,6 +5,8 @@ import { isTouchDevice } from "helpers/touch_helpers"
  * Mobile Columns Controller
  * Enables swipe navigation between columns on mobile devices.
  * Provides prev/next navigation when viewing individual columns.
+ * 
+ * Coordinates with drag-and-drop controller to disable swipe during card dragging.
  */
 export default class extends Controller {
   static values = {
@@ -25,12 +27,16 @@ export default class extends Controller {
     this.currentY = 0
     this.isSwiping = false
     this.isNavigating = false
+    this.isDragPreparing = false  // Track if user is preparing to drag a card
+    this.isDragging = false       // Track if user is actively dragging a card
 
     this.#bindEvents()
+    this.#bindDragEvents()
   }
 
   disconnect() {
     this.#unbindEvents()
+    this.#unbindDragEvents()
   }
 
   #bindEvents() {
@@ -51,8 +57,31 @@ export default class extends Controller {
     }
   }
 
+  #bindDragEvents() {
+    // Listen for drag-and-drop controller events to coordinate behavior
+    this.boundDragPrepareStart = () => { this.isDragPreparing = true }
+    this.boundDragPrepareEnd = () => { this.isDragPreparing = false }
+    this.boundDragStart = () => { this.isDragging = true; this.isSwiping = false }
+    this.boundDragEnd = () => { this.isDragging = false; this.isDragPreparing = false }
+    
+    this.element.addEventListener("drag-prepare-start", this.boundDragPrepareStart)
+    this.element.addEventListener("drag-prepare-end", this.boundDragPrepareEnd)
+    this.element.addEventListener("drag-start", this.boundDragStart)
+    this.element.addEventListener("drag-end", this.boundDragEnd)
+  }
+
+  #unbindDragEvents() {
+    if (this.boundDragPrepareStart) {
+      this.element.removeEventListener("drag-prepare-start", this.boundDragPrepareStart)
+      this.element.removeEventListener("drag-prepare-end", this.boundDragPrepareEnd)
+      this.element.removeEventListener("drag-start", this.boundDragStart)
+      this.element.removeEventListener("drag-end", this.boundDragEnd)
+    }
+  }
+
   #handleTouchStart(event) {
-    if (event.touches.length !== 1 || this.isNavigating) return
+    // Don't start swipe if user is dragging or preparing to drag
+    if (event.touches.length !== 1 || this.isNavigating || this.isDragging || this.isDragPreparing) return
 
     this.startX = event.touches[0].clientX
     this.startY = event.touches[0].clientY
@@ -62,6 +91,12 @@ export default class extends Controller {
   }
 
   #handleTouchMove(event) {
+    // Disable swipe while dragging a card
+    if (this.isDragging) {
+      this.isSwiping = false
+      return
+    }
+    
     if (!this.isSwiping || event.touches.length !== 1 || this.isNavigating) return
 
     this.currentX = event.touches[0].clientX
@@ -84,6 +119,12 @@ export default class extends Controller {
   }
 
   #handleTouchEnd() {
+    // Don't trigger swipe navigation if user was dragging
+    if (this.isDragging) {
+      this.isSwiping = false
+      return
+    }
+    
     if (!this.isSwiping || this.isNavigating) return
 
     const deltaX = this.currentX - this.startX

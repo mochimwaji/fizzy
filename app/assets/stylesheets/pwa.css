@@ -181,8 +181,15 @@
 .mobile-column-tabs__tab--drag-over {
   background: var(--tab-color, var(--color-card-default));
   color: var(--color-ink-inverted);
-  transform: scale(1.05);
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  transform: scale(1.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  transition: all 0.15s ease-out;
+  border: 2px solid var(--color-ink-inverted);
+}
+
+/* Hide current tab indicator when dragging over */
+.mobile-column-tabs__tab--drag-over.mobile-column-tabs__tab--active {
+  border-left-color: transparent;
 }
 
 /* Hidden data container for swipe URLs */
@@ -234,6 +241,26 @@
 @keyframes slideOutRight {
   from { transform: translateX(0); opacity: 1; }
   to { transform: translateX(50px); opacity: 0; }
+}
+
+/* Long-press preparing-to-drag animation */
+@keyframes prepareToDrag {
+  0% { transform: scale(1); }
+  50% { transform: scale(1.02); }
+  100% { transform: scale(1.02); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15); }
+}
+
+.drag-and-drop__preparing {
+  animation: prepareToDrag 0.3s ease-out forwards;
+  z-index: 10;
+  position: relative;
+}
+
+/* Touch drag preview floating card */
+.touch-drag-preview {
+  pointer-events: none;
+  z-index: 10000;
+  touch-action: none;
 }
 
 /* Better card display in column view on mobile */

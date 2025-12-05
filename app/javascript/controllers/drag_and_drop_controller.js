@@ -140,6 +140,12 @@ export default class extends Controller {
       y: position.y - rect.top
     }
 
+    // Add preparing-to-drag visual feedback immediately
+    item.classList.add("drag-and-drop__preparing")
+    
+    // Dispatch event to notify mobile-columns controller that we might be dragging
+    this.element.dispatchEvent(new CustomEvent("drag-prepare-start", { bubbles: true }))
+
     // Start long-press timer to initiate drag
     this.longPressTimer = setTimeout(() => {
       this.#startTouchDrag(item, position)
@@ -238,6 +244,12 @@ export default class extends Controller {
     this.dragItem = item
     this.sourceContainer = this.#containerContaining(item)
 
+    // Remove preparing class, add dragging class
+    item.classList.remove("drag-and-drop__preparing")
+    
+    // Dispatch event to notify that we're now actively dragging
+    this.element.dispatchEvent(new CustomEvent("drag-start", { bubbles: true }))
+
     // Haptic feedback for drag start
     hapticFeedback("medium")
 
@@ -256,8 +268,12 @@ export default class extends Controller {
   }
 
   #endTouchDrag() {
+    // Dispatch event to notify that dragging has ended
+    this.element.dispatchEvent(new CustomEvent("drag-end", { bubbles: true }))
+    
     if (this.dragItem) {
       this.dragItem.classList.remove(this.draggedItemClass)
+      this.dragItem.classList.remove("drag-and-drop__preparing")
       this.dragItem.style.opacity = ""
 
       if (this.wasDropped) {
@@ -276,6 +292,14 @@ export default class extends Controller {
       clearTimeout(this.longPressTimer)
       this.longPressTimer = null
     }
+    
+    // Remove preparing class from potential drag item
+    if (this.potentialDragItem) {
+      this.potentialDragItem.classList.remove("drag-and-drop__preparing")
+    }
+    
+    // Notify that drag preparation was cancelled
+    this.element.dispatchEvent(new CustomEvent("drag-prepare-end", { bubbles: true }))
   }
 
   #cleanupTouch() {
@@ -349,24 +373,56 @@ export default class extends Controller {
     )
   }
 
+  #findTabUnderTouch(element) {
+    if (!element) return null
+    
+    // Check if element itself is a tab
+    if (element.classList?.contains("mobile-column-tabs__tab") && 
+        element.dataset.droppable === "true") {
+      return element
+    }
+    
+    // Check parent elements
+    return element.closest?.(".mobile-column-tabs__tab[data-droppable='true']")
+  }
+
+  #clearTabHoverClasses() {
+    const tabs = document.querySelectorAll(".mobile-column-tabs__tab--drag-over")
+    tabs.forEach(tab => tab.classList.remove("mobile-column-tabs__tab--drag-over"))
+  }
+
   async #submitTabDropRequest(item, tab) {
-    const cardId = item.dataset.id
+    const cardNumber = item.dataset.id
     const columnType = tab.dataset.columnType
     const columnId = tab.dataset.columnId
-    const boardId = tab.dataset.boardId
+    const accountId = tab.dataset.accountId
     
     let url
     if (columnType === "not_now") {
-      url = `/${tab.dataset.accountId}/cards/${cardId}/not_now`
+      // POST /cards/:card_id/not_now
+      url = `/${accountId}/cards/${cardNumber}/not_now`
     } else if (columnType === "stream") {
-      url = `/${tab.dataset.accountId}/cards/${cardId}/stream`
+      // POST /columns/cards/:card_id/drops/stream
+      url = `/${accountId}/columns/cards/${cardNumber}/drops/stream`
     } else if (columnType === "closed") {
-      url = `/${tab.dataset.accountId}/cards/${cardId}/closed`
+      // POST /cards/:card_id/closure
+      url = `/${accountId}/cards/${cardNumber}/closure`
+    } else if (columnType === "column" && columnId) {
+      // POST /columns/cards/:card_id/drops/column?column_id=:column_id
+      url = `/${accountId}/columns/cards/${cardNumber}/drops/column?column_id=${columnId}`
     } else {
-      url = `/${tab.dataset.accountId}/boards/${boardId}/columns/${columnId}/drops/${cardId}`
+      console.error("Unknown column type for drop:", columnType)
+      return
     }
     
-    const body = new FormData()
-    return post(url, { body, headers: { Accept: "text/vnd.turbo-stream.html" } })
+    const response = await post(url, { 
+      body: new FormData(), 
+      headers: { Accept: "text/vnd.turbo-stream.html" } 
+    })
+    
+    if (response.ok) {
+      // Reload the page to show the updated card positions
+      Turbo.visit(window.location.href, { action: "replace" })
+    }
   }
 }
