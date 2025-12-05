@@ -109,3 +109,102 @@
     padding-bottom: calc(var(--block-space) + env(safe-area-inset-bottom));
   }
 }
+
+/* ==========================================================================
+   Mobile Column Navigation
+   ========================================================================== */
+
+/* Mobile column navigation in header - only show on touch devices */
+.mobile-column-nav {
+  display: none;
+  
+  @media (any-hover: none) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+}
+
+.mobile-column-nav__btn {
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  
+  .icon {
+    width: 1.25rem;
+    height: 1.25rem;
+  }
+}
+
+.mobile-column-nav__position {
+  font-size: var(--text-small);
+  color: var(--color-text-secondary);
+  white-space: nowrap;
+  min-width: 3rem;
+  text-align: center;
+}
+
+/* Swipe hints that appear during swipe gestures */
+.swipe-hint {
+  position: fixed;
+  top: 50%;
+  transform: translateY(-50%);
+  padding: 1rem;
+  background: rgba(0, 0, 0, 0.7);
+  color: white;
+  border-radius: 50%;
+  z-index: 1000;
+  pointer-events: none;
+  transition: opacity 0.15s ease;
+}
+
+.swipe-hint--prev {
+  left: 1rem;
+}
+
+.swipe-hint--next {
+  right: 1rem;
+}
+
+.swipe-hint__arrow {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Slide animations for column transitions */
+.slide-out-left {
+  animation: slideOutLeft 0.2s ease-out forwards;
+}
+
+.slide-out-right {
+  animation: slideOutRight 0.2s ease-out forwards;
+}
+
+@keyframes slideOutLeft {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(-50px); opacity: 0; }
+}
+
+@keyframes slideOutRight {
+  from { transform: translateX(0); opacity: 1; }
+  to { transform: translateX(50px); opacity: 0; }
+}
+
+/* Better card display in column view on mobile */
+@media (any-hover: none) {
+  .cards--grid {
+    touch-action: pan-y;
+    
+    .card {
+      /* Ensure cards are visible and touch-friendly */
+      min-height: 64px;
+    }
+  }
+  
+  /* Make sure swipe navigation doesn't conflict with card interactions */
+  .cards--grid .card {
+    touch-action: manipulation;
+  }
+}
