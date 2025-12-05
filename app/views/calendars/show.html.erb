@@ -28,24 +28,26 @@
 <%= turbo_stream_from "calendar_#{Current.user.id}" %>
 
 <div class="calendar" data-controller="calendar-drag-drop" data-calendar-drag-drop-update-url-value="<%= card_due_date_path('__CARD_ID__') %>">
-  <header class="calendar__title">
+  <aside class="calendar__sidebar">
     <h2 class="calendar__month"><%= @date.strftime("%B") %></h2>
     <span class="calendar__year"><%= @date.year %></span>
-  </header>
+  </aside>
 
-  <div class="calendar__header">
-    <% %w[Sun Mon Tue Wed Thu Fri Sat].each do |day_name| %>
-      <div class="calendar__day-name"><%= day_name %></div>
-    <% end %>
-  </div>
-
-  <%= turbo_frame_tag "calendar_body", data: { turbo_action: "advance" } do %>
-    <div class="calendar__body">
-      <% (@start_date..@end_date).each do |date| %>
-        <%= render "calendars/day", date: date, cards: @cards_by_date[date] || [], current_month: date.month == @date.month, current_date: @date %>
+  <div class="calendar__main">
+    <div class="calendar__header">
+      <% %w[Sun Mon Tue Wed Thu Fri Sat].each do |day_name| %>
+        <div class="calendar__day-name"><%= day_name %></div>
       <% end %>
     </div>
-  <% end %>
+
+    <%= turbo_frame_tag "calendar_body", data: { turbo_action: "advance" } do %>
+      <div class="calendar__body">
+        <% (@start_date..@end_date).each do |date| %>
+          <%= render "calendars/day", date: date, cards: @cards_by_date[date] || [], current_month: date.month == @date.month, current_date: @date %>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
 </div>
 
 <%= turbo_frame_tag "calendar_card_modal" %>
