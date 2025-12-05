@@ -9,7 +9,7 @@ import { isTouchDevice } from "helpers/touch_helpers"
  * Cards can be dragged from one category to another.
  */
 export default class extends Controller {
-  static targets = ["category", "header", "cardList", "editForm", "configButton", "systemColorForm"]
+  static targets = ["category", "header", "cardList", "editForm", "configButton"]
   static values = {
     boardId: String,
     accountId: String
@@ -21,9 +21,6 @@ export default class extends Controller {
     
     // Restore any previously expanded state from localStorage
     this.#restoreState()
-    
-    // Restore system category colors from localStorage
-    this.#restoreSystemCategoryColors()
     
     // Listen for drag events to highlight drop targets
     this.#bindDragHighlighting()
@@ -75,7 +72,7 @@ export default class extends Controller {
     const category = button.closest("[data-mobile-board-target='category']")
     if (!category) return
     
-    const editForm = category.querySelector("[data-mobile-board-target='editForm'], [data-mobile-board-target='systemColorForm']")
+    const editForm = category.querySelector("[data-mobile-board-target='editForm']")
     if (!editForm) return
     
     const isVisible = editForm.classList.contains("mobile-board__category-edit--visible")
@@ -150,79 +147,11 @@ export default class extends Controller {
   }
 
   /**
-   * Handle system category color change
-   * Stores color in localStorage and updates the category immediately
-   */
-  selectSystemColor(event) {
-    const radio = event.target
-    if (radio.type !== "radio") return
-    
-    const category = radio.closest("[data-mobile-board-target='category']")
-    if (!category) return
-    
-    const categoryType = category.dataset.categoryType
-    const color = radio.value
-    
-    // Update the category color immediately
-    category.style.setProperty("--card-color", color)
-    
-    // Save to localStorage
-    this.#saveSystemCategoryColor(categoryType, color)
-  }
-
-  /**
-   * Save system category color to localStorage
-   */
-  #saveSystemCategoryColor(categoryType, color) {
-    const key = `mobile-board-${this.boardIdValue}-system-colors`
-    let colors = {}
-    
-    try {
-      const saved = localStorage.getItem(key)
-      if (saved) colors = JSON.parse(saved)
-    } catch (e) {
-      colors = {}
-    }
-    
-    colors[categoryType] = color
-    localStorage.setItem(key, JSON.stringify(colors))
-  }
-
-  /**
-   * Restore system category colors from localStorage
-   */
-  #restoreSystemCategoryColors() {
-    const key = `mobile-board-${this.boardIdValue}-system-colors`
-    
-    try {
-      const saved = localStorage.getItem(key)
-      if (!saved) return
-      
-      const colors = JSON.parse(saved)
-      
-      this.categoryTargets.forEach(category => {
-        const categoryType = category.dataset.categoryType
-        if (categoryType && colors[categoryType]) {
-          category.style.setProperty("--card-color", colors[categoryType])
-          
-          // Also check the correct radio button in the form
-          const radio = category.querySelector(`input[type="radio"][value="${CSS.escape(colors[categoryType])}"]`)
-          if (radio) radio.checked = true
-        }
-      })
-    } catch (e) {
-      // Invalid saved state, ignore
-    }
-  }
-
-  /**
    * Handle edit form submission
    */
   handleEditSubmit(event) {
-    // Reload the page to show updated column name/color
-    if (event.detail.success) {
-      Turbo.visit(window.location.href, { action: "replace" })
-    }
+    // Close the edit form after successful submission
+    // The turbo_stream response will refresh the page
   }
 
   /**

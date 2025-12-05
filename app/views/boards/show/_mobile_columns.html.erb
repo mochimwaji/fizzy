@@ -23,14 +23,14 @@
        data-category-type="not_now"
        data-category-id="not_now"
        data-category-name="Not Now"
-       style="--card-color: var(--color-card-1);">
+       style="--card-color: <%= board.not_now_color %>;">
     <div class="mobile-board__category-header" 
          data-action="click->mobile-board#toggle"
          data-mobile-board-target="header"
          aria-expanded="false"
          aria-controls="mobile-category-not-now-cards">
       <div class="mobile-board__category-expander">
-        <span class="mobile-board__category-count" data-drag-and-drop-counter><%= board.cards.postponed.count %></span>
+        <span class="mobile-board__category-count" id="mobile-category-not-now-count" data-drag-and-drop-counter><%= board.cards.postponed.count %></span>
         <span class="mobile-board__category-title">Not Now</span>
         <%= icon_tag "collapse", class: "mobile-board__category-collapse-icon" %>
       </div>
@@ -42,22 +42,34 @@
       </button>
     </div>
     
-    <%# Color picker for system category %>
-    <div class="mobile-board__category-edit mobile-board__system-color-form" data-mobile-board-target="systemColorForm">
-      <div class="mobile-board__edit-colors" data-action="change->mobile-board#selectSystemColor">
-        <% Color::COLORS.each do |color| %>
-          <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
-            <input type="radio" name="not_now_color" value="<%= color.value %>" <%= "checked" if color.value == "var(--color-card-1)" %>>
-            <span class="mobile-board__color-swatch"></span>
-          </label>
-        <% end %>
-        <% Color::MOBILE_EXTRA_COLORS.each do |color| %>
-          <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
-            <input type="radio" name="not_now_color" value="<%= color.value %>">
-            <span class="mobile-board__color-swatch"></span>
-          </label>
-        <% end %>
-      </div>
+    <%# Color picker form for system category %>
+    <div class="mobile-board__category-edit" data-mobile-board-target="editForm">
+      <%= form_with url: board_system_category_colors_path(board), 
+                    method: :patch,
+                    data: { 
+                      controller: "form", 
+                      action: "turbo:submit-end->mobile-board#handleEditSubmit" 
+                    },
+                    class: "mobile-board__edit-form" do |form| %>
+        <%= form.hidden_field :category, value: "not_now" %>
+        <div class="mobile-board__edit-colors">
+          <% Color::COLORS.each do |color| %>
+            <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
+              <%= form.radio_button :color, color.value, checked: (board.not_now_color == color.value) %>
+              <span class="mobile-board__color-swatch"></span>
+            </label>
+          <% end %>
+          <% Color::MOBILE_EXTRA_COLORS.each do |color| %>
+            <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
+              <%= form.radio_button :color, color.value, checked: (board.not_now_color == color.value) %>
+              <span class="mobile-board__color-swatch"></span>
+            </label>
+          <% end %>
+        </div>
+        <div class="mobile-board__edit-actions">
+          <%= form.submit "Save", class: "btn btn--small" %>
+        </div>
+      <% end %>
     </div>
     
     <div class="mobile-board__category-cards" 
@@ -81,14 +93,14 @@
        data-category-type="stream"
        data-category-id="stream"
        data-category-name="Maybe?"
-       style="--card-color: var(--color-card-default);">
+       style="--card-color: <%= board.stream_color %>;">
     <div class="mobile-board__category-header" 
          data-action="click->mobile-board#toggle"
          data-mobile-board-target="header"
          aria-expanded="false"
          aria-controls="mobile-category-stream-cards">
       <div class="mobile-board__category-expander">
-        <span class="mobile-board__category-count" data-drag-and-drop-counter><%= board.cards.awaiting_triage.count %></span>
+        <span class="mobile-board__category-count" id="mobile-category-stream-count" data-drag-and-drop-counter><%= board.cards.awaiting_triage.count %></span>
         <span class="mobile-board__category-title">Maybe?</span>
         <%= icon_tag "collapse", class: "mobile-board__category-collapse-icon" %>
       </div>
@@ -100,22 +112,34 @@
       </button>
     </div>
     
-    <%# Color picker for system category %>
-    <div class="mobile-board__category-edit mobile-board__system-color-form" data-mobile-board-target="systemColorForm">
-      <div class="mobile-board__edit-colors" data-action="change->mobile-board#selectSystemColor">
-        <% Color::COLORS.each do |color| %>
-          <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
-            <input type="radio" name="stream_color" value="<%= color.value %>" <%= "checked" if color.value == "var(--color-card-default)" %>>
-            <span class="mobile-board__color-swatch"></span>
-          </label>
-        <% end %>
-        <% Color::MOBILE_EXTRA_COLORS.each do |color| %>
-          <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
-            <input type="radio" name="stream_color" value="<%= color.value %>">
-            <span class="mobile-board__color-swatch"></span>
-          </label>
-        <% end %>
-      </div>
+    <%# Color picker form for system category %>
+    <div class="mobile-board__category-edit" data-mobile-board-target="editForm">
+      <%= form_with url: board_system_category_colors_path(board), 
+                    method: :patch,
+                    data: { 
+                      controller: "form", 
+                      action: "turbo:submit-end->mobile-board#handleEditSubmit" 
+                    },
+                    class: "mobile-board__edit-form" do |form| %>
+        <%= form.hidden_field :category, value: "stream" %>
+        <div class="mobile-board__edit-colors">
+          <% Color::COLORS.each do |color| %>
+            <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
+              <%= form.radio_button :color, color.value, checked: (board.stream_color == color.value) %>
+              <span class="mobile-board__color-swatch"></span>
+            </label>
+          <% end %>
+          <% Color::MOBILE_EXTRA_COLORS.each do |color| %>
+            <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
+              <%= form.radio_button :color, color.value, checked: (board.stream_color == color.value) %>
+              <span class="mobile-board__color-swatch"></span>
+            </label>
+          <% end %>
+        </div>
+        <div class="mobile-board__edit-actions">
+          <%= form.submit "Save", class: "btn btn--small" %>
+        </div>
+      <% end %>
     </div>
     
     <div class="mobile-board__category-cards" 
@@ -147,7 +171,7 @@
            aria-expanded="false"
            aria-controls="mobile-category-column-<%= column.id %>-cards">
         <div class="mobile-board__category-expander">
-          <span class="mobile-board__category-count" data-drag-and-drop-counter><%= column.cards.active.count %></span>
+          <span class="mobile-board__category-count" id="mobile-category-column-<%= column.id %>-count" data-drag-and-drop-counter><%= column.cards.active.count %></span>
           <span class="mobile-board__category-title"><%= column.name %></span>
           <%= icon_tag "collapse", class: "mobile-board__category-collapse-icon" %>
         </div>
@@ -218,14 +242,14 @@
        data-category-type="closed"
        data-category-id="closed"
        data-category-name="Done"
-       style="--card-color: var(--color-card-complete);">
+       style="--card-color: <%= board.closed_color %>;">
     <div class="mobile-board__category-header" 
          data-action="click->mobile-board#toggle"
          data-mobile-board-target="header"
          aria-expanded="false"
          aria-controls="mobile-category-closed-cards">
       <div class="mobile-board__category-expander">
-        <span class="mobile-board__category-count" data-drag-and-drop-counter><%= board.cards.closed.count %></span>
+        <span class="mobile-board__category-count" id="mobile-category-closed-count" data-drag-and-drop-counter><%= board.cards.closed.count %></span>
         <span class="mobile-board__category-title">Done</span>
         <%= icon_tag "collapse", class: "mobile-board__category-collapse-icon" %>
       </div>
@@ -237,22 +261,34 @@
       </button>
     </div>
     
-    <%# Color picker for system category %>
-    <div class="mobile-board__category-edit mobile-board__system-color-form" data-mobile-board-target="systemColorForm">
-      <div class="mobile-board__edit-colors" data-action="change->mobile-board#selectSystemColor">
-        <% Color::COLORS.each do |color| %>
-          <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
-            <input type="radio" name="closed_color" value="<%= color.value %>">
-            <span class="mobile-board__color-swatch"></span>
-          </label>
-        <% end %>
-        <% Color::MOBILE_EXTRA_COLORS.each do |color| %>
-          <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
-            <input type="radio" name="closed_color" value="<%= color.value %>">
-            <span class="mobile-board__color-swatch"></span>
-          </label>
-        <% end %>
-      </div>
+    <%# Color picker form for system category %>
+    <div class="mobile-board__category-edit" data-mobile-board-target="editForm">
+      <%= form_with url: board_system_category_colors_path(board), 
+                    method: :patch,
+                    data: { 
+                      controller: "form", 
+                      action: "turbo:submit-end->mobile-board#handleEditSubmit" 
+                    },
+                    class: "mobile-board__edit-form" do |form| %>
+        <%= form.hidden_field :category, value: "closed" %>
+        <div class="mobile-board__edit-colors">
+          <% Color::COLORS.each do |color| %>
+            <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
+              <%= form.radio_button :color, color.value, checked: (board.closed_color == color.value) %>
+              <span class="mobile-board__color-swatch"></span>
+            </label>
+          <% end %>
+          <% Color::MOBILE_EXTRA_COLORS.each do |color| %>
+            <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
+              <%= form.radio_button :color, color.value, checked: (board.closed_color == color.value) %>
+              <span class="mobile-board__color-swatch"></span>
+            </label>
+          <% end %>
+        </div>
+        <div class="mobile-board__edit-actions">
+          <%= form.submit "Save", class: "btn btn--small" %>
+        </div>
+      <% end %>
     </div>
     
     <div class="mobile-board__category-cards" 

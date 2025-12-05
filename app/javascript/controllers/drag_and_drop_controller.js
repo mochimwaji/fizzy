@@ -232,7 +232,7 @@ export default class extends Controller {
       this.wasDropped = true
       hapticFeedback("success")
       this.#decreaseCounter(this.sourceContainer)
-      // Submit and wait for response, then refresh
+      // Submit and wait for response - Turbo Streams will update the DOM
       await this.#submitTabDropRequest(this.dragItem, this.currentTabTarget)
     }
     // Check if we have a valid container drop target (including mobile board categories)
@@ -240,16 +240,8 @@ export default class extends Controller {
       this.wasDropped = true
       hapticFeedback("success")
       this.#decreaseCounter(this.sourceContainer)
-      // Check if this is a mobile board category drop
-      const isMobileBoardDrop = this.currentDropTarget.classList.contains("mobile-board__category")
-      // Submit drop request - for mobile, don't request turbo streams
-      const response = await this.#submitDropRequest(this.dragItem, this.currentDropTarget, isMobileBoardDrop)
-      // Smooth page refresh for mobile board drops using Turbo morph
-      if (isMobileBoardDrop && response.ok) {
-        // Use Turbo visit with morph for seamless update
-        Turbo.visit(window.location.href, { action: "replace" })
-        return // Don't run endTouchDrag since page is refreshing
-      }
+      // Submit drop request - Turbo Streams will update both desktop and mobile elements
+      await this.#submitDropRequest(this.dragItem, this.currentDropTarget)
     }
 
     this.#endTouchDrag()
@@ -403,16 +395,13 @@ export default class extends Controller {
     this.containerTargets.forEach(container => container.classList.remove(this.hoverContainerClass))
   }
 
-  async #submitDropRequest(item, container, skipTurboStreams = false) {
+  async #submitDropRequest(item, container) {
     const body = new FormData()
     const id = item.dataset.id
     const url = container.dataset.dragAndDropUrl.replaceAll("__id__", id)
 
-    // For mobile board drops, request JSON to avoid Turbo Stream processing
-    // which would try to update non-existent desktop element IDs
-    const headers = skipTurboStreams 
-      ? { Accept: "application/json, text/html" }
-      : { Accept: "text/vnd.turbo-stream.html" }
+    // Request Turbo Stream response - it will update both desktop and mobile elements
+    const headers = { Accept: "text/vnd.turbo-stream.html" }
 
     return post(url, { body, headers })
   }
@@ -507,15 +496,10 @@ export default class extends Controller {
       return
     }
     
-    // Request JSON to avoid Turbo Stream processing (mobile doesn't have desktop element IDs)
-    const response = await post(url, { 
+    // Request Turbo Stream response - it will update both desktop and mobile elements
+    await post(url, { 
       body: new FormData(), 
-      headers: { Accept: "application/json, text/html" } 
+      headers: { Accept: "text/vnd.turbo-stream.html" } 
     })
-    
-    if (response.ok) {
-      // Use Turbo visit with morph for seamless update
-      Turbo.visit(window.location.href, { action: "replace" })
-    }
   }
 }

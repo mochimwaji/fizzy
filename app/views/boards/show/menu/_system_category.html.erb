@@ -1,0 +1,25 @@
+<div class="cards__menu" data-controller="dialog" data-action="keydown.esc->dialog#close click@document->dialog#closeOnClickOutside">
+  <button class="btn btn--circle txt-x-small borderless" data-action="click->dialog#open">
+    <%= icon_tag "menu-dots-horizontal", class: "translucent" %>
+    <span class="for-screen-reader"><%= category_name %> options</span>
+  </button>
+  <dialog class="popup panel flex-column gap-half fill-white shadow txt-small margin-block-double" data-dialog-target="dialog" data-action="turbo:before-morph-attribute->dialog#preventCloseOnMorphing">
+    <%= form_with url: board_system_category_colors_path(board), 
+                  method: :patch,
+                  data: { controller: "form", action: "turbo:submit-end->dialog#close" } do |form| %>
+      <%= form.hidden_field :category, value: category_type %>
+      
+      <div class="color-picker__colors">
+        <% Color::COLORS.each do |color| %>
+          <label class="btn txt-small borderless" style="--btn-background: <%= color %>" title="<%= color.name %>">
+            <%= form.radio_button :color, color.value, checked: (current_color == color.value) %>
+            <%= icon_tag "check", class: "checked" %>
+            <span class="for-screen-reader"><%= color.name %></span>
+          </label>
+        <% end %>
+      </div>
+
+      <%= form.submit "Save", class: "btn btn--link" %>
+    <% end %>
+  </dialog>
+</div>

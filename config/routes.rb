@@ -40,6 +40,9 @@ Rails.application.routes.draw do
       end
 
       resources :columns
+      
+      # System category color customization
+      resource :system_category_colors, only: :update, module: :boards
     end
 
     resources :cards, only: :create
