@@ -48,7 +48,7 @@ export default class extends Controller {
 
   #setupDropTargets() {
     this.tabTargets.forEach(tab => {
-      // Only make column tabs (not special columns) droppable
+      // All tabs are droppable
       if (tab.dataset.droppable === "true") {
         tab.addEventListener("dragover", this.#handleDragOver.bind(this))
         tab.addEventListener("dragenter", this.#handleDragEnter.bind(this))
@@ -86,6 +86,7 @@ export default class extends Controller {
     const tab = event.currentTarget
     tab.classList.remove("mobile-column-tabs__tab--drag-over")
     
+    const columnType = tab.dataset.columnType
     const columnId = tab.dataset.columnId
     
     // The drag item is stored in the drag-and-drop controller's state
@@ -95,18 +96,33 @@ export default class extends Controller {
     
     const cardNumber = draggedCard.dataset.id
     
-    if (cardNumber && columnId) {
-      this.#moveCardToColumn(cardNumber, columnId)
+    if (cardNumber) {
+      this.#moveCardToColumn(cardNumber, columnType, columnId)
     }
   }
 
-  #moveCardToColumn(cardNumber, columnId) {
-    // Build the URL for moving the card to the column
-    // Use the current path to extract the account prefix
+  #moveCardToColumn(cardNumber, columnType, columnId) {
+    // Build the URL for moving the card based on column type
     const pathParts = window.location.pathname.split("/")
-    // Find the account ID (first segment after empty string)
     const accountId = pathParts[1]
-    const url = `/${accountId}/columns/cards/${cardNumber}/drops/columns?column_id=${columnId}`
+    
+    let url
+    switch (columnType) {
+      case "not_now":
+        url = `/${accountId}/columns/cards/${cardNumber}/drops/not_nows`
+        break
+      case "stream":
+        url = `/${accountId}/columns/cards/${cardNumber}/drops/streams`
+        break
+      case "closed":
+        url = `/${accountId}/columns/cards/${cardNumber}/drops/closures`
+        break
+      case "column":
+        url = `/${accountId}/columns/cards/${cardNumber}/drops/columns?column_id=${columnId}`
+        break
+      default:
+        return
+    }
     
     // Use fetch to submit the move request
     fetch(url, {
