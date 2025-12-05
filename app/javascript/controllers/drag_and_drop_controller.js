@@ -171,14 +171,25 @@ export default class extends Controller {
     // Find container under touch point
     const elementUnder = getElementAtTouch(position, this.dragPreview)
     const container = this.#containerContaining(elementUnder)
+    
+    // Also check for mobile tab drop targets
+    const tab = this.#findTabUnderTouch(elementUnder)
 
     this.#clearContainerHoverClasses()
+    this.#clearTabHoverClasses()
 
-    if (container && container !== this.sourceContainer) {
+    if (tab) {
+      // Prioritize tab if found
+      tab.classList.add("mobile-column-tabs__tab--drag-over")
+      this.currentDropTarget = null
+      this.currentTabTarget = tab
+    } else if (container && container !== this.sourceContainer) {
       container.classList.add(this.hoverContainerClass)
       this.currentDropTarget = container
+      this.currentTabTarget = null
     } else {
       this.currentDropTarget = null
+      this.currentTabTarget = null
     }
 
     // Auto-scroll if near container edges
@@ -197,8 +208,15 @@ export default class extends Controller {
 
     preventTouchDefault(event)
 
-    // Check if we have a valid drop target
-    if (this.currentDropTarget && this.currentDropTarget !== this.sourceContainer) {
+    // Check if we have a tab drop target (mobile tabs)
+    if (this.currentTabTarget) {
+      this.wasDropped = true
+      hapticFeedback("success")
+      this.#decreaseCounter(this.sourceContainer)
+      this.#submitTabDropRequest(this.dragItem, this.currentTabTarget)
+    }
+    // Check if we have a valid container drop target
+    else if (this.currentDropTarget && this.currentDropTarget !== this.sourceContainer) {
       this.wasDropped = true
       hapticFeedback("success")
       this.#decreaseCounter(this.sourceContainer)
@@ -248,6 +266,7 @@ export default class extends Controller {
     }
 
     this.#clearContainerHoverClasses()
+    this.#clearTabHoverClasses()
     removeDragPreview(this.dragPreview)
     this.#cleanupTouch()
   }
@@ -267,6 +286,7 @@ export default class extends Controller {
     this.isDragging = false
     this.dragPreview = null
     this.currentDropTarget = null
+    this.currentTabTarget = null
     this.touchOffset = null
     this.sourceContainer = null
     this.dragItem = null
@@ -315,5 +335,38 @@ export default class extends Controller {
         counterElement.textContent = count - 1
       }
     }
+  }
+
+  // ========================================
+  // Tab Drop Helpers (Mobile)
+  // ========================================
+
+  #findTabAtPoint(x, y) {
+    const elements = document.elementsFromPoint(x, y)
+    return elements.find(el => 
+      el.classList.contains("mobile-column-tabs__tab") && 
+      el.dataset.droppable === "true"
+    )
+  }
+
+  async #submitTabDropRequest(item, tab) {
+    const cardId = item.dataset.id
+    const columnType = tab.dataset.columnType
+    const columnId = tab.dataset.columnId
+    const boardId = tab.dataset.boardId
+    
+    let url
+    if (columnType === "not_now") {
+      url = `/${tab.dataset.accountId}/cards/${cardId}/not_now`
+    } else if (columnType === "stream") {
+      url = `/${tab.dataset.accountId}/cards/${cardId}/stream`
+    } else if (columnType === "closed") {
+      url = `/${tab.dataset.accountId}/cards/${cardId}/closed`
+    } else {
+      url = `/${tab.dataset.accountId}/boards/${boardId}/columns/${columnId}/drops/${cardId}`
+    }
+    
+    const body = new FormData()
+    return post(url, { body, headers: { Accept: "text/vnd.turbo-stream.html" } })
   }
 }
