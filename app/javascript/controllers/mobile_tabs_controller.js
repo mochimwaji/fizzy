@@ -109,16 +109,16 @@ export default class extends Controller {
     let url
     switch (columnType) {
       case "not_now":
-        // POST /cards/:card_id/not_now
-        url = `/${accountId}/cards/${cardNumber}/not_now`
+        // POST /columns/cards/:card_id/drops/not_now
+        url = `/${accountId}/columns/cards/${cardNumber}/drops/not_now`
         break
       case "stream":
         // POST /columns/cards/:card_id/drops/stream
         url = `/${accountId}/columns/cards/${cardNumber}/drops/stream`
         break
       case "closed":
-        // POST /cards/:card_id/closure
-        url = `/${accountId}/cards/${cardNumber}/closure`
+        // POST /columns/cards/:card_id/drops/closure
+        url = `/${accountId}/columns/cards/${cardNumber}/drops/closure`
         break
       case "column":
         // POST /columns/cards/:card_id/drops/column?column_id=:column_id
@@ -138,8 +138,8 @@ export default class extends Controller {
       }
     }).then(response => {
       if (response.ok) {
-        // Reload the page to show the updated card positions
-        Turbo.visit(window.location.href, { action: "replace" })
+        // Force full page reload to show the updated card positions
+        window.location.reload()
       }
     })
   }

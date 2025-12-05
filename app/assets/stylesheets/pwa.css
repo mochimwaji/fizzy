@@ -204,7 +204,8 @@
   opacity: 0.6;
   transition: opacity 0.15s ease, background-color 0.15s ease;
   
-  .mobile-board__category--editable & {
+  .mobile-board__category--editable &,
+  .mobile-board__category--system & {
     display: flex;
   }
   

@@ -4,12 +4,16 @@ module CardsHelper
       options.delete(:class),
       ("golden-effect" if card.golden?),
       ("card--postponed" if card.postponed?),
+      ("card--closed" if card.closed?),
       ("card--active" if card.active?)
     ].compact.join(" ")
 
+    # Use complete color for closed/postponed cards
+    card_color = (card.closed? || card.postponed?) ? "var(--color-card-complete)" : card.color
+
     tag.article \
       id: id,
-      style: "--card-color: #{card.color}; view-transition-name: #{id}",
+      style: "--card-color: #{card_color}; view-transition-name: #{id}",
       class: classes,
       **options,
       &block

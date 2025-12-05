@@ -244,9 +244,11 @@ export default class extends Controller {
       const isMobileBoardDrop = this.currentDropTarget.classList.contains("mobile-board__category")
       // Submit and wait for response
       const response = await this.#submitDropRequest(this.dragItem, this.currentDropTarget)
-      // Refresh page for mobile board drops to update counts
+      // Force full page refresh for mobile board drops to update counts
+      // Using location.reload instead of Turbo.visit for more reliable updates
       if (isMobileBoardDrop && response.ok) {
-        Turbo.visit(window.location.href, { action: "replace" })
+        window.location.reload()
+        return // Don't run endTouchDrag since page is reloading
       }
     }
 
@@ -483,14 +485,14 @@ export default class extends Controller {
     
     let url
     if (columnType === "not_now") {
-      // POST /cards/:card_id/not_now
-      url = `/${accountId}/cards/${cardNumber}/not_now`
+      // POST /columns/cards/:card_id/drops/not_now
+      url = `/${accountId}/columns/cards/${cardNumber}/drops/not_now`
     } else if (columnType === "stream") {
       // POST /columns/cards/:card_id/drops/stream
       url = `/${accountId}/columns/cards/${cardNumber}/drops/stream`
     } else if (columnType === "closed") {
-      // POST /cards/:card_id/closure
-      url = `/${accountId}/cards/${cardNumber}/closure`
+      // POST /columns/cards/:card_id/drops/closure
+      url = `/${accountId}/columns/cards/${cardNumber}/drops/closure`
     } else if (columnType === "column" && columnId) {
       // POST /columns/cards/:card_id/drops/column?column_id=:column_id
       url = `/${accountId}/columns/cards/${cardNumber}/drops/column?column_id=${columnId}`
@@ -505,8 +507,9 @@ export default class extends Controller {
     })
     
     if (response.ok) {
-      // Reload the page to show the updated card positions
-      Turbo.visit(window.location.href, { action: "replace" })
+      // Force full page reload to show the updated card positions
+      // Using location.reload instead of Turbo.visit for more reliable updates
+      window.location.reload()
     }
   }
 }
