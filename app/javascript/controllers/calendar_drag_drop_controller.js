@@ -1,9 +1,38 @@
 import { Controller } from "@hotwired/stimulus"
 import { patch } from "@rails/request.js"
+import {
+  isTouchDevice,
+  getTouchPosition,
+  exceedsDragThreshold,
+  hapticFeedback,
+  createDragPreview,
+  moveDragPreview,
+  removeDragPreview,
+  getElementAtTouch,
+  preventTouchDefault,
+  LONG_PRESS_DURATION
+} from "helpers/touch_helpers"
 
 export default class extends Controller {
   static targets = ["card", "day"]
   static values = { updateUrl: String }
+  
+  connect() {
+    if (isTouchDevice()) {
+      this.#bindTouchEvents()
+    }
+  }
+  
+  disconnect() {
+    this.#cleanupTouch()
+    if (isTouchDevice()) {
+      this.#unbindTouchEvents()
+    }
+  }
+  
+  // ========================================
+  // Desktop Drag and Drop (HTML5 API)
+  // ========================================
   
   dragStart(event) {
     const card = event.target.closest(".calendar__card")
@@ -96,17 +125,194 @@ export default class extends Controller {
     
     if (!cardId || !newDate) return
     
-    // Build the URL for updating the due date
+    await this.#updateCardDueDate(cardId, newDate, this.draggedCard)
+  }
+  
+  // ========================================
+  // Touch Drag and Drop (Mobile)
+  // ========================================
+  
+  #bindTouchEvents() {
+    this.boundTouchStart = this.#handleTouchStart.bind(this)
+    this.boundTouchMove = this.#handleTouchMove.bind(this)
+    this.boundTouchEnd = this.#handleTouchEnd.bind(this)
+    this.boundTouchCancel = this.#handleTouchCancel.bind(this)
+
+    this.element.addEventListener("touchstart", this.boundTouchStart, { passive: false })
+    this.element.addEventListener("touchmove", this.boundTouchMove, { passive: false })
+    this.element.addEventListener("touchend", this.boundTouchEnd, { passive: false })
+    this.element.addEventListener("touchcancel", this.boundTouchCancel, { passive: false })
+  }
+
+  #unbindTouchEvents() {
+    if (this.boundTouchStart) {
+      this.element.removeEventListener("touchstart", this.boundTouchStart)
+      this.element.removeEventListener("touchmove", this.boundTouchMove)
+      this.element.removeEventListener("touchend", this.boundTouchEnd)
+      this.element.removeEventListener("touchcancel", this.boundTouchCancel)
+    }
+  }
+
+  #handleTouchStart(event) {
+    const card = event.target.closest(".calendar__card")
+    if (!card) return
+
+    const position = getTouchPosition(event)
+    if (!position) return
+
+    this.touchStartPosition = position
+    this.touchCurrentPosition = position
+    this.potentialDragCard = card
+    this.isDragging = false
+
+    // Calculate offset
+    const rect = card.getBoundingClientRect()
+    this.touchOffset = {
+      x: position.x - rect.left,
+      y: position.y - rect.top
+    }
+
+    // Long-press to initiate drag
+    this.longPressTimer = setTimeout(() => {
+      this.#startTouchDrag(card, position)
+    }, LONG_PRESS_DURATION)
+  }
+
+  #handleTouchMove(event) {
+    const position = getTouchPosition(event)
+    if (!position) return
+
+    this.touchCurrentPosition = position
+
+    if (!this.isDragging) {
+      // Cancel if moved too much before long-press
+      if (this.longPressTimer && exceedsDragThreshold(this.touchStartPosition, position)) {
+        this.#cancelLongPress()
+        return
+      }
+      return
+    }
+
+    preventTouchDefault(event)
+
+    // Move preview
+    moveDragPreview(this.dragPreview, position, this.touchOffset)
+
+    // Find day under touch
+    const elementUnder = getElementAtTouch(position, this.dragPreview)
+    const day = elementUnder?.closest(".calendar__day")
+
+    // Clear all highlights
+    this.dayTargets.forEach(d => d.classList.remove("calendar__day--drop-target"))
+
+    if (day && day !== this.sourceDay) {
+      day.classList.add("calendar__day--drop-target")
+      this.currentDropTarget = day
+    } else {
+      this.currentDropTarget = null
+    }
+  }
+
+  #handleTouchEnd(event) {
+    this.#cancelLongPress()
+
+    if (!this.isDragging) {
+      this.#cleanupTouch()
+      return
+    }
+
+    preventTouchDefault(event)
+
+    // Process drop
+    if (this.currentDropTarget && this.currentDropTarget !== this.sourceDay) {
+      hapticFeedback("success")
+      const cardId = this.draggedCard.dataset.cardId
+      const newDate = this.currentDropTarget.dataset.date
+      
+      if (cardId && newDate) {
+        this.#updateCardDueDate(cardId, newDate, this.draggedCard)
+      }
+    }
+
+    this.#endTouchDrag()
+  }
+
+  #handleTouchCancel() {
+    this.#cancelLongPress()
+    this.#endTouchDrag()
+  }
+
+  #startTouchDrag(card, position) {
+    this.isDragging = true
+    this.draggedCard = card
+    this.sourceDay = card.closest(".calendar__day")
+
+    hapticFeedback("medium")
+
+    // Create preview
+    this.dragPreview = createDragPreview(card, {
+      opacity: "0.95",
+      transform: "scale(1.1) rotate(2deg)"
+    })
+
+    // Style original
+    card.classList.add("calendar__card--dragging")
+    this.sourceDay.classList.add("calendar__day--source")
+
+    moveDragPreview(this.dragPreview, position, this.touchOffset)
+  }
+
+  #endTouchDrag() {
+    if (this.draggedCard) {
+      this.draggedCard.classList.remove("calendar__card--dragging")
+    }
+
+    if (this.sourceDay) {
+      this.sourceDay.classList.remove("calendar__day--source")
+    }
+
+    this.dayTargets.forEach(day => {
+      day.classList.remove("calendar__day--drop-target")
+    })
+
+    removeDragPreview(this.dragPreview)
+    this.#cleanupTouch()
+  }
+
+  #cancelLongPress() {
+    if (this.longPressTimer) {
+      clearTimeout(this.longPressTimer)
+      this.longPressTimer = null
+    }
+  }
+
+  #cleanupTouch() {
+    this.#cancelLongPress()
+    this.touchStartPosition = null
+    this.touchCurrentPosition = null
+    this.potentialDragCard = null
+    this.isDragging = false
+    this.dragPreview = null
+    this.currentDropTarget = null
+    this.touchOffset = null
+    this.sourceDay = null
+    this.draggedCard = null
+  }
+
+  // ========================================
+  // Shared Helpers
+  // ========================================
+
+  async #updateCardDueDate(cardId, newDate, card) {
     const url = this.updateUrlValue.replace("__CARD_ID__", cardId)
     
-    // Add a subtle animation to the dropped card placeholder
-    if (this.draggedCard) {
-      this.draggedCard.style.transition = "all 0.3s ease"
-      this.draggedCard.style.opacity = "0"
-      this.draggedCard.style.transform = "scale(0.8)"
+    // Animate the card
+    if (card) {
+      card.style.transition = "all 0.3s ease"
+      card.style.opacity = "0"
+      card.style.transform = "scale(0.8)"
     }
     
-    // Send PATCH request to update due date
     const response = await patch(url, {
       body: JSON.stringify({ due_date: { due_on: newDate } }),
       headers: {
@@ -116,7 +322,6 @@ export default class extends Controller {
     })
     
     if (response.ok) {
-      // Reload the calendar to show updated positions
       window.Turbo.visit(window.location.href, { action: "replace" })
     }
   }

@@ -1,12 +1,41 @@
 import { Controller } from "@hotwired/stimulus"
 import { post } from "@rails/request.js"
 import { nextFrame } from "helpers/timing_helpers"
+import {
+  isTouchDevice,
+  getTouchPosition,
+  exceedsDragThreshold,
+  hapticFeedback,
+  createDragPreview,
+  moveDragPreview,
+  removeDragPreview,
+  getElementAtTouch,
+  preventTouchDefault,
+  autoScrollNearEdge,
+  LONG_PRESS_DURATION
+} from "helpers/touch_helpers"
 
 export default class extends Controller {
   static targets = [ "item", "container" ]
   static classes = [ "draggedItem", "hoverContainer" ]
 
-  // Actions
+  connect() {
+    // Bind touch handlers for mobile support
+    if (isTouchDevice()) {
+      this.#bindTouchEvents()
+    }
+  }
+
+  disconnect() {
+    this.#cleanupTouch()
+    if (isTouchDevice()) {
+      this.#unbindTouchEvents()
+    }
+  }
+
+  // ========================================
+  // Desktop Drag and Drop (HTML5 API)
+  // ========================================
 
   async dragStart(event) {
     event.dataTransfer.effectAllowed = "move"
@@ -56,11 +85,194 @@ export default class extends Controller {
     this.wasDropped = false
   }
 
+  // ========================================
+  // Touch Drag and Drop (Mobile)
+  // ========================================
+
+  #bindTouchEvents() {
+    this.boundTouchStart = this.#handleTouchStart.bind(this)
+    this.boundTouchMove = this.#handleTouchMove.bind(this)
+    this.boundTouchEnd = this.#handleTouchEnd.bind(this)
+    this.boundTouchCancel = this.#handleTouchCancel.bind(this)
+
+    this.element.addEventListener("touchstart", this.boundTouchStart, { passive: false })
+    this.element.addEventListener("touchmove", this.boundTouchMove, { passive: false })
+    this.element.addEventListener("touchend", this.boundTouchEnd, { passive: false })
+    this.element.addEventListener("touchcancel", this.boundTouchCancel, { passive: false })
+  }
+
+  #unbindTouchEvents() {
+    if (this.boundTouchStart) {
+      this.element.removeEventListener("touchstart", this.boundTouchStart)
+      this.element.removeEventListener("touchmove", this.boundTouchMove)
+      this.element.removeEventListener("touchend", this.boundTouchEnd)
+      this.element.removeEventListener("touchcancel", this.boundTouchCancel)
+    }
+  }
+
+  #handleTouchStart(event) {
+    const item = this.#itemContaining(event.target)
+    if (!item) return
+
+    const position = getTouchPosition(event)
+    if (!position) return
+
+    // Store initial touch data
+    this.touchStartPosition = position
+    this.touchCurrentPosition = position
+    this.potentialDragItem = item
+    this.isDragging = false
+
+    // Calculate offset from touch point to item's top-left
+    const rect = item.getBoundingClientRect()
+    this.touchOffset = {
+      x: position.x - rect.left,
+      y: position.y - rect.top
+    }
+
+    // Start long-press timer to initiate drag
+    this.longPressTimer = setTimeout(() => {
+      this.#startTouchDrag(item, position)
+    }, LONG_PRESS_DURATION)
+  }
+
+  #handleTouchMove(event) {
+    const position = getTouchPosition(event)
+    if (!position) return
+
+    this.touchCurrentPosition = position
+
+    // If we haven't started dragging yet
+    if (!this.isDragging) {
+      // Check if moved too much before long-press completed (user is scrolling)
+      if (this.longPressTimer && exceedsDragThreshold(this.touchStartPosition, position)) {
+        this.#cancelLongPress()
+        return
+      }
+      return
+    }
+
+    // We're actively dragging
+    preventTouchDefault(event)
+
+    // Move the preview
+    moveDragPreview(this.dragPreview, position, this.touchOffset)
+
+    // Find container under touch point
+    const elementUnder = getElementAtTouch(position, this.dragPreview)
+    const container = this.#containerContaining(elementUnder)
+
+    this.#clearContainerHoverClasses()
+
+    if (container && container !== this.sourceContainer) {
+      container.classList.add(this.hoverContainerClass)
+      this.currentDropTarget = container
+    } else {
+      this.currentDropTarget = null
+    }
+
+    // Auto-scroll if near container edges
+    if (this.sourceContainer) {
+      autoScrollNearEdge(this.sourceContainer.closest(".cards__list, .mobile-card-columns"), position)
+    }
+  }
+
+  #handleTouchEnd(event) {
+    this.#cancelLongPress()
+
+    if (!this.isDragging) {
+      this.#cleanupTouch()
+      return
+    }
+
+    preventTouchDefault(event)
+
+    // Check if we have a valid drop target
+    if (this.currentDropTarget && this.currentDropTarget !== this.sourceContainer) {
+      this.wasDropped = true
+      hapticFeedback("success")
+      this.#decreaseCounter(this.sourceContainer)
+      const sourceContainer = this.sourceContainer
+      this.#submitDropRequest(this.dragItem, this.currentDropTarget)
+      this.#reloadSourceFrame(sourceContainer)
+    }
+
+    this.#endTouchDrag()
+  }
+
+  #handleTouchCancel(event) {
+    this.#cancelLongPress()
+    this.#endTouchDrag()
+  }
+
+  #startTouchDrag(item, position) {
+    this.isDragging = true
+    this.dragItem = item
+    this.sourceContainer = this.#containerContaining(item)
+
+    // Haptic feedback for drag start
+    hapticFeedback("medium")
+
+    // Create floating preview
+    this.dragPreview = createDragPreview(item, {
+      opacity: "0.95",
+      transform: "scale(1.03) rotate(1deg)"
+    })
+
+    // Style the original item
+    item.classList.add(this.draggedItemClass)
+    item.style.opacity = "0.3"
+
+    // Position preview at current touch
+    moveDragPreview(this.dragPreview, position, this.touchOffset)
+  }
+
+  #endTouchDrag() {
+    if (this.dragItem) {
+      this.dragItem.classList.remove(this.draggedItemClass)
+      this.dragItem.style.opacity = ""
+
+      if (this.wasDropped) {
+        this.dragItem.remove()
+      }
+    }
+
+    this.#clearContainerHoverClasses()
+    removeDragPreview(this.dragPreview)
+    this.#cleanupTouch()
+  }
+
+  #cancelLongPress() {
+    if (this.longPressTimer) {
+      clearTimeout(this.longPressTimer)
+      this.longPressTimer = null
+    }
+  }
+
+  #cleanupTouch() {
+    this.#cancelLongPress()
+    this.touchStartPosition = null
+    this.touchCurrentPosition = null
+    this.potentialDragItem = null
+    this.isDragging = false
+    this.dragPreview = null
+    this.currentDropTarget = null
+    this.touchOffset = null
+    this.sourceContainer = null
+    this.dragItem = null
+    this.wasDropped = false
+  }
+
+  // ========================================
+  // Shared Helpers
+  // ========================================
+
   #itemContaining(element) {
     return this.itemTargets.find(item => item.contains(element) || item === element)
   }
 
   #containerContaining(element) {
+    if (!element) return null
     return this.containerTargets.find(container => container.contains(element) || container === element)
   }
 

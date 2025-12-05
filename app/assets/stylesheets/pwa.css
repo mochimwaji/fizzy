@@ -12,3 +12,100 @@
     display: block;
   }
 }
+
+/* ==========================================================================
+   Touch Drag and Drop Styles
+   ========================================================================== */
+
+/* Touch drag preview - the floating element that follows the finger */
+.touch-drag-preview {
+  pointer-events: none !important;
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  touch-action: none !important;
+  will-change: transform, left, top;
+}
+
+/* Prevent text selection during drag on touch devices */
+.touch-dragging {
+  user-select: none !important;
+  -webkit-user-select: none !important;
+  -webkit-touch-callout: none !important;
+}
+
+/* Improve touch targets for draggable items */
+@media (any-hover: none) {
+  /* Cards in columns should have larger touch targets */
+  .card {
+    min-height: 64px;
+  }
+  
+  /* Calendar cards need bigger touch targets */
+  .calendar__card {
+    min-height: 32px;
+    padding: 8px 12px;
+  }
+  
+  /* Ensure buttons meet 44x44 minimum touch target */
+  .btn--circle,
+  .btn--icon {
+    min-width: 44px;
+    min-height: 44px;
+  }
+}
+
+/* Visual feedback for long-press on touch devices */
+@media (any-hover: none) {
+  .card,
+  .calendar__card {
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    
+    &:active {
+      transform: scale(0.98);
+    }
+  }
+}
+
+/* Improve drag visual states for touch */
+.drag-and-drop__dragged-item,
+.calendar__card--dragging {
+  opacity: 0.3;
+  transform: scale(0.95);
+}
+
+/* Hover container styling for touch drop targets */
+.drag-and-drop__hover-container {
+  outline: 2px dashed var(--color-selected);
+  outline-offset: -2px;
+  background-color: var(--dnd-bg-color, rgba(99, 102, 241, 0.1));
+}
+
+/* ==========================================================================
+   PWA Standalone Mode Enhancements
+   ========================================================================== */
+
+@media (display-mode: standalone) {
+  /* Slightly larger tap targets in PWA mode */
+  .btn {
+    min-height: 40px;
+  }
+  
+  /* Remove browser-specific elements in PWA */
+  .browser-only {
+    display: none !important;
+  }
+  
+  /* Prevent pull-to-refresh interfering with app gestures */
+  body {
+    overscroll-behavior-y: contain;
+  }
+  
+  /* Safe area handling for notched devices */
+  .header {
+    padding-top: calc(var(--block-space-half) + env(safe-area-inset-top));
+  }
+  
+  .bar {
+    padding-bottom: calc(var(--block-space) + env(safe-area-inset-bottom));
+  }
+}
