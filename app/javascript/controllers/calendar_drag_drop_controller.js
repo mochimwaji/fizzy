@@ -323,30 +323,39 @@ export default class extends Controller {
       const targetCardsContainer = targetDay.querySelector(".calendar__cards")
       const sourceCardsContainer = sourceDay?.querySelector(".calendar__cards")
       
-      // Clone the card for animation
-      const cardClone = card.cloneNode(true)
-      cardClone.classList.remove("calendar__card--dragging")
-      cardClone.style.transition = "all 0.3s ease"
-      cardClone.style.opacity = "0"
-      cardClone.style.transform = "scale(0.9)"
-      
-      // Find the right insertion point - before the "more" button or drop zone
+      // Count visible cards in target (max 1 visible per day)
+      const visibleCardsInTarget = targetCardsContainer?.querySelectorAll(".calendar__card:not(.calendar__card--hidden)").length || 0
       const moreButton = targetCardsContainer?.querySelector(".calendar__more")
-      const dropZone = targetCardsContainer?.querySelector(".calendar__drop-zone")
-      const insertBefore = moreButton || dropZone
+      const hasMoreButton = moreButton !== null
       
-      if (targetCardsContainer && insertBefore) {
-        targetCardsContainer.insertBefore(cardClone, insertBefore)
-      } else if (targetCardsContainer) {
-        // Prepend as first card if no other cards exist
-        targetCardsContainer.prepend(cardClone)
+      // If target already has a visible card, we should only update the +X more count
+      // Don't add a visible card
+      if (visibleCardsInTarget >= 1 || hasMoreButton) {
+        // Just update the count, don't show the card
+        this.#updateMoreButton(targetCardsContainer, 1, true)
+      } else {
+        // Target is empty or has no visible cards, we can show this card
+        const cardClone = card.cloneNode(true)
+        cardClone.classList.remove("calendar__card--dragging")
+        cardClone.style.transition = "all 0.3s ease"
+        cardClone.style.opacity = "0"
+        cardClone.style.transform = "scale(0.9)"
+        
+        // Find the right insertion point - before the drop zone
+        const dropZone = targetCardsContainer?.querySelector(".calendar__drop-zone")
+        
+        if (targetCardsContainer && dropZone) {
+          targetCardsContainer.insertBefore(cardClone, dropZone)
+        } else if (targetCardsContainer) {
+          targetCardsContainer.prepend(cardClone)
+        }
+        
+        // Animate in
+        requestAnimationFrame(() => {
+          cardClone.style.opacity = "1"
+          cardClone.style.transform = "scale(1)"
+        })
       }
-      
-      // Animate in
-      requestAnimationFrame(() => {
-        cardClone.style.opacity = "1"
-        cardClone.style.transform = "scale(1)"
-      })
       
       // Remove from source
       card.style.transition = "all 0.2s ease"
@@ -354,9 +363,8 @@ export default class extends Controller {
       card.style.transform = "scale(0.8)"
       setTimeout(() => card.remove(), 200)
       
-      // Update the "+X more" button counts
-      this.#updateMoreButton(sourceCardsContainer, -1)
-      this.#updateMoreButton(targetCardsContainer, 1)
+      // Update the source "+X more" button count (decrement)
+      this.#updateMoreButton(sourceCardsContainer, -1, false)
     }
     
     // Send request to server - Turbo Stream will handle any additional updates
@@ -375,7 +383,7 @@ export default class extends Controller {
     }
   }
   
-  #updateMoreButton(container, delta) {
+  #updateMoreButton(container, delta, createIfNeeded = false) {
     if (!container) return
     
     const moreButton = container.querySelector(".calendar__more")
@@ -395,9 +403,20 @@ export default class extends Controller {
           moreButton.style.display = "none"
         }
       }
-    } else if (delta > 0 && moreButton) {
-      // If adding to a day that had a hidden "more" button, show it
-      moreButton.style.display = ""
+    } else if (delta > 0 && createIfNeeded) {
+      // Need to create a new "+X more" button
+      const dropZone = container.querySelector(".calendar__drop-zone")
+      const newButton = document.createElement("button")
+      newButton.className = "calendar__more"
+      newButton.dataset.action = "calendar-expand#toggle"
+      newButton.dataset.calendarExpandTarget = "toggle"
+      newButton.innerHTML = `<span class="calendar__more-text">+${delta} more</span>`
+      
+      if (dropZone) {
+        container.insertBefore(newButton, dropZone)
+      } else {
+        container.appendChild(newButton)
+      }
     }
   }
 }
