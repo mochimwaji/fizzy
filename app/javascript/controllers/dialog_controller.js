@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { orient } from "helpers/orientation_helpers"
+import { isTouchDevice } from "helpers/touch_helpers"
 
 export default class extends Controller {
   static targets = [ "dialog" ]
@@ -23,6 +24,7 @@ export default class extends Controller {
     }
 
     this.loadLazyFrames()
+    this.#autofocusDesktopInputs()
     this.dialogTarget.setAttribute("aria-hidden", "false")
     this.dispatch("show")
   }
@@ -56,5 +58,16 @@ export default class extends Controller {
 
   loadLazyFrames() {
     Array.from(this.dialogTarget.querySelectorAll("turbo-frame")).forEach(frame => { frame.loading = "eager" })
+  }
+
+  // Focus search input on desktop only (not touch devices where it would open keyboard)
+  #autofocusDesktopInputs() {
+    if (isTouchDevice()) return
+    
+    const input = this.dialogTarget.querySelector("[data-autofocus-desktop]")
+    if (input) {
+      // Small delay to ensure dialog is fully rendered
+      requestAnimationFrame(() => input.focus())
+    }
   }
 }

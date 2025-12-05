@@ -1,11 +1,14 @@
 module My::MenuHelper
   def jump_field_tag
+    # On touch devices, don't autofocus to avoid keyboard popup
+    # On desktop, autofocus for quick keyboard navigation
     text_field_tag :search, nil,
       type: "search",
       role: "combobox",
       placeholder: "Type to jump to a board, person, place, or tag…",
       class: "input input--transparent txt-small",
-      autofocus: true,
+      autofocus: false,
+      data: { autofocus_desktop: true },
       autocorrect: "off",
       autocomplete: "off",
       aria: { activedescendant: "" },

@@ -10,7 +10,7 @@
   <% end %>
 
   <%= tag.dialog class: "nav__menu filter popup popup--animated panel margin-block-start-half", data: {
-        action: "turbo:before-cache@document->dialog#close turbo:frame-render->navigable-list#reset keydown->navigable-list#navigate filter:changed->navigable-list#reset filter:changed->nav-section-expander#showWhileFiltering toggle->filter#filter",
+        action: "turbo:before-cache@document->dialog#close turbo:before-visit@document->dialog#close turbo:frame-render->navigable-list#reset keydown->navigable-list#navigate filter:changed->navigable-list#reset filter:changed->nav-section-expander#showWhileFiltering toggle->filter#filter",
         controller: "filter navigable-list nav-section-expander",
         dialog_target: "dialog",
         navigable_list_focus_on_selection_value: false,

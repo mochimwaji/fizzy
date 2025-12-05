@@ -315,14 +315,40 @@ export default class extends Controller {
 
   async #updateCardDueDate(cardId, newDate, card) {
     const url = this.updateUrlValue.replace("__CARD_ID__", cardId)
+    const sourceDay = card?.closest(".calendar__day")
+    const targetDay = this.dayTargets.find(d => d.dataset.date === newDate)
     
-    // Animate the card
-    if (card) {
-      card.style.transition = "all 0.3s ease"
+    // Optimistically move the card to the new day
+    if (card && targetDay && sourceDay !== targetDay) {
+      // Clone the card for animation
+      const cardClone = card.cloneNode(true)
+      cardClone.classList.remove("calendar__card--dragging")
+      cardClone.style.transition = "all 0.3s ease"
+      cardClone.style.opacity = "0"
+      cardClone.style.transform = "scale(0.9)"
+      
+      // Add to target day
+      const cardsContainer = targetDay.querySelector(".calendar__day-cards") || targetDay
+      cardsContainer.appendChild(cardClone)
+      
+      // Animate in
+      requestAnimationFrame(() => {
+        cardClone.style.opacity = "1"
+        cardClone.style.transform = "scale(1)"
+      })
+      
+      // Remove from source
+      card.style.transition = "all 0.2s ease"
       card.style.opacity = "0"
       card.style.transform = "scale(0.8)"
+      setTimeout(() => card.remove(), 200)
+      
+      // Update day counts
+      this.#updateDayCount(sourceDay, -1)
+      this.#updateDayCount(targetDay, 1)
     }
     
+    // Send request to server - Turbo Stream will handle any additional updates
     const response = await patch(url, {
       body: JSON.stringify({ due_date: { due_on: newDate } }),
       headers: {
@@ -331,10 +357,21 @@ export default class extends Controller {
       }
     })
     
-    if (response.ok) {
-      // Force a full page refresh to update the calendar
-      // Using location.reload instead of Turbo.visit for more reliable updates
+    // No reload needed - optimistic UI already updated, Turbo Stream handles server response
+    if (!response.ok) {
+      // If failed, reload to restore correct state
       window.location.reload()
+    }
+  }
+  
+  #updateDayCount(day, delta) {
+    if (!day) return
+    const countEl = day.querySelector(".calendar__day-count")
+    if (countEl) {
+      const current = parseInt(countEl.textContent) || 0
+      const newCount = Math.max(0, current + delta)
+      countEl.textContent = newCount
+      countEl.style.display = newCount > 0 ? "" : "none"
     }
   }
 }
