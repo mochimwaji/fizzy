@@ -1,31 +1,45 @@
-<%# Mobile column navigation for all column types %>
+<%# Mobile column navigation - scrollable tabs for all column types %>
 <%# Params: board, column_type (:not_now, :stream, :closed, :column), column (only for :column type) %>
 
 <% column_obj = local_assigns[:column] %>
-<% prev_item = column_type == :column ? prev_column_item(board, :column, column_obj) : prev_column_item(board, column_type) %>
-<% next_item = column_type == :column ? next_column_item(board, :column, column_obj) : next_column_item(board, column_type) %>
-<% position_label = column_type == :column ? column_position_label(column_obj) : column_position_label_for(board, column_type) %>
+<% all_items = all_column_items(board) %>
+<% current_index = find_column_index(board, column_type, column_obj) %>
+<% prev_item = current_index && current_index > 0 ? all_items[current_index - 1] : nil %>
+<% next_item = current_index && current_index < all_items.length - 1 ? all_items[current_index + 1] : nil %>
 
-<div class="header__actions header__actions--end mobile-column-nav">
-  <% if prev_item %>
-    <%= link_to prev_item[:path], class: "btn btn--icon mobile-column-nav__btn" do %>
-      <%= icon_tag("arrow-left") %>
-      <span class="for-screen-reader">Previous: <%= prev_item[:name] %></span>
+<nav class="mobile-column-tabs" 
+     data-controller="mobile-tabs"
+     data-mobile-tabs-current-index-value="<%= current_index %>">
+  <div class="mobile-column-tabs__scroll" data-mobile-tabs-target="scroll">
+    <% all_items.each_with_index do |item, index| %>
+      <% 
+        is_current = index == current_index
+        # Get the color for this column
+        tab_color = case item[:type]
+                    when :column then item[:column].color
+                    when :not_now, :stream then "var(--color-card-1)"
+                    when :closed then "var(--color-card-complete)"
+                    end
+      %>
+      <%= link_to item[:path], 
+          class: class_names("mobile-column-tabs__tab", "mobile-column-tabs__tab--active": is_current),
+          style: "--tab-color: #{tab_color}",
+          data: { 
+            mobile_tabs_target: "tab",
+            index: index,
+            droppable: item[:type] == :column ? "true" : nil,
+            column_id: item[:type] == :column ? item[:column].id : nil,
+            column_type: item[:type]
+          } do %>
+        <span class="mobile-column-tabs__tab-text"><%= item[:name] %></span>
+      <% end %>
     <% end %>
-  <% else %>
-    <span class="btn btn--icon mobile-column-nav__btn" style="visibility: hidden;">
-      <%= icon_tag("arrow-left") %>
-    </span>
-  <% end %>
-  <span class="mobile-column-nav__position"><%= position_label %></span>
-  <% if next_item %>
-    <%= link_to next_item[:path], class: "btn btn--icon mobile-column-nav__btn" do %>
-      <%= icon_tag("arrow-right") %>
-      <span class="for-screen-reader">Next: <%= next_item[:name] %></span>
-    <% end %>
-  <% else %>
-    <span class="btn btn--icon mobile-column-nav__btn" style="visibility: hidden;">
-      <%= icon_tag("arrow-right") %>
-    </span>
-  <% end %>
+  </div>
+</nav>
+
+<%# Keep swipe data for mobile-columns controller %>
+<div class="mobile-column-swipe-data" 
+     style="display: none;"
+     data-prev-url="<%= prev_item ? prev_item[:path] : '' %>"
+     data-next-url="<%= next_item ? next_item[:path] : '' %>">
 </div>

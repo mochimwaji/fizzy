@@ -8,9 +8,9 @@
   <h1 class="header__title divider divider--fade">
     <span class="overflow-ellipsis"><%= @page_title %></span>
   </h1>
-
-  <%= render "boards/columns/mobile_nav", board: @board, column_type: :not_now %>
 <% end %>
+
+<%= render "boards/columns/mobile_nav", board: @board, column_type: :not_now %>
 
 <section class="cards cards--grid"
          data-controller="mobile-columns"

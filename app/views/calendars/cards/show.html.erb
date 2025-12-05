@@ -1,5 +1,8 @@
 <%= turbo_frame_tag "calendar_card_modal" do %>
-  <div class="calendar-modal" data-controller="calendar-modal" data-action="keydown.esc->calendar-modal#close turbo:before-cache@window->calendar-modal#close">
+  <div class="calendar-modal" 
+       data-controller="calendar-modal" 
+       data-calendar-modal-calendar-url-value="<%= calendar_path(date: @return_date) %>"
+       data-action="keydown.esc->calendar-modal#close turbo:before-cache@window->calendar-modal#close">
     <div class="calendar-modal__backdrop" data-action="click->calendar-modal#close"></div>
     
     <div class="calendar-modal__container" data-calendar-modal-target="container">

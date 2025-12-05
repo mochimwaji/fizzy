@@ -2,6 +2,9 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static targets = ["container"]
+  static values = {
+    calendarUrl: String
+  }
 
   connect() {
     // Animate in on connect
@@ -16,6 +19,7 @@ export default class extends Controller {
     this.needsRefresh = false
     
     // Watch for due date changes (signaled by data-calendar-refresh elements)
+    // Need to observe the parent turbo-frame since turbo_stream.append targets the frame ID
     this.observer = new MutationObserver((mutations) => {
       for (const mutation of mutations) {
         for (const node of mutation.addedNodes) {
@@ -26,7 +30,10 @@ export default class extends Controller {
         }
       }
     })
-    this.observer.observe(this.element, { childList: true, subtree: true })
+    
+    // Observe the turbo-frame parent, not just this element
+    const frame = this.element.closest("turbo-frame") || this.element
+    this.observer.observe(frame, { childList: true, subtree: true })
   }
 
   disconnect() {
@@ -45,15 +52,16 @@ export default class extends Controller {
     this.element.classList.remove("calendar-modal--open")
     this.element.classList.add("calendar-modal--closing")
 
-    // Navigate back after animation and refresh calendar if needed
+    // Navigate back after animation and refresh calendar
     setTimeout(() => {
       const frame = document.getElementById("calendar_card_modal")
       if (frame) {
         frame.innerHTML = ""
       }
-      // Always refresh to update calendar with any due date changes
-      // Using replace to avoid adding to browser history
-      window.Turbo.visit(window.location.href, { action: "replace" })
+      // Navigate to the calendar URL (with date) to refresh with any due date changes
+      // Using the explicit calendar URL ensures we go back to the right month
+      const calendarUrl = this.hasCalendarUrlValue ? this.calendarUrlValue : window.location.pathname.replace(/\/cards\/.*$/, "")
+      window.Turbo.visit(calendarUrl, { action: "replace" })
     }, 200)
   }
 }

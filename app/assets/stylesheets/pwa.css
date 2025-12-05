@@ -111,71 +111,83 @@
 }
 
 /* ==========================================================================
-   Mobile Column Navigation
+   Mobile Column Tabs Navigation
    ========================================================================== */
 
-/* Mobile column navigation in header - show on small screens and touch devices */
-.mobile-column-nav {
+/* Hide tabs on desktop, show on mobile/touch */
+.mobile-column-tabs {
   display: none;
   
-  /* Show on touch devices */
   @media (any-hover: none) {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
+    display: block;
   }
   
-  /* Also show on small screens regardless of hover capability */
   @media (max-width: 519px) {
-    display: flex;
-    align-items: center;
-    gap: 0.25rem;
+    display: block;
   }
 }
 
-/* Override header grid to accommodate mobile nav */
-@media (max-width: 519px) {
-  .header:has(.mobile-column-nav) {
-    grid-template-columns: auto 1fr auto;
-    
-    .header__title {
-      font-size: var(--text-base);
-      max-width: 40vw;
-    }
-  }
-}
-
-@media (any-hover: none) {
-  .header:has(.mobile-column-nav) {
-    grid-template-columns: auto 1fr auto;
-    
-    .header__title {
-      font-size: var(--text-base);
-      max-width: 40vw;
-    }
-  }
-}
-
-.mobile-column-nav__btn {
-  min-width: 40px;
-  min-height: 40px;
+.mobile-column-tabs__scroll {
   display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 0;
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scrollbar-width: none; /* Firefox */
+  -webkit-overflow-scrolling: touch;
+  gap: 0.25rem;
+  padding: 0.5rem var(--main-padding);
+  background: var(--color-canvas);
+  border-bottom: 1px solid var(--color-ink-lighter);
   
-  .icon {
-    width: 1.25rem;
-    height: 1.25rem;
+  &::-webkit-scrollbar {
+    display: none; /* Chrome/Safari */
   }
 }
 
-.mobile-column-nav__position {
+.mobile-column-tabs__tab {
+  flex-shrink: 0;
+  padding: 0.5rem 0.75rem;
+  border-radius: 0.5rem;
   font-size: var(--text-small);
-  color: var(--color-text-secondary);
+  font-weight: 500;
+  text-decoration: none;
   white-space: nowrap;
-  min-width: 3rem;
-  text-align: center;
+  color: var(--color-ink-dark);
+  background: var(--color-ink-lightest);
+  border: 2px solid transparent;
+  transition: all 0.15s ease;
+  
+  /* Use the tab color as an accent */
+  border-left: 3px solid var(--tab-color, var(--color-card-default));
+  
+  &:hover {
+    background: var(--color-ink-lighter);
+  }
+}
+
+.mobile-column-tabs__tab--active {
+  background: var(--tab-color, var(--color-card-default));
+  color: var(--color-ink-inverted);
+  border-left-color: transparent;
+  font-weight: 600;
+}
+
+.mobile-column-tabs__tab-text {
+  max-width: 20ch;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Drag over state for tabs */
+.mobile-column-tabs__tab--drag-over {
+  background: var(--tab-color, var(--color-card-default));
+  color: var(--color-ink-inverted);
+  transform: scale(1.05);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* Hidden data container for swipe URLs */
+.mobile-column-swipe-data {
+  display: none !important;
 }
 
 /* Swipe hints that appear during swipe gestures */

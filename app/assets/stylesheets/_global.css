@@ -218,6 +218,10 @@
   --color-card-6: oklch(var(--lch-violet-medium));
   --color-card-7: oklch(var(--lch-purple-medium));
   --color-card-8: oklch(var(--lch-pink-medium));
+  --color-card-9: oklch(var(--lch-red-medium));
+  --color-card-10: oklch(65% 0.18 55);  /* Orange */
+  --color-card-11: oklch(var(--lch-green-medium));
+  --color-card-12: oklch(var(--lch-blue-medium));
 
   /* Colors: Syntax highlighting */
   --color-code-token__att: oklch(var(--lch-blue-dark));

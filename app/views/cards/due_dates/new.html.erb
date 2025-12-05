@@ -5,14 +5,14 @@
       <kbd class="txt-xx-small hide-on-touch">u</kbd>
     </div>
 
-    <%= form_with url: card_due_date_path(@card), method: @card.due? ? :patch : :post, class: "flex flex-column gap-half full-width margin-block-half" do |form| %>
+    <%= form_with url: card_due_date_path(@card), method: @card.due? ? :patch : :post, class: "flex flex-column gap-half full-width margin-block-half", data: { turbo_stream: true } do |form| %>
       <%= form.date_field :due_on, name: "due_date[due_on]", value: @card.due_on || Date.current, class: "input txt-small full-width", autofocus: true %>
 
       <div class="flex gap-half margin-block-start-half">
         <%= form.submit @card.due? ? "Update" : "Set due date", class: "btn btn--primary" %>
 
         <% if @card.due? %>
-          <%= button_to "Remove", card_due_date_path(@card), method: :delete, class: "btn btn--negative" %>
+          <%= button_to "Remove", card_due_date_path(@card), method: :delete, class: "btn btn--negative", data: { turbo_stream: true } %>
         <% end %>
       </div>
     <% end %>
