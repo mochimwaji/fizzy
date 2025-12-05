@@ -325,11 +325,6 @@
   &.mobile-board__category-edit--visible {
     display: block;
   }
-  
-  /* Only available for editable categories (columns) */
-  .mobile-board__category:not(.mobile-board__category--editable) & {
-    display: none !important;
-  }
 }
 
 .mobile-board__edit-form {

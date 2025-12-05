@@ -242,13 +242,13 @@ export default class extends Controller {
       this.#decreaseCounter(this.sourceContainer)
       // Check if this is a mobile board category drop
       const isMobileBoardDrop = this.currentDropTarget.classList.contains("mobile-board__category")
-      // Submit and wait for response
-      const response = await this.#submitDropRequest(this.dragItem, this.currentDropTarget)
-      // Force full page refresh for mobile board drops to update counts
-      // Using location.reload instead of Turbo.visit for more reliable updates
+      // Submit drop request - for mobile, don't request turbo streams
+      const response = await this.#submitDropRequest(this.dragItem, this.currentDropTarget, isMobileBoardDrop)
+      // Smooth page refresh for mobile board drops using Turbo morph
       if (isMobileBoardDrop && response.ok) {
-        window.location.reload()
-        return // Don't run endTouchDrag since page is reloading
+        // Use Turbo visit with morph for seamless update
+        Turbo.visit(window.location.href, { action: "replace" })
+        return // Don't run endTouchDrag since page is refreshing
       }
     }
 
@@ -403,12 +403,18 @@ export default class extends Controller {
     this.containerTargets.forEach(container => container.classList.remove(this.hoverContainerClass))
   }
 
-  async #submitDropRequest(item, container) {
+  async #submitDropRequest(item, container, skipTurboStreams = false) {
     const body = new FormData()
     const id = item.dataset.id
     const url = container.dataset.dragAndDropUrl.replaceAll("__id__", id)
 
-    return post(url, { body, headers: { Accept: "text/vnd.turbo-stream.html" } })
+    // For mobile board drops, request JSON to avoid Turbo Stream processing
+    // which would try to update non-existent desktop element IDs
+    const headers = skipTurboStreams 
+      ? { Accept: "application/json, text/html" }
+      : { Accept: "text/vnd.turbo-stream.html" }
+
+    return post(url, { body, headers })
   }
 
   #reloadSourceFrame(sourceContainer) {
@@ -501,15 +507,15 @@ export default class extends Controller {
       return
     }
     
+    // Request JSON to avoid Turbo Stream processing (mobile doesn't have desktop element IDs)
     const response = await post(url, { 
       body: new FormData(), 
-      headers: { Accept: "text/vnd.turbo-stream.html" } 
+      headers: { Accept: "application/json, text/html" } 
     })
     
     if (response.ok) {
-      // Force full page reload to show the updated card positions
-      // Using location.reload instead of Turbo.visit for more reliable updates
-      window.location.reload()
+      // Use Turbo visit with morph for seamless update
+      Turbo.visit(window.location.href, { action: "replace" })
     }
   }
 }

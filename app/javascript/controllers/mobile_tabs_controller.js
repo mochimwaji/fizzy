@@ -130,16 +130,17 @@ export default class extends Controller {
     }
     
     // Use fetch to submit the move request
+    // Request JSON to avoid Turbo Stream processing (mobile doesn't have desktop element IDs)
     fetch(url, {
       method: "POST",
       headers: {
-        "Accept": "text/vnd.turbo-stream.html",
+        "Accept": "application/json, text/html",
         "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
       }
     }).then(response => {
       if (response.ok) {
-        // Force full page reload to show the updated card positions
-        window.location.reload()
+        // Use Turbo visit with morph for seamless update
+        Turbo.visit(window.location.href, { action: "replace" })
       }
     })
   }

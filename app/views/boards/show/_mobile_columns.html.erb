@@ -81,7 +81,7 @@
        data-category-type="stream"
        data-category-id="stream"
        data-category-name="Maybe?"
-       style="--card-color: var(--color-card-2);">
+       style="--card-color: var(--color-card-default);">
     <div class="mobile-board__category-header" 
          data-action="click->mobile-board#toggle"
          data-mobile-board-target="header"
@@ -105,7 +105,7 @@
       <div class="mobile-board__edit-colors" data-action="change->mobile-board#selectSystemColor">
         <% Color::COLORS.each do |color| %>
           <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
-            <input type="radio" name="stream_color" value="<%= color.value %>" <%= "checked" if color.value == "var(--color-card-2)" %>>
+            <input type="radio" name="stream_color" value="<%= color.value %>" <%= "checked" if color.value == "var(--color-card-default)" %>>
             <span class="mobile-board__color-swatch"></span>
           </label>
         <% end %>
