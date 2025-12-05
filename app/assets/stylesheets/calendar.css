@@ -7,23 +7,24 @@
 .calendar {
   --cal-bg: rgba(20, 25, 35, 0.95);
   --cal-bg-subtle: rgba(30, 35, 50, 0.8);
-  --cal-glass: rgba(255, 255, 255, 0.03);
-  --cal-glass-hover: rgba(255, 255, 255, 0.06);
-  --cal-glass-active: rgba(255, 255, 255, 0.08);
-  --cal-border: rgba(255, 255, 255, 0.06);
-  --cal-border-hover: rgba(255, 255, 255, 0.12);
+  --cal-glass: rgba(255, 255, 255, 0.02);
+  --cal-glass-hover: rgba(255, 255, 255, 0.05);
+  --cal-glass-active: rgba(255, 255, 255, 0.07);
+  --cal-border: rgba(255, 255, 255, 0.08);
+  --cal-border-hover: rgba(255, 255, 255, 0.15);
   --cal-text: rgba(255, 255, 255, 0.9);
   --cal-text-muted: rgba(255, 255, 255, 0.5);
-  --cal-text-faint: rgba(255, 255, 255, 0.3);
+  --cal-text-faint: rgba(255, 255, 255, 0.25);
   --cal-accent: #6366f1;
-  --cal-accent-glow: rgba(99, 102, 241, 0.4);
-  --cal-accent-soft: rgba(99, 102, 241, 0.15);
-  --cal-radius: 12px;
+  --cal-accent-glow: rgba(99, 102, 241, 0.25);
+  --cal-accent-soft: rgba(99, 102, 241, 0.08);
+  --cal-radius: 16px;
   --cal-radius-sm: 8px;
   --cal-radius-pill: 20px;
   --cal-shadow: 0 4px 24px rgba(0, 0, 0, 0.3);
-  --cal-shadow-glow: 0 0 30px var(--cal-accent-glow);
+  --cal-shadow-glow: 0 0 20px var(--cal-accent-glow);
   --cal-transition: 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  --cal-cell-padding: 12px;
 }
 
 /* Light mode overrides */
@@ -31,14 +32,14 @@
   .calendar:not([data-theme="dark"]) {
     --cal-bg: rgba(248, 250, 252, 0.98);
     --cal-bg-subtle: rgba(241, 245, 249, 0.9);
-    --cal-glass: rgba(255, 255, 255, 0.6);
-    --cal-glass-hover: rgba(255, 255, 255, 0.8);
-    --cal-glass-active: rgba(255, 255, 255, 0.9);
-    --cal-border: rgba(0, 0, 0, 0.06);
-    --cal-border-hover: rgba(0, 0, 0, 0.1);
+    --cal-glass: rgba(255, 255, 255, 0.5);
+    --cal-glass-hover: rgba(255, 255, 255, 0.7);
+    --cal-glass-active: rgba(255, 255, 255, 0.85);
+    --cal-border: rgba(0, 0, 0, 0.08);
+    --cal-border-hover: rgba(0, 0, 0, 0.12);
     --cal-text: rgba(15, 23, 42, 0.9);
     --cal-text-muted: rgba(15, 23, 42, 0.5);
-    --cal-text-faint: rgba(15, 23, 42, 0.3);
+    --cal-text-faint: rgba(15, 23, 42, 0.25);
     --cal-shadow: 0 4px 24px rgba(0, 0, 0, 0.08);
   }
 }
@@ -48,7 +49,7 @@
    ========================================================================== */
 
 .calendar {
-  padding: var(--size-l) var(--size-xl);
+  padding: var(--size-xl);
   max-width: 1200px;
   margin: 0 auto;
   background: var(--cal-bg);
@@ -58,30 +59,32 @@
 }
 
 /* ==========================================================================
-   Calendar Title
+   Calendar Title - All caps, matching board column headers
    ========================================================================== */
 
 .calendar__title {
   display: flex;
   align-items: baseline;
-  gap: var(--size-s);
+  gap: var(--size-xs);
   margin-bottom: var(--size-l);
-  padding-left: 2px;
+  padding-left: var(--cal-cell-padding);
 }
 
 .calendar__month {
-  font-size: 28px;
-  font-weight: 300;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--cal-text);
-  letter-spacing: -0.02em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
   margin: 0;
 }
 
 .calendar__year {
-  font-size: 28px;
-  font-weight: 300;
+  font-size: 13px;
+  font-weight: 600;
   color: var(--cal-text-muted);
-  letter-spacing: -0.02em;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
 }
 
 /* ==========================================================================
@@ -156,9 +159,10 @@
 
 .calendar__day-name {
   text-align: center;
-  font-weight: 500;
+  font-weight: 600;
   color: var(--cal-text-muted);
   padding: var(--size-m) var(--size-xs);
+  padding-bottom: var(--size-l);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -185,7 +189,7 @@
 .calendar__day {
   background: var(--cal-glass);
   min-height: 120px;
-  padding: var(--size-m);
+  padding: var(--cal-cell-padding);
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -207,7 +211,7 @@
 }
 
 .calendar__day--other-month .calendar__card {
-  opacity: 0.4;
+  opacity: 0.5;
 }
 
 .calendar__day--other-month:hover {
@@ -216,27 +220,19 @@
 
 /* Weekend styling */
 .calendar__day--weekend {
-  background: rgba(0, 0, 0, 0.02);
+  background: rgba(0, 0, 0, 0.015);
 }
 
-/* Today - Glowing effect */
+/* Today - Subtle highlight */
 .calendar__day--today {
   background: var(--cal-accent-soft);
-  box-shadow: 
-    inset 0 0 0 1px var(--cal-accent),
-    var(--cal-shadow-glow);
-  z-index: 2;
 }
 
 .calendar__day--today::before {
   content: '';
   position: absolute;
   inset: 0;
-  background: linear-gradient(
-    135deg,
-    rgba(99, 102, 241, 0.1) 0%,
-    transparent 50%
-  );
+  border: 1px solid rgba(99, 102, 241, 0.3);
   pointer-events: none;
 }
 
@@ -273,15 +269,14 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 28px;
-  height: 28px;
+  width: 26px;
+  height: 26px;
   margin: -4px;
   border-radius: 50%;
   background: var(--cal-accent);
   color: white;
   font-weight: 600;
-  font-size: 13px;
-  box-shadow: 0 2px 8px var(--cal-accent-glow);
+  font-size: 12px;
 }
 
 /* Card count badge */
@@ -309,17 +304,17 @@
 }
 
 /* ==========================================================================
-   Card Pills/Chips
+   Card Pills/Chips - Color based on column
    ========================================================================== */
 
 .calendar__card {
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 4px 10px;
+  padding: 5px 10px;
   background: var(--card-color, var(--cal-glass-active));
   border-radius: var(--cal-radius-pill);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 500;
   text-decoration: none;
   color: white;
@@ -327,20 +322,19 @@
   max-width: 100%;
   overflow: hidden;
   cursor: grab;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
-  border: 1px solid rgba(255, 255, 255, 0.1);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 .calendar__card:hover {
   transform: translateY(-1px) scale(1.02);
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+  box-shadow: 0 3px 8px rgba(0, 0, 0, 0.2);
   filter: brightness(1.1);
 }
 
 .calendar__card:active {
   cursor: grabbing;
   transform: scale(1.05);
-  box-shadow: 0 6px 20px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
 }
 
 /* Dragging State */
@@ -350,9 +344,10 @@
   box-shadow: none;
 }
 
-/* Hide color indicator - card itself is the color now */
-.calendar__card-indicator {
-  display: none;
+/* Closed/Not Now cards - gray */
+.calendar__card--closed {
+  background: var(--color-card-complete, #64748b) !important;
+  opacity: 0.7;
 }
 
 /* Card Title */
@@ -366,15 +361,9 @@
   letter-spacing: -0.01em;
 }
 
-/* Overdue Cards */
-.calendar__card--overdue {
-  background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-  animation: overdue-pulse 2s ease-in-out infinite;
-}
-
-@keyframes overdue-pulse {
-  0%, 100% { box-shadow: 0 1px 3px rgba(239, 68, 68, 0.3); }
-  50% { box-shadow: 0 2px 8px rgba(239, 68, 68, 0.5); }
+/* Overdue Cards - subtle red tint */
+.calendar__card--overdue:not(.calendar__card--closed) {
+  box-shadow: 0 0 0 1px rgba(239, 68, 68, 0.5), 0 1px 2px rgba(0, 0, 0, 0.15);
 }
 
 /* ==========================================================================
@@ -384,7 +373,7 @@
 .calendar__more {
   font-size: 11px;
   color: var(--cal-text-muted);
-  padding: 3px 10px;
+  padding: 4px 10px;
   cursor: pointer;
   transition: all var(--cal-transition);
   background: var(--cal-glass);
@@ -463,9 +452,7 @@
 
 .calendar__day--drop-target {
   background: var(--cal-accent-soft);
-  box-shadow: 
-    inset 0 0 0 2px var(--cal-accent),
-    var(--cal-shadow-glow);
+  box-shadow: inset 0 0 0 2px var(--cal-accent);
   z-index: 10;
 }
 
@@ -490,22 +477,17 @@
 
 @media (max-width: 1024px) {
   .calendar {
-    padding: var(--size-m);
+    padding: var(--size-l);
     border-radius: var(--cal-radius-sm);
+    --cal-cell-padding: 10px;
   }
   
   .calendar__title {
     margin-bottom: var(--size-m);
   }
   
-  .calendar__month,
-  .calendar__year {
-    font-size: 24px;
-  }
-  
   .calendar__day {
     min-height: 100px;
-    padding: var(--size-s);
   }
   
   .calendar__date {
@@ -515,13 +497,12 @@
   .calendar__date--today {
     width: 24px;
     height: 24px;
-    font-size: 12px;
+    font-size: 11px;
   }
   
   .calendar__card {
-    padding: 3px 8px;
-    font-size: 11px;
-    gap: 4px;
+    padding: 4px 8px;
+    font-size: 10px;
   }
 }
 
@@ -531,9 +512,10 @@
 
 @media (max-width: 768px) {
   .calendar {
-    padding: var(--size-s);
+    padding: var(--size-m);
     border-radius: 0;
     margin: 0 calc(-1 * var(--size-s));
+    --cal-cell-padding: 8px;
   }
   
   .calendar__title {
@@ -543,7 +525,7 @@
   
   .calendar__month,
   .calendar__year {
-    font-size: 20px;
+    font-size: 12px;
   }
   
   .calendar__header {
@@ -553,6 +535,7 @@
   .calendar__day-name {
     font-size: 10px;
     padding: var(--size-s) 2px;
+    padding-bottom: var(--size-m);
     letter-spacing: 0.05em;
   }
   
@@ -562,7 +545,6 @@
   
   .calendar__day {
     min-height: 70px;
-    padding: var(--size-xs);
   }
 
   .calendar__date-wrapper {
@@ -586,8 +568,7 @@
 
   .calendar__card {
     font-size: 10px;
-    padding: 2px 6px;
-    gap: 3px;
+    padding: 3px 7px;
     border-radius: 12px;
   }
   
@@ -597,7 +578,7 @@
   
   .calendar__more {
     font-size: 9px;
-    padding: 2px 6px;
+    padding: 3px 8px;
   }
   
   .calendar__drop-zone {
@@ -612,14 +593,18 @@
 
 /* Extra small mobile */
 @media (max-width: 480px) {
+  .calendar {
+    --cal-cell-padding: 6px;
+  }
+  
   .calendar__day {
-    min-height: 60px;
-    padding: 4px;
+    min-height: 55px;
   }
   
   .calendar__day-name {
     font-size: 9px;
     padding: var(--size-xs) 1px;
+    padding-bottom: var(--size-s);
   }
   
   .calendar__date {
@@ -628,7 +613,7 @@
   
   .calendar__card {
     font-size: 9px;
-    padding: 2px 5px;
+    padding: 2px 6px;
   }
   
   /* On very small screens, show only dots for cards */
@@ -653,7 +638,7 @@
   
   .calendar__more {
     font-size: 8px;
-    padding: 1px 4px;
+    padding: 2px 5px;
   }
 }
 

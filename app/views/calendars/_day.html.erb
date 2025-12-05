@@ -28,8 +28,9 @@
     <% if cards.any? %>
       <% cards.first(3).each do |card| %>
         <%= link_to calendar_card_path(card, date: current_date), 
-            class: class_names("calendar__card", "calendar__card--overdue": card.overdue?), 
-            title: "#{card.board.name}: #{card.title}", 
+            class: class_names("calendar__card", "calendar__card--overdue": card.overdue?, "calendar__card--closed": card.closed? || card.postponed?), 
+            title: "#{card.board.name}: #{card.title}",
+            style: "--card-color: #{card.color}",
             draggable: true,
             data: { 
               turbo_frame: "calendar_card_modal",
@@ -37,7 +38,6 @@
               calendar_drag_drop_target: "card",
               action: "dragstart->calendar-drag-drop#dragStart dragend->calendar-drag-drop#dragEnd"
             } do %>
-          <span class="calendar__card-indicator" style="--card-color: <%= card.color %>"></span>
           <span class="calendar__card-title"><%= card.title %></span>
         <% end %>
       <% end %>
@@ -45,8 +45,9 @@
       <% if cards.size > 3 %>
         <% cards.drop(3).each do |card| %>
           <%= link_to calendar_card_path(card, date: current_date), 
-              class: class_names("calendar__card", "calendar__card--hidden", "calendar__card--overdue": card.overdue?), 
-              title: "#{card.board.name}: #{card.title}", 
+              class: class_names("calendar__card", "calendar__card--hidden", "calendar__card--overdue": card.overdue?, "calendar__card--closed": card.closed? || card.postponed?), 
+              title: "#{card.board.name}: #{card.title}",
+              style: "--card-color: #{card.color}",
               draggable: true,
               data: { 
                 turbo_frame: "calendar_card_modal",
@@ -55,7 +56,6 @@
                 calendar_expand_target: "hidden",
                 action: "dragstart->calendar-drag-drop#dragStart dragend->calendar-drag-drop#dragEnd"
               } do %>
-            <span class="calendar__card-indicator" style="--card-color: <%= card.color %>"></span>
             <span class="calendar__card-title"><%= card.title %></span>
           <% end %>
         <% end %>
