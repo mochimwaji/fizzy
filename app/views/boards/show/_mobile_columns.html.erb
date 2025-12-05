@@ -39,7 +39,7 @@
          id="mobile-category-not-now-cards"
          data-mobile-board-target="cardList">
       <% board.cards.postponed.latest.limit(50).each do |card| %>
-        <%= render "cards/display/preview", card: card, draggable: true %>
+        <%= render "cards/display/mobile_preview", card: card, draggable: true %>
       <% end %>
       <% if board.cards.postponed.count == 0 %>
         <div class="mobile-board__empty">No cards</div>
@@ -72,7 +72,7 @@
          id="mobile-category-stream-cards"
          data-mobile-board-target="cardList">
       <% board.cards.awaiting_triage.latest.limit(50).each do |card| %>
-        <%= render "cards/display/preview", card: card, draggable: true %>
+        <%= render "cards/display/mobile_preview", card: card, draggable: true %>
       <% end %>
       <% if board.cards.awaiting_triage.count == 0 %>
         <div class="mobile-board__empty">No cards</div>
@@ -101,9 +101,15 @@
           <span class="mobile-board__category-title"><%= column.name %></span>
           <%= icon_tag "collapse", class: "mobile-board__category-collapse-icon" %>
         </div>
+        <button class="mobile-board__config-button" 
+                data-action="click->mobile-board#toggleConfig:stop"
+                data-mobile-board-target="configButton"
+                title="Edit column">
+          <%= icon_tag "settings" %>
+        </button>
       </div>
       
-      <%# Edit form for column (shown when expanded) %>
+      <%# Edit form for column (hidden by default, shown when config button clicked) %>
       <div class="mobile-board__category-edit" data-mobile-board-target="editForm">
         <%= form_with model: [board, column], 
                       data: { 
@@ -126,6 +132,13 @@
                 <span class="mobile-board__color-swatch"></span>
               </label>
             <% end %>
+            <%# Additional mobile-only colors %>
+            <% Color::MOBILE_EXTRA_COLORS.each do |color| %>
+              <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
+                <%= form.radio_button :color, color.value, checked: (column.color.to_s == color.value) %>
+                <span class="mobile-board__color-swatch"></span>
+              </label>
+            <% end %>
           </div>
           <div class="mobile-board__edit-actions">
             <%= form.submit "Save", class: "btn btn--small" %>
@@ -137,7 +150,7 @@
            id="mobile-category-column-<%= column.id %>-cards"
            data-mobile-board-target="cardList">
         <% column.cards.active.latest.limit(50).each do |card| %>
-          <%= render "cards/display/preview", card: card, draggable: true %>
+          <%= render "cards/display/mobile_preview", card: card, draggable: true %>
         <% end %>
         <% if column.cards.active.count == 0 %>
           <div class="mobile-board__empty">No cards</div>
@@ -171,7 +184,7 @@
          id="mobile-category-closed-cards"
          data-mobile-board-target="cardList">
       <% board.cards.closed.latest.limit(50).each do |card| %>
-        <%= render "cards/display/preview", card: card, draggable: true %>
+        <%= render "cards/display/mobile_preview", card: card, draggable: true %>
       <% end %>
       <% if board.cards.closed.count == 0 %>
         <div class="mobile-board__empty">No cards</div>

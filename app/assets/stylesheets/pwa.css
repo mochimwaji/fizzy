@@ -154,7 +154,8 @@
 
 /* Category header - matches desktop .cards__expander style */
 .mobile-board__category-header {
-  display: block;
+  display: flex;
+  align-items: center;
   width: 100%;
   padding: 0;
   background: transparent;
@@ -165,6 +166,7 @@
 
 /* Expander row - matches desktop collapsed column style */
 .mobile-board__category-expander {
+  flex: 1;
   display: flex;
   align-items: center;
   gap: 0.75rem;
@@ -179,6 +181,48 @@
   
   &:active {
     filter: brightness(0.95);
+  }
+  
+  .mobile-board__category--expanded & {
+    border-radius: 1.25rem 0 0 0;
+  }
+}
+
+/* Config/Settings button for editable categories */
+.mobile-board__config-button {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  width: 2.5rem;
+  height: 100%;
+  padding: 0.75rem 0.75rem 0.75rem 0;
+  background: linear-gradient(to right, var(--column-color) 0%, var(--column-color) 100%);
+  border: none;
+  border-radius: 0 1.25rem 1.25rem 0;
+  cursor: pointer;
+  color: var(--color-ink);
+  opacity: 0.6;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
+  
+  .mobile-board__category--editable & {
+    display: flex;
+  }
+  
+  .mobile-board__category--expanded & {
+    border-radius: 0 1.25rem 0 0;
+  }
+  
+  &:hover, &:focus {
+    opacity: 1;
+  }
+  
+  &.mobile-board__config-button--active {
+    opacity: 1;
+    background: color-mix(in srgb, var(--card-color) 30%, var(--column-color));
+  }
+  
+  .icon {
+    --icon-size: 1.25rem;
   }
 }
 
@@ -218,10 +262,6 @@
 /* Expanded state */
 .mobile-board__category--expanded {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  
-  .mobile-board__category-expander {
-    border-radius: 1.25rem 1.25rem 0 0;
-  }
   
   .mobile-board__category-collapse-icon {
     opacity: 0.66;
@@ -280,11 +320,12 @@
   background: var(--column-color);
   border-top: 1px solid color-mix(in srgb, var(--card-color) 30%, transparent);
   
-  .mobile-board__category--expanded & {
+  /* Only show when both expanded AND visible class is set */
+  &.mobile-board__category-edit--visible {
     display: block;
   }
   
-  /* Only show for editable categories (columns) */
+  /* Only available for editable categories (columns) */
   .mobile-board__category:not(.mobile-board__category--editable) & {
     display: none !important;
   }
@@ -392,6 +433,37 @@
   
   &:active {
     transform: scale(0.98);
+  }
+}
+
+/* ==========================================================================
+   Mobile Card Preview - Simplified card display for mobile board
+   ========================================================================== */
+
+.card--mobile-preview {
+  /* Hide meta information (author, dates, assignees) */
+  .card__footer {
+    display: none;
+  }
+  
+  /* Hide column stages sidebar */
+  .card__stages {
+    display: none;
+  }
+  
+  /* Simplify the card body */
+  .card__body {
+    justify-content: flex-start;
+  }
+  
+  /* Make the card more compact */
+  padding: 0.5rem 0.75rem;
+  
+  /* Ensure the card is still clickable */
+  .card__link {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
   }
 }
 

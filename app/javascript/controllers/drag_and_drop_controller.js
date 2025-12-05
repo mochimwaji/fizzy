@@ -216,7 +216,7 @@ export default class extends Controller {
     }
   }
 
-  #handleTouchEnd(event) {
+  async #handleTouchEnd(event) {
     this.#cancelLongPress()
     this.#stopAutoScroll()
 
@@ -232,20 +232,22 @@ export default class extends Controller {
       this.wasDropped = true
       hapticFeedback("success")
       this.#decreaseCounter(this.sourceContainer)
+      // Submit and wait for response, then refresh
       this.#submitTabDropRequest(this.dragItem, this.currentTabTarget)
-      // Dispatch event for mobile-board controller to handle refresh
-      this.element.dispatchEvent(new CustomEvent("card-dropped", { bubbles: true }))
     }
-    // Check if we have a valid container drop target
+    // Check if we have a valid container drop target (including mobile board categories)
     else if (this.currentDropTarget && this.currentDropTarget !== this.sourceContainer) {
       this.wasDropped = true
       hapticFeedback("success")
       this.#decreaseCounter(this.sourceContainer)
-      const sourceContainer = this.sourceContainer
-      this.#submitDropRequest(this.dragItem, this.currentDropTarget)
-      this.#reloadSourceFrame(sourceContainer)
-      // Dispatch event for mobile-board controller to handle refresh
-      this.element.dispatchEvent(new CustomEvent("card-dropped", { bubbles: true }))
+      // Check if this is a mobile board category drop
+      const isMobileBoardDrop = this.currentDropTarget.classList.contains("mobile-board__category")
+      // Submit and wait for response
+      await this.#submitDropRequest(this.dragItem, this.currentDropTarget)
+      // Refresh page for mobile board drops to update counts
+      if (isMobileBoardDrop) {
+        Turbo.visit(window.location.href, { action: "replace" })
+      }
     }
 
     this.#endTouchDrag()
