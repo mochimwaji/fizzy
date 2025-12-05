@@ -231,16 +231,22 @@ export default class extends Controller {
     if (this.currentTabTarget) {
       this.wasDropped = true
       hapticFeedback("success")
-      this.#decreaseCounter(this.sourceContainer)
-      // Submit and wait for response - Turbo Streams will update the DOM
+      // Hide the dragged item immediately for instant visual feedback
+      if (this.dragItem) {
+        this.dragItem.style.display = "none"
+      }
+      // Submit drop request - Turbo Streams will update the UI
       await this.#submitTabDropRequest(this.dragItem, this.currentTabTarget)
     }
     // Check if we have a valid container drop target (including mobile board categories)
     else if (this.currentDropTarget && this.currentDropTarget !== this.sourceContainer) {
       this.wasDropped = true
       hapticFeedback("success")
-      this.#decreaseCounter(this.sourceContainer)
-      // Submit drop request - Turbo Streams will update both desktop and mobile elements
+      // Hide the dragged item immediately for instant visual feedback
+      if (this.dragItem) {
+        this.dragItem.style.display = "none"
+      }
+      // Submit drop request - Turbo Streams will update the UI
       await this.#submitDropRequest(this.dragItem, this.currentDropTarget)
     }
 
@@ -496,8 +502,8 @@ export default class extends Controller {
       return
     }
     
-    // Request Turbo Stream response - it will update both desktop and mobile elements
-    await post(url, { 
+    // Request Turbo Stream response - it will update mobile elements
+    return post(url, { 
       body: new FormData(), 
       headers: { Accept: "text/vnd.turbo-stream.html" } 
     })

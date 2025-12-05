@@ -1,2 +1,12 @@
-<%# Refresh the board page to reflect the color change in both desktop and mobile %>
-<%= turbo_stream.refresh %>
+<%# Update the system category color inline without page refresh %>
+<%# We use morphing for smooth visual transitions %>
+
+<%# Desktop updates - replace the entire system category panels with morph %>
+<%= turbo_stream.replace("not-now", partial: "boards/show/not_now", method: :morph, locals: { board: @board }) %>
+<%= turbo_stream.replace("the-stream", partial: "boards/show/stream", method: :morph, locals: { board: @board, page: 1 }) %>
+<%= turbo_stream.replace("closed-cards", partial: "boards/show/closed", method: :morph, locals: { board: @board }) %>
+
+<%# Mobile updates - replace category elements with morph for smooth transition %>
+<%= turbo_stream.replace("mobile-category-not-now", partial: "boards/show/mobile_not_now_category", method: :morph, locals: { board: @board }) %>
+<%= turbo_stream.replace("mobile-category-stream", partial: "boards/show/mobile_stream_category", method: :morph, locals: { board: @board }) %>
+<%= turbo_stream.replace("mobile-category-closed", partial: "boards/show/mobile_closed_category", method: :morph, locals: { board: @board }) %>

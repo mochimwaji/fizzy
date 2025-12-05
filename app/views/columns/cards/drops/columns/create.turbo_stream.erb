@@ -1,13 +1,10 @@
 <%= turbo_stream.replace(dom_id(@column), partial: "boards/show/column", method: :morph, locals: { column: @column }) %>
 
-<%# Mobile updates - update all categories since we don't know the source %>
-<%= turbo_stream.replace("mobile-category-not-now-cards", partial: "boards/show/mobile_not_now_cards", locals: { board: @card.board }) %>
-<%= turbo_stream.update("mobile-category-not-now-count") { @card.board.cards.postponed.count } %>
-<%= turbo_stream.replace("mobile-category-stream-cards", partial: "boards/show/mobile_stream_cards", locals: { board: @card.board }) %>
-<%= turbo_stream.update("mobile-category-stream-count") { @card.board.cards.awaiting_triage.count } %>
-<%= turbo_stream.replace("mobile-category-closed-cards", partial: "boards/show/mobile_closed_cards", locals: { board: @card.board }) %>
-<%= turbo_stream.update("mobile-category-closed-count") { @card.board.cards.closed.count } %>
+<%# Mobile updates - replace category elements with morph for smooth transition %>
+<%= turbo_stream.replace("mobile-category-not-now", partial: "boards/show/mobile_not_now_category", method: :morph, locals: { board: @card.board }) %>
+<%= turbo_stream.replace("mobile-category-stream", partial: "boards/show/mobile_stream_category", method: :morph, locals: { board: @card.board }) %>
+<%= turbo_stream.replace("mobile-category-closed", partial: "boards/show/mobile_closed_category", method: :morph, locals: { board: @card.board }) %>
 <% @card.board.columns.each do |column| %>
-<%= turbo_stream.replace("mobile-category-column-#{column.id}-cards", partial: "boards/show/mobile_column_cards", locals: { column: column }) %>
-<%= turbo_stream.update("mobile-category-column-#{column.id}-count") { column.cards.active.count } %>
+<%= turbo_stream.update "mobile-category-column-#{column.id}-count", column.cards.active.count.to_s %>
+<%= turbo_stream.replace("mobile-category-column-#{column.id}-cards", partial: "boards/show/mobile_column_cards", method: :morph, locals: { column: column }) %>
 <% end %>
