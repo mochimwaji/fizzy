@@ -14,11 +14,7 @@
       action: "dragover->calendar-drag-drop#dragOver dragenter->calendar-drag-drop#dragEnter dragleave->calendar-drag-drop#dragLeave drop->calendar-drag-drop#drop"
     } do %>
   <div class="calendar__date-wrapper">
-    <% if date == Date.current %>
-      <span class="calendar__date calendar__date--today"><%= date.day %></span>
-    <% else %>
-      <span class="calendar__date"><%= date.day %></span>
-    <% end %>
+    <span class="calendar__date"><%= date.day %></span>
     <% if cards.any? %>
       <span class="calendar__card-count"><%= cards.size %></span>
     <% end %>
@@ -26,7 +22,7 @@
 
   <div class="calendar__cards" data-controller="calendar-expand">
     <% if cards.any? %>
-      <% max_visible = 2 %>
+      <% max_visible = 1 %>
       <% cards.first(max_visible).each do |card| %>
         <%= link_to calendar_card_path(card, date: current_date), 
             class: class_names("calendar__card", "calendar__card--overdue": card.overdue?, "calendar__card--closed": card.closed? || card.postponed?), 

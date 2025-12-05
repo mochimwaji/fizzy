@@ -232,20 +232,6 @@
   color: var(--cal-text);
 }
 
-/* Today's date badge - no negative margin */
-.calendar__date--today {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 26px;
-  height: 26px;
-  border-radius: 50%;
-  background: var(--cal-accent);
-  color: white;
-  font-weight: 600;
-  font-size: 12px;
-}
-
 /* Card count badge */
 .calendar__card-count {
   font-size: 10px;
@@ -424,8 +410,7 @@
   z-index: 10;
 }
 
-.calendar__day--drop-target .calendar__date,
-.calendar__day--drop-target .calendar__date--today {
+.calendar__day--drop-target .calendar__date {
   color: var(--cal-accent);
 }
 
@@ -509,12 +494,6 @@
     font-size: 12px;
   }
   
-  .calendar__date--today {
-    width: 24px;
-    height: 24px;
-    font-size: 11px;
-  }
-  
   .calendar__date-wrapper {
     min-height: 24px;
   }
@@ -575,12 +554,6 @@
 
   .calendar__date {
     font-size: 11px;
-  }
-  
-  .calendar__date--today {
-    width: 20px;
-    height: 20px;
-    font-size: 10px;
   }
   
   .calendar__card-count {
