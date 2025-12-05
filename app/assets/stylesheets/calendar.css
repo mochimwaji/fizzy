@@ -507,6 +507,7 @@
 /* ==========================================================================
    Responsive Design - Mobile
    Keep the same aspect ratio as desktop, enable horizontal scroll
+   Support pinch-to-zoom for accessibility
    ========================================================================== */
 
 @media (max-width: 768px) {
@@ -523,6 +524,8 @@
     overflow-x: auto;
     overflow-y: hidden;
     -webkit-overflow-scrolling: touch;
+    /* Enable pinch-to-zoom - allows manipulation for zooming */
+    touch-action: pan-x pan-y pinch-zoom;
   }
   
   /* Keep sidebar on the left, rotated like desktop */

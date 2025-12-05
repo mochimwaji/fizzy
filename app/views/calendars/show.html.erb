@@ -27,7 +27,7 @@
 
 <%= turbo_stream_from "calendar_#{Current.user.id}" %>
 
-<div class="calendar" data-controller="calendar-drag-drop" data-calendar-drag-drop-update-url-value="<%= card_due_date_path('__CARD_ID__') %>">
+<div class="calendar" data-controller="calendar-drag-drop calendar-zoom" data-calendar-drag-drop-update-url-value="<%= card_due_date_path('__CARD_ID__') %>">
   <aside class="calendar__sidebar">
     <h2 class="calendar__month"><%= @date.strftime("%B") %></h2>
     <span class="calendar__year"><%= @date.year %></span>

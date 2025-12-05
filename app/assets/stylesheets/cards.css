@@ -26,15 +26,12 @@
     position: relative;
     text-align: start;
     z-index: 1;
-    /* Prevent overflow on mobile */
-    max-inline-size: 100%;
-    overflow-x: hidden;
 
     @media (prefers-color-scheme: dark) {
       box-shadow: 0 0 0 1px var(--color-ink-lighter);
     }
     
-    /* Mobile card fixes */
+    /* Mobile card fixes - reduce padding but keep all content visible */
     @media (max-width: 480px) {
       --card-padding-inline: 12px;
       --card-padding-block: 12px;
@@ -63,12 +60,6 @@
     margin-inline: calc(-1 * var(--card-padding-inline)) calc(-0.5 * var(--card-padding-inline));
     max-inline-size: unset;
     min-inline-size: 0;
-    
-    /* Mobile: allow wrapping to prevent overflow */
-    @media (max-width: 480px) {
-      flex-wrap: wrap;
-      gap: 0;
-    }
 
     .card__column-name {
       display: none;
@@ -85,14 +76,6 @@
     min-inline-size: 0;
     padding-block: 0.25lh;
     padding-inline: var(--card-padding-inline) 1ch;
-    
-    /* Mobile: ensure it doesn't overflow */
-    @media (max-width: 480px) {
-      font-size: 12px;
-      padding-block: 8px;
-      padding-inline: 12px 8px;
-      overflow: hidden;
-    }
 
     &:has(.board-picker__button) {
       cursor: pointer;
@@ -129,13 +112,6 @@
     min-inline-size: 0;
     padding-inline-start: var(--card-header-space);
     text-transform: uppercase;
-    
-    /* Mobile: prevent text overflow */
-    @media (max-width: 480px) {
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
   }
 
   .card__due-date {

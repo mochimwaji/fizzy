@@ -145,64 +145,39 @@
       margin-inline: calc(-1 * var(--padding-inline));
       max-inline-size: none;
       position: relative;
+      
+      /* Ensure card scales to content, not fixed aspect ratio */
+      .card {
+        --card-aspect-ratio: auto;
+      }
     }
     
-    /* Small mobile - prevent overflow and fix layout */
+    /* Small mobile - keep all elements visible */
     @media (max-width: 480px) {
       --padding-inline: var(--size-s, 8px);
       
       .card {
-        --card-padding-inline: var(--size-s, 8px);
-        --card-padding-block: var(--size-s, 8px);
-        overflow: hidden;
-      }
-      
-      .card__header {
-        flex-wrap: wrap;
-        gap: 4px;
-        margin-inline: calc(-1 * var(--card-padding-inline));
-      }
-      
-      .card__board {
-        max-inline-size: 100%;
-        font-size: 12px;
-        padding-block: 6px;
-        padding-inline: 12px 8px;
-      }
-      
-      .card__title {
-        font-size: 18px !important;
-        line-height: 1.2;
+        --card-aspect-ratio: auto;
+        --card-padding-inline: 12px;
+        --card-padding-block: 12px;
       }
       
       .card__body {
         flex-direction: column;
-        gap: 12px;
-      }
-      
-      .card__content {
-        max-inline-size: 100%;
+        gap: 16px;
       }
       
       .card__stages {
-        max-inline-size: 100%;
+        /* Ensure column buttons are visible and wrap properly */
+        display: flex;
         flex-direction: row;
         flex-wrap: wrap;
-        gap: 4px;
+        gap: 8px;
+        max-inline-size: 100%;
       }
       
       .card__meta {
-        font-size: 11px;
-        grid-template-columns: auto 1fr;
-        gap: 4px;
-      }
-      
-      .card__tags {
-        flex-wrap: wrap;
-        gap: 4px;
-      }
-      
-      .card__due-date {
+        /* Keep meta visible but more compact */
         font-size: 11px;
       }
     }
