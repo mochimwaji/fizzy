@@ -114,11 +114,19 @@
    Mobile Column Navigation
    ========================================================================== */
 
-/* Mobile column navigation in header - only show on touch devices */
+/* Mobile column navigation in header - show on small screens and touch devices */
 .mobile-column-nav {
   display: none;
   
+  /* Show on touch devices */
   @media (any-hover: none) {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+  }
+  
+  /* Also show on small screens regardless of hover capability */
+  @media (max-width: 519px) {
     display: flex;
     align-items: center;
     gap: 0.5rem;

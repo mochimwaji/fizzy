@@ -12,17 +12,25 @@
   <%# Mobile column navigation %>
   <div class="header__actions header__actions--end mobile-column-nav">
     <% if (prev_path = prev_column_path(@column)) %>
-      <%= link_to prev_path, class: "btn btn--icon mobile-column-nav__btn", data: { action: "mobile-columns#prev" } do %>
-        <%= icon_tag("chevron-left") %>
+      <%= link_to prev_path, class: "btn btn--icon mobile-column-nav__btn" do %>
+        <%= icon_tag("arrow-left") %>
         <span class="for-screen-reader">Previous column</span>
       <% end %>
+    <% else %>
+      <span class="btn btn--icon mobile-column-nav__btn" style="visibility: hidden;">
+        <%= icon_tag("arrow-left") %>
+      </span>
     <% end %>
     <span class="mobile-column-nav__position"><%= column_position_label(@column) %></span>
     <% if (next_path = next_column_path(@column)) %>
-      <%= link_to next_path, class: "btn btn--icon mobile-column-nav__btn", data: { action: "mobile-columns#next" } do %>
-        <%= icon_tag("chevron-right") %>
+      <%= link_to next_path, class: "btn btn--icon mobile-column-nav__btn" do %>
+        <%= icon_tag("arrow-right") %>
         <span class="for-screen-reader">Next column</span>
       <% end %>
+    <% else %>
+      <span class="btn btn--icon mobile-column-nav__btn" style="visibility: hidden;">
+        <%= icon_tag("arrow-right") %>
+      </span>
     <% end %>
   </div>
 <% end %>

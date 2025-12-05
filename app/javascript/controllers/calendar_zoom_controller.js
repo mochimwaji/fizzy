@@ -9,11 +9,11 @@ import { isTouchDevice } from "helpers/touch_helpers"
  */
 export default class extends Controller {
   static values = {
-    minScale: { type: Number, default: 0.5 },
-    maxScale: { type: Number, default: 2.0 },
+    minScale: { type: Number, default: 0.3 },
+    maxScale: { type: Number, default: 3.0 },
     initialScale: { type: Number, default: 1.0 },
     // Sensitivity factor to slow down zoom (lower = slower)
-    sensitivity: { type: Number, default: 0.4 }
+    sensitivity: { type: Number, default: 0.6 }
   }
 
   // Storage key for persisting zoom level
@@ -34,10 +34,30 @@ export default class extends Controller {
     if (this.scale !== 1) {
       this.#applyScale(this.scale)
     }
+
+    // Handle Turbo cache restoration - re-apply scale when page is restored
+    this.boundPageShow = this.#handlePageShow.bind(this)
+    window.addEventListener("pageshow", this.boundPageShow)
+    document.addEventListener("turbo:render", this.boundPageShow)
   }
 
   disconnect() {
     this.#unbindEvents()
+    if (this.boundPageShow) {
+      window.removeEventListener("pageshow", this.boundPageShow)
+      document.removeEventListener("turbo:render", this.boundPageShow)
+    }
+  }
+
+  #handlePageShow() {
+    // Re-apply saved scale when page is shown (e.g., from cache or after navigation)
+    const savedScale = this.#loadSavedScale()
+    if (savedScale !== this.scale) {
+      this.scale = savedScale
+      if (this.scale !== 1) {
+        this.#applyScale(this.scale)
+      }
+    }
   }
 
   #bindEvents() {
@@ -178,10 +198,9 @@ export default class extends Controller {
     this.element.style.transform = `scale(${this.scale})`
     this.element.style.transformOrigin = "top left"
     
-    // Adjust the container size to account for scaling
-    // This ensures the calendar takes up the correct space and scrolling works
+    // Only adjust width to account for scaling
+    // Height is not constrained to allow zooming smaller than screen
     this.element.style.width = `${100 / this.scale}%`
-    this.element.style.height = `${100 / this.scale}%`
 
     // Add visual indicator for current zoom level
     this.#updateZoomIndicator()
@@ -228,7 +247,6 @@ export default class extends Controller {
     this.element.style.transform = ""
     this.element.style.transformOrigin = ""
     this.element.style.width = ""
-    this.element.style.height = ""
     this.#saveScale()
     this.#updateZoomIndicator()
   }
