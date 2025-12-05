@@ -11,6 +11,7 @@ import {
   removeDragPreview,
   getElementAtTouch,
   preventTouchDefault,
+  preventContextMenu,
   autoScrollNearEdge,
   LONG_PRESS_DURATION
 } from "helpers/touch_helpers"
@@ -23,6 +24,8 @@ export default class extends Controller {
     // Bind touch handlers for mobile support
     if (isTouchDevice()) {
       this.#bindTouchEvents()
+      // Prevent context menu on draggable items
+      this.itemTargets.forEach(item => preventContextMenu(item))
     }
   }
 
@@ -30,6 +33,13 @@ export default class extends Controller {
     this.#cleanupTouch()
     if (isTouchDevice()) {
       this.#unbindTouchEvents()
+    }
+  }
+  
+  // Called when new item targets are added (e.g., via Turbo)
+  itemTargetConnected(item) {
+    if (isTouchDevice()) {
+      preventContextMenu(item)
     }
   }
 

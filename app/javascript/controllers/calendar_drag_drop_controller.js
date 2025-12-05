@@ -10,6 +10,7 @@ import {
   removeDragPreview,
   getElementAtTouch,
   preventTouchDefault,
+  preventContextMenu,
   LONG_PRESS_DURATION
 } from "helpers/touch_helpers"
 
@@ -20,6 +21,8 @@ export default class extends Controller {
   connect() {
     if (isTouchDevice()) {
       this.#bindTouchEvents()
+      // Prevent context menu on all cards for mobile drag
+      this.cardTargets.forEach(card => preventContextMenu(card))
     }
   }
   
@@ -322,7 +325,9 @@ export default class extends Controller {
     })
     
     if (response.ok) {
-      window.Turbo.visit(window.location.href, { action: "replace" })
+      // Force a full page refresh to update the calendar
+      // Using location.reload instead of Turbo.visit for more reliable updates
+      window.location.reload()
     }
   }
 }

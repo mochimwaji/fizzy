@@ -4,7 +4,7 @@
 export const DRAG_THRESHOLD = 10
 
 // Duration in ms for long-press to initiate drag
-export const LONG_PRESS_DURATION = 200
+export const LONG_PRESS_DURATION = 300
 
 // Check if the device supports touch
 export function isTouchDevice() {
@@ -15,6 +15,14 @@ export function isTouchDevice() {
 export function isStandalone() {
   return window.matchMedia("(display-mode: standalone)").matches ||
          window.navigator.standalone === true
+}
+
+// Prevent browser context menu on long-press (for draggable elements)
+export function preventContextMenu(element) {
+  element.addEventListener("contextmenu", (e) => {
+    e.preventDefault()
+    return false
+  }, { passive: false })
 }
 
 // Get touch position from event
