@@ -11,6 +11,7 @@
   justify-content: center;
   width: 32px;
   height: 32px;
+  flex-shrink: 0;
   border-radius: var(--rounded);
   background-color: transparent;
   color: var(--color-ink-light);
@@ -34,6 +35,9 @@
   padding: var(--size-xs) var(--size-s);
   border-radius: var(--rounded);
   transition: background-color 0.15s ease;
+  white-space: nowrap;
+  text-align: center;
+  min-width: 120px;
 }
 
 .calendar-nav__current:hover {
@@ -75,6 +79,7 @@
   padding: var(--size-xs);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .calendar__day--other-month {
@@ -125,6 +130,8 @@
   text-decoration: none;
   color: var(--color-ink);
   transition: background-color 0.15s ease;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 .calendar__card:hover {
