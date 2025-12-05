@@ -9,7 +9,7 @@ import { isTouchDevice } from "helpers/touch_helpers"
  * Cards can be dragged from one category to another.
  */
 export default class extends Controller {
-  static targets = ["category", "header", "cardList", "editForm", "configButton"]
+  static targets = ["category", "header", "cardList", "editForm", "configButton", "systemColorForm"]
   static values = {
     boardId: String,
     accountId: String
@@ -21,6 +21,9 @@ export default class extends Controller {
     
     // Restore any previously expanded state from localStorage
     this.#restoreState()
+    
+    // Restore system category colors from localStorage
+    this.#restoreSystemCategoryColors()
     
     // Listen for drag events to highlight drop targets
     this.#bindDragHighlighting()
@@ -62,6 +65,7 @@ export default class extends Controller {
 
   /**
    * Toggle the configuration/edit form for a category
+   * Uses the same animation as category expansion/collapse
    */
   toggleConfig(event) {
     event.preventDefault()
@@ -71,17 +75,143 @@ export default class extends Controller {
     const category = button.closest("[data-mobile-board-target='category']")
     if (!category) return
     
-    const editForm = category.querySelector("[data-mobile-board-target='editForm']")
+    const editForm = category.querySelector("[data-mobile-board-target='editForm'], [data-mobile-board-target='systemColorForm']")
     if (!editForm) return
     
     const isVisible = editForm.classList.contains("mobile-board__category-edit--visible")
     
     if (isVisible) {
-      editForm.classList.remove("mobile-board__category-edit--visible")
-      button.classList.remove("mobile-board__config-button--active")
+      this.#collapseConfigForm(editForm, button)
     } else {
-      editForm.classList.add("mobile-board__category-edit--visible")
-      button.classList.add("mobile-board__config-button--active")
+      this.#expandConfigForm(editForm, button)
+    }
+  }
+
+  /**
+   * Expand config form with smooth animation
+   */
+  #expandConfigForm(editForm, button) {
+    // Get the natural height of the content
+    editForm.style.display = "block"
+    editForm.style.height = "auto"
+    const naturalHeight = editForm.scrollHeight
+    editForm.style.height = "0"
+    editForm.style.opacity = "0"
+    editForm.style.overflow = "hidden"
+    
+    // Force reflow
+    editForm.offsetHeight
+    
+    // Animate to natural height
+    editForm.style.transition = "height 0.3s ease-out, opacity 0.3s ease-out"
+    editForm.style.height = `${naturalHeight}px`
+    editForm.style.opacity = "1"
+    
+    editForm.classList.add("mobile-board__category-edit--visible")
+    button.classList.add("mobile-board__config-button--active")
+    
+    // After animation completes, set height to auto
+    setTimeout(() => {
+      editForm.style.height = "auto"
+      editForm.style.overflow = ""
+      editForm.style.transition = ""
+    }, 300)
+  }
+
+  /**
+   * Collapse config form with smooth animation
+   */
+  #collapseConfigForm(editForm, button) {
+    // Get current height and set it explicitly
+    const currentHeight = editForm.scrollHeight
+    editForm.style.height = `${currentHeight}px`
+    editForm.style.overflow = "hidden"
+    editForm.style.transition = ""
+    
+    // Force reflow
+    editForm.offsetHeight
+    
+    // Animate to 0
+    editForm.style.transition = "height 0.3s ease-out, opacity 0.3s ease-out"
+    editForm.style.height = "0"
+    editForm.style.opacity = "0"
+    
+    button.classList.remove("mobile-board__config-button--active")
+    
+    // After animation, hide and clean up
+    setTimeout(() => {
+      editForm.classList.remove("mobile-board__category-edit--visible")
+      editForm.style.display = ""
+      editForm.style.height = ""
+      editForm.style.overflow = ""
+      editForm.style.opacity = ""
+      editForm.style.transition = ""
+    }, 300)
+  }
+
+  /**
+   * Handle system category color change
+   * Stores color in localStorage and updates the category immediately
+   */
+  selectSystemColor(event) {
+    const radio = event.target
+    if (radio.type !== "radio") return
+    
+    const category = radio.closest("[data-mobile-board-target='category']")
+    if (!category) return
+    
+    const categoryType = category.dataset.categoryType
+    const color = radio.value
+    
+    // Update the category color immediately
+    category.style.setProperty("--card-color", color)
+    
+    // Save to localStorage
+    this.#saveSystemCategoryColor(categoryType, color)
+  }
+
+  /**
+   * Save system category color to localStorage
+   */
+  #saveSystemCategoryColor(categoryType, color) {
+    const key = `mobile-board-${this.boardIdValue}-system-colors`
+    let colors = {}
+    
+    try {
+      const saved = localStorage.getItem(key)
+      if (saved) colors = JSON.parse(saved)
+    } catch (e) {
+      colors = {}
+    }
+    
+    colors[categoryType] = color
+    localStorage.setItem(key, JSON.stringify(colors))
+  }
+
+  /**
+   * Restore system category colors from localStorage
+   */
+  #restoreSystemCategoryColors() {
+    const key = `mobile-board-${this.boardIdValue}-system-colors`
+    
+    try {
+      const saved = localStorage.getItem(key)
+      if (!saved) return
+      
+      const colors = JSON.parse(saved)
+      
+      this.categoryTargets.forEach(category => {
+        const categoryType = category.dataset.categoryType
+        if (categoryType && colors[categoryType]) {
+          category.style.setProperty("--card-color", colors[categoryType])
+          
+          // Also check the correct radio button in the form
+          const radio = category.querySelector(`input[type="radio"][value="${CSS.escape(colors[categoryType])}"]`)
+          if (radio) radio.checked = true
+        }
+      })
+    } catch (e) {
+      // Invalid saved state, ignore
     }
   }
 

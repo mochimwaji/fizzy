@@ -233,7 +233,7 @@ export default class extends Controller {
       hapticFeedback("success")
       this.#decreaseCounter(this.sourceContainer)
       // Submit and wait for response, then refresh
-      this.#submitTabDropRequest(this.dragItem, this.currentTabTarget)
+      await this.#submitTabDropRequest(this.dragItem, this.currentTabTarget)
     }
     // Check if we have a valid container drop target (including mobile board categories)
     else if (this.currentDropTarget && this.currentDropTarget !== this.sourceContainer) {
@@ -243,9 +243,9 @@ export default class extends Controller {
       // Check if this is a mobile board category drop
       const isMobileBoardDrop = this.currentDropTarget.classList.contains("mobile-board__category")
       // Submit and wait for response
-      await this.#submitDropRequest(this.dragItem, this.currentDropTarget)
+      const response = await this.#submitDropRequest(this.dragItem, this.currentDropTarget)
       // Refresh page for mobile board drops to update counts
-      if (isMobileBoardDrop) {
+      if (isMobileBoardDrop && response.ok) {
         Turbo.visit(window.location.href, { action: "replace" })
       }
     }
