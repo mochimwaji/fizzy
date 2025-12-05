@@ -30,7 +30,7 @@
             droppable: "true",
             column_id: item[:type] == :column ? item[:column].id : nil,
             column_type: item[:type],
-            account_id: Current.account.external_id,
+            account_id: board.account.external_account_id,
             board_id: board.id
           } do %>
         <span class="mobile-column-tabs__tab-text"><%= item[:name] %></span>

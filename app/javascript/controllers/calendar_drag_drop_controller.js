@@ -33,6 +33,13 @@ export default class extends Controller {
     }
   }
   
+  // Called when new card targets are added (e.g., via Turbo)
+  cardTargetConnected(card) {
+    if (isTouchDevice()) {
+      preventContextMenu(card)
+    }
+  }
+  
   // ========================================
   // Desktop Drag and Drop (HTML5 API)
   // ========================================
