@@ -265,10 +265,10 @@
   display: flex;
   align-items: center;
   gap: 6px;
-  padding: 5px 10px;
+  padding: 6px 14px;
   background: var(--card-color, var(--cal-glass-active));
-  border-radius: var(--cal-radius-pill);
-  font-size: 11px;
+  border-radius: 999px;
+  font-size: 12px;
   font-weight: 500;
   text-decoration: none;
   color: white;
@@ -276,7 +276,7 @@
   max-width: 100%;
   overflow: hidden;
   cursor: grab;
-  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.15);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
 .calendar__card:hover {
@@ -325,14 +325,14 @@
    ========================================================================== */
 
 .calendar__more {
-  font-size: 11px;
+  font-size: 12px;
   color: var(--cal-text-muted);
-  padding: 5px 10px;
+  padding: 6px 14px;
   cursor: pointer;
   transition: all var(--cal-transition);
   background: var(--cal-glass);
   border: 1px solid var(--cal-border);
-  border-radius: var(--cal-radius-pill);
+  border-radius: 999px;
   text-align: center;
   font-weight: 500;
   margin-top: 2px;
@@ -550,8 +550,10 @@
     flex: 1;
     display: flex;
     flex-direction: column;
-    /* Set minimum width to maintain aspect ratio - prevents squishing */
-    min-width: 700px;
+    /* Maintain 2:3 aspect ratio (height:width) based on viewport height */
+    /* For a calendar that fills viewport height, width should be 1.5x the height */
+    min-width: calc((100vh - 60px) * 1.5);
+    min-width: calc((100dvh - 60px) * 1.5);
     overflow: hidden;
   }
   
@@ -590,8 +592,8 @@
 
   .calendar__card {
     font-size: 14px;
-    padding: 6px 10px;
-    border-radius: 12px;
+    padding: 8px 14px;
+    border-radius: 999px;
     /* Prevent browser context menu on long-press */
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -613,7 +615,8 @@
   
   .calendar__more {
     font-size: 14px;
-    padding: 6px 12px;
+    padding: 8px 14px;
+    border-radius: 999px;
   }
   
   .calendar__drop-zone {
@@ -643,8 +646,9 @@
   }
   
   .calendar__main {
-    /* Slightly smaller minimum width for very small phones */
-    min-width: 600px;
+    /* Maintain 2:3 aspect ratio for smaller phones too */
+    min-width: calc((100vh - 60px) * 1.5);
+    min-width: calc((100dvh - 60px) * 1.5);
   }
   
   .calendar__header {
@@ -670,8 +674,8 @@
   
   .calendar__card {
     font-size: 13px;
-    padding: 5px 8px;
-    border-radius: 10px;
+    padding: 6px 12px;
+    border-radius: 999px;
   }
   
   /* Keep card titles visible - truncate with ellipsis */
@@ -691,7 +695,8 @@
   
   .calendar__more {
     font-size: 13px;
-    padding: 5px 10px;
+    padding: 6px 12px;
+    border-radius: 999px;
   }
 }
 
