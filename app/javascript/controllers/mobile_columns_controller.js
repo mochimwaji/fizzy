@@ -24,6 +24,7 @@ export default class extends Controller {
     this.currentX = 0
     this.currentY = 0
     this.isSwiping = false
+    this.isNavigating = false
 
     this.#bindEvents()
   }
@@ -51,7 +52,7 @@ export default class extends Controller {
   }
 
   #handleTouchStart(event) {
-    if (event.touches.length !== 1) return
+    if (event.touches.length !== 1 || this.isNavigating) return
 
     this.startX = event.touches[0].clientX
     this.startY = event.touches[0].clientY
@@ -61,7 +62,7 @@ export default class extends Controller {
   }
 
   #handleTouchMove(event) {
-    if (!this.isSwiping || event.touches.length !== 1) return
+    if (!this.isSwiping || event.touches.length !== 1 || this.isNavigating) return
 
     this.currentX = event.touches[0].clientX
     this.currentY = event.touches[0].clientY
@@ -83,9 +84,10 @@ export default class extends Controller {
   }
 
   #handleTouchEnd() {
-    if (!this.isSwiping) return
+    if (!this.isSwiping || this.isNavigating) return
 
     const deltaX = this.currentX - this.startX
+    const direction = deltaX > 0 ? "right" : "left"
     
     this.#hideSwipeIndicator()
 
@@ -93,10 +95,10 @@ export default class extends Controller {
     if (Math.abs(deltaX) >= this.thresholdValue) {
       if (deltaX > 0 && this.hasPrevUrlValue) {
         // Swiped right - go to previous column
-        this.#navigateTo(this.prevUrlValue)
+        this.#navigateWithFade(this.prevUrlValue, direction)
       } else if (deltaX < 0 && this.hasNextUrlValue) {
         // Swiped left - go to next column
-        this.#navigateTo(this.nextUrlValue)
+        this.#navigateWithFade(this.nextUrlValue, direction)
       }
     }
 
@@ -104,38 +106,50 @@ export default class extends Controller {
   }
 
   #showSwipeIndicator(deltaX) {
-    // Simple visual feedback during swipe
-    const maxOffset = 20
+    // Visual feedback during swipe - subtle transform and opacity
     const progress = Math.min(Math.abs(deltaX) / this.thresholdValue, 1)
+    const maxOffset = 30
     const offset = progress * maxOffset * Math.sign(deltaX)
+    const opacity = 1 - (progress * 0.3)
     
     this.element.style.transform = `translateX(${offset}px)`
+    this.element.style.opacity = opacity
     this.element.style.transition = "none"
   }
 
   #hideSwipeIndicator() {
     this.element.style.transform = ""
-    this.element.style.transition = "transform 0.15s ease-out"
+    this.element.style.opacity = ""
+    this.element.style.transition = "transform 0.2s ease-out, opacity 0.2s ease-out"
   }
 
-  #navigateTo(url) {
-    // Navigate immediately without animation - Turbo handles the transition
-    // Animation was causing jitter due to page replacement
-    if (url) {
+  #navigateWithFade(url, direction) {
+    if (!url || this.isNavigating) return
+    
+    this.isNavigating = true
+    
+    // Apply fade out with directional slide
+    const slideOffset = direction === "left" ? "-40px" : "40px"
+    this.element.style.transition = "transform 0.2s ease-out, opacity 0.2s ease-out"
+    this.element.style.transform = `translateX(${slideOffset})`
+    this.element.style.opacity = "0"
+    
+    // Navigate after fade animation
+    setTimeout(() => {
       Turbo.visit(url)
-    }
+    }, 180)
   }
 
   // Action methods for button-based navigation
   prev() {
-    if (this.hasPrevUrlValue) {
-      this.#navigateTo(this.prevUrlValue)
+    if (this.hasPrevUrlValue && !this.isNavigating) {
+      this.#navigateWithFade(this.prevUrlValue, "right")
     }
   }
 
   next() {
-    if (this.hasNextUrlValue) {
-      this.#navigateTo(this.nextUrlValue)
+    if (this.hasNextUrlValue && !this.isNavigating) {
+      this.#navigateWithFade(this.nextUrlValue, "left")
     }
   }
 }

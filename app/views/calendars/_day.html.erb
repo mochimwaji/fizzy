@@ -15,9 +15,6 @@
     } do %>
   <div class="calendar__date-wrapper">
     <span class="calendar__date"><%= date.day %></span>
-    <% if cards.any? %>
-      <span class="calendar__card-count"><%= cards.size %></span>
-    <% end %>
   </div>
 
   <div class="calendar__cards" data-controller="calendar-expand">

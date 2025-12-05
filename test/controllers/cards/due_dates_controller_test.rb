@@ -20,7 +20,7 @@ class Cards::DueDatesControllerTest < ActionDispatch::IntegrationTest
     due_date = 1.week.from_now.to_date
 
     assert_changes -> { card.reload.due_on }, from: nil, to: due_date do
-      post card_due_date_path(card), params: { due_date: { due_on: due_date } }
+      post card_due_date_path(card), params: { due_date: { due_on: due_date } }, as: :turbo_stream
       assert_response :success
     end
   end
@@ -34,7 +34,7 @@ class Cards::DueDatesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_changes -> { card.reload.due_on }, from: old_date, to: new_date do
-      post card_due_date_path(card), params: { due_date: { due_on: new_date } }
+      post card_due_date_path(card), params: { due_date: { due_on: new_date } }, as: :turbo_stream
       assert_response :success
     end
   end
@@ -47,7 +47,7 @@ class Cards::DueDatesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_changes -> { card.reload.due_on }, from: due_date, to: nil do
-      delete card_due_date_path(card)
+      delete card_due_date_path(card), as: :turbo_stream
       assert_response :success
     end
   end
@@ -59,7 +59,7 @@ class Cards::DueDatesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_difference -> { card.events.count }, +1 do
-      post card_due_date_path(card), params: { due_date: { due_on: Date.tomorrow } }
+      post card_due_date_path(card), params: { due_date: { due_on: Date.tomorrow } }, as: :turbo_stream
     end
 
     assert_equal "card_due_date_set", card.events.last.action
@@ -72,7 +72,7 @@ class Cards::DueDatesControllerTest < ActionDispatch::IntegrationTest
     end
 
     assert_difference -> { card.events.count }, +1 do
-      delete card_due_date_path(card)
+      delete card_due_date_path(card), as: :turbo_stream
     end
 
     assert_equal "card_due_date_removed", card.events.last.action

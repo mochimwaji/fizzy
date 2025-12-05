@@ -6,17 +6,26 @@ class Cards::DueDatesController < ApplicationController
 
   def create
     @card.set_due_date(due_date_params[:due_on])
-    render_card_replacement
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to card_path(@card) }
+    end
   end
 
   def update
     @card.set_due_date(due_date_params[:due_on])
-    render_card_replacement
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to card_path(@card) }
+    end
   end
 
   def destroy
     @card.remove_due_date
-    render_card_replacement
+    respond_to do |format|
+      format.turbo_stream
+      format.html { redirect_to card_path(@card) }
+    end
   end
 
   private

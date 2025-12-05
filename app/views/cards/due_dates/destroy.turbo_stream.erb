@@ -1,1 +1,5 @@
-<%= turbo_stream.replace([ @card, :meta ], partial: "/cards/display/perma/meta", method: "morph", locals: { card: @card.reload }) %>
+<%= turbo_stream.replace([ @card, :card_container ], partial: "cards/container", method: :morph, locals: { card: @card.reload }) %>
+<%# Signal to calendar modal that due date changed and calendar needs refresh %>
+<%= turbo_stream.append("calendar_card_modal") do %>
+  <div data-calendar-refresh="true" style="display: none;"></div>
+<% end %>
