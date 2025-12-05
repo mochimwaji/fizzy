@@ -7,14 +7,17 @@
 
   <div class="header__actions header__actions--end">
     <nav class="calendar-nav" aria-label="Calendar navigation">
-      <%= link_to calendar_path(date: @date.prev_month), class: "calendar-nav__btn", data: { controller: "tooltip" } do %>
+      <%= link_to calendar_path(date: @date.prev_month), class: "calendar-nav__btn", data: { controller: "tooltip", tooltip_content_value: "Previous month" } do %>
         <%= icon_tag "arrow-left" %>
         <span class="for-screen-reader">Previous month</span>
       <% end %>
 
-      <%= link_to l(@date, format: :month_year), calendar_path, class: "calendar-nav__current" %>
+      <%= link_to calendar_path, class: "calendar-nav__btn", data: { controller: "tooltip", tooltip_content_value: "Today" } do %>
+        <%= icon_tag "calendar" %>
+        <span class="for-screen-reader">Today</span>
+      <% end %>
 
-      <%= link_to calendar_path(date: @date.next_month), class: "calendar-nav__btn", data: { controller: "tooltip" } do %>
+      <%= link_to calendar_path(date: @date.next_month), class: "calendar-nav__btn", data: { controller: "tooltip", tooltip_content_value: "Next month" } do %>
         <%= icon_tag "arrow-right" %>
         <span class="for-screen-reader">Next month</span>
       <% end %>
@@ -25,6 +28,11 @@
 <%= turbo_stream_from "calendar_#{Current.user.id}" %>
 
 <div class="calendar" data-controller="calendar-drag-drop" data-calendar-drag-drop-update-url-value="<%= card_due_date_path('__CARD_ID__') %>">
+  <header class="calendar__title">
+    <h2 class="calendar__month"><%= @date.strftime("%B") %></h2>
+    <span class="calendar__year"><%= @date.year %></span>
+  </header>
+
   <div class="calendar__header">
     <% %w[Sun Mon Tue Wed Thu Fri Sat].each do |day_name| %>
       <div class="calendar__day-name"><%= day_name %></div>
