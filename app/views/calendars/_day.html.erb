@@ -1,4 +1,10 @@
-<%= tag.div class: class_names("calendar__day", "calendar__day--other-month": !current_month, "calendar__day--today": date == Date.current) do %>
+<%= tag.div class: class_names("calendar__day", "calendar__day--other-month": !current_month, "calendar__day--today": date == Date.current),
+    id: "calendar-day-#{date.iso8601}",
+    data: { 
+      date: date.iso8601,
+      calendar_drag_drop_target: "day",
+      action: "dragover->calendar-drag-drop#dragOver dragenter->calendar-drag-drop#dragEnter dragleave->calendar-drag-drop#dragLeave drop->calendar-drag-drop#drop"
+    } do %>
   <div class="calendar__date">
     <% if date == Date.current %>
       <span class="calendar__date-badge"><%= date.day %></span>
@@ -8,18 +14,44 @@
   </div>
 
   <% if cards.any? %>
-    <div class="calendar__cards">
+    <div class="calendar__cards" data-controller="calendar-expand">
       <% cards.first(3).each do |card| %>
-        <%= link_to calendar_card_path(card, date: current_date), class: "calendar__card #{'calendar__card--overdue' if card.overdue?}", title: card.title, data: { turbo_frame: "calendar_card_modal" } do %>
+        <%= link_to calendar_card_path(card, date: current_date), 
+            class: "calendar__card #{'calendar__card--overdue' if card.overdue?}", 
+            title: card.title, 
+            draggable: true,
+            data: { 
+              turbo_frame: "calendar_card_modal",
+              card_id: card.number,
+              calendar_drag_drop_target: "card",
+              action: "dragstart->calendar-drag-drop#dragStart dragend->calendar-drag-drop#dragEnd"
+            } do %>
           <span class="calendar__card-board" style="background-color: <%= card.color %>"></span>
           <span class="calendar__card-title"><%= card.title %></span>
         <% end %>
       <% end %>
 
       <% if cards.size > 3 %>
-        <div class="calendar__more">
+        <% cards.drop(3).each do |card| %>
+          <%= link_to calendar_card_path(card, date: current_date), 
+              class: "calendar__card calendar__card--hidden #{'calendar__card--overdue' if card.overdue?}", 
+              title: card.title, 
+              draggable: true,
+              data: { 
+                turbo_frame: "calendar_card_modal",
+                card_id: card.number,
+                calendar_drag_drop_target: "card",
+                calendar_expand_target: "hidden",
+                action: "dragstart->calendar-drag-drop#dragStart dragend->calendar-drag-drop#dragEnd"
+              } do %>
+            <span class="calendar__card-board" style="background-color: <%= card.color %>"></span>
+            <span class="calendar__card-title"><%= card.title %></span>
+          <% end %>
+        <% end %>
+
+        <button class="calendar__more" data-action="calendar-expand#toggle" data-calendar-expand-target="toggle">
           +<%= cards.size - 3 %> more
-        </div>
+        </button>
       <% end %>
     </div>
   <% end %>

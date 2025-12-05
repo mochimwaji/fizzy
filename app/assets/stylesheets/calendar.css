@@ -122,20 +122,29 @@
 .calendar__card {
   display: flex;
   align-items: center;
-  gap: var(--size-xs);
+  gap: var(--size-s);
   padding: 2px var(--size-xs);
   background-color: var(--color-paper-dark);
   border-radius: var(--rounded-s);
   font-size: var(--size-xs);
   text-decoration: none;
   color: var(--color-ink);
-  transition: background-color 0.15s ease;
+  transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
   max-width: 100%;
   overflow: hidden;
+  cursor: grab;
 }
 
 .calendar__card:hover {
   background-color: var(--color-paper-darker);
+}
+
+.calendar__card:active {
+  cursor: grabbing;
+}
+
+.calendar__card--dragging {
+  opacity: 0.5;
 }
 
 .calendar__card--overdue {
@@ -159,12 +168,53 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  text-align: left;
 }
 
 .calendar__more {
   font-size: var(--size-xs);
   color: var(--color-ink-light);
   padding: 2px var(--size-xs);
+  cursor: pointer;
+  transition: color 0.15s ease;
+  background: none;
+  border: none;
+  text-align: left;
+  width: 100%;
+}
+
+.calendar__more:hover {
+  color: var(--color-ink);
+  text-decoration: underline;
+}
+
+/* Hidden cards (overflow) */
+.calendar__card--hidden {
+  display: none;
+}
+
+/* Expanded day state */
+.calendar__day--expanded {
+  min-height: auto;
+}
+
+.calendar__day--expanded .calendar__cards {
+  overflow: visible;
+}
+
+.calendar__day--expanded .calendar__card--hidden {
+  display: flex;
+}
+
+.calendar__day--expanded .calendar__more {
+  color: var(--color-ink-light);
+}
+
+/* Drag and drop states */
+.calendar__day--drop-target {
+  background-color: var(--color-highlight-faint);
+  outline: 2px dashed var(--color-accent);
+  outline-offset: -2px;
 }
 
 @media (max-width: 768px) {

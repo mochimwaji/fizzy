@@ -22,18 +22,22 @@
   </div>
 <% end %>
 
-<div class="calendar">
+<%= turbo_stream_from "calendar_#{Current.user.id}" %>
+
+<div class="calendar" data-controller="calendar-drag-drop" data-calendar-drag-drop-update-url-value="<%= card_due_date_path('__CARD_ID__') %>">
   <div class="calendar__header">
     <% %w[Sun Mon Tue Wed Thu Fri Sat].each do |day_name| %>
       <div class="calendar__day-name"><%= day_name %></div>
     <% end %>
   </div>
 
-  <div class="calendar__body">
-    <% (@start_date..@end_date).each do |date| %>
-      <%= render "calendars/day", date: date, cards: @cards_by_date[date] || [], current_month: date.month == @date.month, current_date: @date %>
-    <% end %>
-  </div>
+  <%= turbo_frame_tag "calendar_body", data: { turbo_action: "advance" } do %>
+    <div class="calendar__body">
+      <% (@start_date..@end_date).each do |date| %>
+        <%= render "calendars/day", date: date, cards: @cards_by_date[date] || [], current_month: date.month == @date.month, current_date: @date %>
+      <% end %>
+    </div>
+  <% end %>
 </div>
 
 <%= turbo_frame_tag "calendar_card_modal" %>

@@ -26,12 +26,14 @@ export default class extends Controller {
     this.element.classList.remove("calendar-modal--open")
     this.element.classList.add("calendar-modal--closing")
 
-    // Navigate back after animation
+    // Navigate back after animation and refresh calendar
     setTimeout(() => {
       const frame = document.getElementById("calendar_card_modal")
       if (frame) {
         frame.innerHTML = ""
       }
+      // Refresh the page to update calendar with any due date changes
+      window.Turbo.visit(window.location.href, { action: "replace" })
     }, 200)
   }
 }
