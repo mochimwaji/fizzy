@@ -5,11 +5,11 @@ class Cards::TriagesController < ApplicationController
     column = @card.board.columns.find(params[:column_id])
     @card.triage_into(column)
 
-    redirect_to @card
+    render_card_replacement
   end
 
   def destroy
     @card.send_back_to_triage
-    redirect_to @card
+    render_card_replacement
   end
 end

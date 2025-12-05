@@ -65,8 +65,8 @@
 .calendar__title {
   display: flex;
   align-items: baseline;
-  gap: var(--size-xs);
-  margin-bottom: var(--size-l);
+  gap: 0.4em;
+  margin-bottom: var(--size-xl);
   padding-left: var(--cal-cell-padding);
 }
 
@@ -161,8 +161,8 @@
   text-align: center;
   font-weight: 600;
   color: var(--cal-text-muted);
-  padding: var(--size-m) var(--size-xs);
-  padding-bottom: var(--size-l);
+  padding: var(--size-s) var(--size-xs);
+  padding-bottom: var(--size-xl);
   font-size: 11px;
   text-transform: uppercase;
   letter-spacing: 0.1em;
@@ -249,7 +249,7 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--size-s);
+  margin-bottom: var(--size-m);
 }
 
 .calendar__date {
@@ -483,7 +483,11 @@
   }
   
   .calendar__title {
-    margin-bottom: var(--size-m);
+    margin-bottom: var(--size-l);
+  }
+  
+  .calendar__day-name {
+    padding-bottom: var(--size-l);
   }
   
   .calendar__day {
@@ -492,6 +496,10 @@
   
   .calendar__date {
     font-size: 12px;
+  }
+  
+  .calendar__date-wrapper {
+    margin-bottom: var(--size-s);
   }
   
   .calendar__date--today {
