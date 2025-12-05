@@ -9,7 +9,7 @@ import { isTouchDevice } from "helpers/touch_helpers"
  * Cards can be dragged from one category to another.
  */
 export default class extends Controller {
-  static targets = ["category", "header", "cardList"]
+  static targets = ["category", "header", "cardList", "editForm"]
   static values = {
     boardId: String,
     accountId: String
@@ -24,10 +24,14 @@ export default class extends Controller {
     
     // Listen for drag events to highlight drop targets
     this.#bindDragHighlighting()
+    
+    // Listen for successful card drops to refresh counts
+    this.#bindDropRefresh()
   }
 
   disconnect() {
     this.#unbindDragHighlighting()
+    this.#unbindDropRefresh()
   }
 
   /**
@@ -57,6 +61,16 @@ export default class extends Controller {
       } else {
         this.#expandCategory(category)
       }
+    }
+  }
+
+  /**
+   * Handle edit form submission
+   */
+  handleEditSubmit(event) {
+    // Reload the page to show updated column name/color
+    if (event.detail.success) {
+      Turbo.visit(window.location.href, { action: "replace" })
     }
   }
 
@@ -243,5 +257,24 @@ export default class extends Controller {
     this.categoryTargets.forEach(category => {
       category.classList.remove("mobile-board__category--drag-over")
     })
+  }
+
+  /**
+   * Bind listener for successful card drops to refresh the page
+   */
+  #bindDropRefresh() {
+    this.boundCardDropped = this.#handleCardDropped.bind(this)
+    this.element.addEventListener("card-dropped", this.boundCardDropped)
+  }
+
+  #unbindDropRefresh() {
+    this.element.removeEventListener("card-dropped", this.boundCardDropped)
+  }
+
+  #handleCardDropped(event) {
+    // Refresh the page after a short delay to show updated counts
+    setTimeout(() => {
+      Turbo.visit(window.location.href, { action: "replace" })
+    }, 300)
   }
 }

@@ -1,6 +1,7 @@
 <%# Mobile board view with expandable categories %>
 <%# Each category can be clicked to expand/collapse, showing cards inline %>
 <%# Cards can be dragged from one category row to another %>
+<%# Design matches the desktop column styling %>
 
 <section class="mobile-board" 
          data-controller="mobile-board drag-and-drop"
@@ -14,23 +15,26 @@
   </div>
 
   <%# Not Now category %>
-  <div class="mobile-board__category mobile-board__category--not-now" 
+  <div class="mobile-board__category" 
        id="mobile-category-not-now"
        data-mobile-board-target="category"
        data-drag-and-drop-target="container"
        data-drag-and-drop-url="<%= card_not_now_path('__id__') %>"
        data-category-type="not_now"
        data-category-id="not_now"
-       style="--category-color: var(--color-card-1);">
-    <button class="mobile-board__category-header" 
-            data-action="click->mobile-board#toggle"
-            data-mobile-board-target="header"
-            aria-expanded="false"
-            aria-controls="mobile-category-not-now-cards">
-      <span class="mobile-board__category-count"><%= board.cards.postponed.count %></span>
-      <span class="mobile-board__category-title">Not Now</span>
-      <span class="mobile-board__category-chevron">›</span>
-    </button>
+       data-category-name="Not Now"
+       style="--card-color: var(--color-card-1);">
+    <div class="mobile-board__category-header" 
+         data-action="click->mobile-board#toggle"
+         data-mobile-board-target="header"
+         aria-expanded="false"
+         aria-controls="mobile-category-not-now-cards">
+      <div class="mobile-board__category-expander">
+        <span class="mobile-board__category-count" data-drag-and-drop-counter><%= board.cards.postponed.count %></span>
+        <span class="mobile-board__category-title">Not Now</span>
+        <%= icon_tag "collapse", class: "mobile-board__category-collapse-icon" %>
+      </div>
+    </div>
     <div class="mobile-board__category-cards" 
          id="mobile-category-not-now-cards"
          data-mobile-board-target="cardList">
@@ -44,23 +48,26 @@
   </div>
 
   <%# Maybe/Stream category %>
-  <div class="mobile-board__category mobile-board__category--stream" 
+  <div class="mobile-board__category" 
        id="mobile-category-stream"
        data-mobile-board-target="category"
        data-drag-and-drop-target="container"
        data-drag-and-drop-url="<%= columns_card_drops_stream_path('__id__') %>"
        data-category-type="stream"
        data-category-id="stream"
-       style="--category-color: var(--color-card-2);">
-    <button class="mobile-board__category-header" 
-            data-action="click->mobile-board#toggle"
-            data-mobile-board-target="header"
-            aria-expanded="false"
-            aria-controls="mobile-category-stream-cards">
-      <span class="mobile-board__category-count"><%= board.cards.awaiting_triage.count %></span>
-      <span class="mobile-board__category-title">Maybe?</span>
-      <span class="mobile-board__category-chevron">›</span>
-    </button>
+       data-category-name="Maybe?"
+       style="--card-color: var(--color-card-2);">
+    <div class="mobile-board__category-header" 
+         data-action="click->mobile-board#toggle"
+         data-mobile-board-target="header"
+         aria-expanded="false"
+         aria-controls="mobile-category-stream-cards">
+      <div class="mobile-board__category-expander">
+        <span class="mobile-board__category-count" data-drag-and-drop-counter><%= board.cards.awaiting_triage.count %></span>
+        <span class="mobile-board__category-title">Maybe?</span>
+        <%= icon_tag "collapse", class: "mobile-board__category-collapse-icon" %>
+      </div>
+    </div>
     <div class="mobile-board__category-cards" 
          id="mobile-category-stream-cards"
          data-mobile-board-target="cardList">
@@ -75,23 +82,57 @@
 
   <%# Column categories %>
   <% board.columns.sorted.each do |column| %>
-    <div class="mobile-board__category mobile-board__category--column" 
+    <div class="mobile-board__category mobile-board__category--editable" 
          id="mobile-category-column-<%= column.id %>"
          data-mobile-board-target="category"
          data-drag-and-drop-target="container"
          data-drag-and-drop-url="<%= columns_card_drops_column_path('__id__', column_id: column.id) %>"
          data-category-type="column"
          data-category-id="<%= column.id %>"
-         style="--category-color: <%= column.color %>;">
-      <button class="mobile-board__category-header" 
-              data-action="click->mobile-board#toggle"
-              data-mobile-board-target="header"
-              aria-expanded="false"
-              aria-controls="mobile-category-column-<%= column.id %>-cards">
-        <span class="mobile-board__category-count"><%= column.cards.active.count %></span>
-        <span class="mobile-board__category-title"><%= column.name %></span>
-        <span class="mobile-board__category-chevron">›</span>
-      </button>
+         data-category-name="<%= column.name %>"
+         style="--card-color: <%= column.color %>;">
+      <div class="mobile-board__category-header" 
+           data-action="click->mobile-board#toggle"
+           data-mobile-board-target="header"
+           aria-expanded="false"
+           aria-controls="mobile-category-column-<%= column.id %>-cards">
+        <div class="mobile-board__category-expander">
+          <span class="mobile-board__category-count" data-drag-and-drop-counter><%= column.cards.active.count %></span>
+          <span class="mobile-board__category-title"><%= column.name %></span>
+          <%= icon_tag "collapse", class: "mobile-board__category-collapse-icon" %>
+        </div>
+      </div>
+      
+      <%# Edit form for column (shown when expanded) %>
+      <div class="mobile-board__category-edit" data-mobile-board-target="editForm">
+        <%= form_with model: [board, column], 
+                      data: { 
+                        controller: "form", 
+                        action: "turbo:submit-end->mobile-board#handleEditSubmit" 
+                      },
+                      class: "mobile-board__edit-form" do |form| %>
+          <div class="mobile-board__edit-name-row">
+            <%= form.text_field :name, 
+                                class: "input mobile-board__edit-input", 
+                                placeholder: "Column name", 
+                                value: column.name,
+                                required: true, 
+                                autocomplete: "off" %>
+          </div>
+          <div class="mobile-board__edit-colors">
+            <% Color::COLORS.each do |color| %>
+              <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
+                <%= form.radio_button :color, color.value, checked: (column.color == color) %>
+                <span class="mobile-board__color-swatch"></span>
+              </label>
+            <% end %>
+          </div>
+          <div class="mobile-board__edit-actions">
+            <%= form.submit "Save", class: "btn btn--small" %>
+          </div>
+        <% end %>
+      </div>
+      
       <div class="mobile-board__category-cards" 
            id="mobile-category-column-<%= column.id %>-cards"
            data-mobile-board-target="cardList">
@@ -106,23 +147,26 @@
   <% end %>
 
   <%# Done category %>
-  <div class="mobile-board__category mobile-board__category--closed" 
+  <div class="mobile-board__category" 
        id="mobile-category-closed"
        data-mobile-board-target="category"
        data-drag-and-drop-target="container"
        data-drag-and-drop-url="<%= card_closure_path('__id__') %>"
        data-category-type="closed"
        data-category-id="closed"
-       style="--category-color: var(--color-card-complete);">
-    <button class="mobile-board__category-header" 
-            data-action="click->mobile-board#toggle"
-            data-mobile-board-target="header"
-            aria-expanded="false"
-            aria-controls="mobile-category-closed-cards">
-      <span class="mobile-board__category-count"><%= board.cards.closed.count %></span>
-      <span class="mobile-board__category-title">Done</span>
-      <span class="mobile-board__category-chevron">›</span>
-    </button>
+       data-category-name="Done"
+       style="--card-color: var(--color-card-complete);">
+    <div class="mobile-board__category-header" 
+         data-action="click->mobile-board#toggle"
+         data-mobile-board-target="header"
+         aria-expanded="false"
+         aria-controls="mobile-category-closed-cards">
+      <div class="mobile-board__category-expander">
+        <span class="mobile-board__category-count" data-drag-and-drop-counter><%= board.cards.closed.count %></span>
+        <span class="mobile-board__category-title">Done</span>
+        <%= icon_tag "collapse", class: "mobile-board__category-collapse-icon" %>
+      </div>
+    </div>
     <div class="mobile-board__category-cards" 
          id="mobile-category-closed-cards"
          data-mobile-board-target="cardList">
@@ -133,5 +177,16 @@
         <div class="mobile-board__empty">No cards</div>
       <% end %>
     </div>
+  </div>
+
+  <%# Add New Column button %>
+  <div class="mobile-board__add-column" data-controller="dialog" data-action="keydown.esc->dialog#close click@document->dialog#closeOnClickOutside">
+    <button class="mobile-board__add-column-button" data-action="click->dialog#open:stop">
+      <%= icon_tag "add" %>
+      <span class="for-screen-reader">Add a column</span>
+    </button>
+    <dialog class="popup panel flex-column gap-half fill-white shadow txt-small" data-dialog-target="dialog">
+      <%= render "boards/show/menu/column_form", board: board, column: Column.new, label: "Add column" %>
+    </dialog>
   </div>
 </section>

@@ -207,7 +207,10 @@ export default class extends Controller {
       this.currentTabTarget = null
     }
 
-    // Auto-scroll if near container edges
+    // Auto-scroll the page when dragging near top/bottom edges
+    this.#autoScrollPage(position)
+    
+    // Also try container-level scrolling if inside a scrollable container
     if (this.sourceContainer) {
       autoScrollNearEdge(this.sourceContainer.closest(".cards__list, .mobile-card-columns, .mobile-board"), position)
     }
@@ -215,6 +218,7 @@ export default class extends Controller {
 
   #handleTouchEnd(event) {
     this.#cancelLongPress()
+    this.#stopAutoScroll()
 
     if (!this.isDragging) {
       this.#cleanupTouch()
@@ -229,6 +233,8 @@ export default class extends Controller {
       hapticFeedback("success")
       this.#decreaseCounter(this.sourceContainer)
       this.#submitTabDropRequest(this.dragItem, this.currentTabTarget)
+      // Dispatch event for mobile-board controller to handle refresh
+      this.element.dispatchEvent(new CustomEvent("card-dropped", { bubbles: true }))
     }
     // Check if we have a valid container drop target
     else if (this.currentDropTarget && this.currentDropTarget !== this.sourceContainer) {
@@ -238,6 +244,8 @@ export default class extends Controller {
       const sourceContainer = this.sourceContainer
       this.#submitDropRequest(this.dragItem, this.currentDropTarget)
       this.#reloadSourceFrame(sourceContainer)
+      // Dispatch event for mobile-board controller to handle refresh
+      this.element.dispatchEvent(new CustomEvent("card-dropped", { bubbles: true }))
     }
 
     this.#endTouchDrag()
@@ -245,6 +253,7 @@ export default class extends Controller {
 
   #handleTouchCancel(event) {
     this.#cancelLongPress()
+    this.#stopAutoScroll()
     this.#endTouchDrag()
   }
 
@@ -314,6 +323,7 @@ export default class extends Controller {
 
   #cleanupTouch() {
     this.#cancelLongPress()
+    this.#stopAutoScroll()
     this.touchStartPosition = null
     this.touchCurrentPosition = null
     this.potentialDragItem = null
@@ -325,6 +335,51 @@ export default class extends Controller {
     this.sourceContainer = null
     this.dragItem = null
     this.wasDropped = false
+  }
+
+  // ========================================
+  // Page Auto-Scroll During Drag
+  // ========================================
+
+  #autoScrollPage(position) {
+    const edgeSize = 80 // pixels from edge to start scrolling
+    const maxSpeed = 20 // max scroll speed per frame
+    const viewportHeight = window.innerHeight
+    
+    let scrollSpeed = 0
+    
+    // Near top edge - scroll up
+    if (position.y < edgeSize) {
+      const distance = edgeSize - position.y
+      scrollSpeed = -Math.min(distance / edgeSize * maxSpeed, maxSpeed)
+    }
+    // Near bottom edge - scroll down
+    else if (position.y > viewportHeight - edgeSize) {
+      const distance = position.y - (viewportHeight - edgeSize)
+      scrollSpeed = Math.min(distance / edgeSize * maxSpeed, maxSpeed)
+    }
+    
+    if (scrollSpeed !== 0) {
+      // Start continuous scrolling if not already
+      if (!this.autoScrollInterval) {
+        this.autoScrollInterval = setInterval(() => {
+          if (this.lastScrollSpeed) {
+            window.scrollBy({ top: this.lastScrollSpeed })
+          }
+        }, 16) // ~60fps
+      }
+      this.lastScrollSpeed = scrollSpeed
+    } else {
+      this.#stopAutoScroll()
+    }
+  }
+
+  #stopAutoScroll() {
+    if (this.autoScrollInterval) {
+      clearInterval(this.autoScrollInterval)
+      this.autoScrollInterval = null
+    }
+    this.lastScrollSpeed = 0
   }
 
   // ========================================

@@ -111,7 +111,7 @@
 }
 
 /* ==========================================================================
-   Mobile Board View - Expandable Categories
+   Mobile Board View - Expandable Categories (Desktop-matched styling)
    ========================================================================== */
 
 /* Only show on mobile/touch devices */
@@ -140,82 +140,92 @@
   margin-bottom: 0.75rem;
 }
 
-/* Category row container */
+/* Category row container - matches desktop .cards collapsed style */
 .mobile-board__category {
-  border-radius: 0.5rem;
+  --column-color: color-mix(in srgb, var(--card-color) 15%, var(--color-canvas));
+  
+  position: relative;
   margin-bottom: 0.5rem;
   background: var(--color-canvas);
-  border: 1px solid var(--color-ink-lighter);
+  border-radius: 1.25rem;
   overflow: hidden;
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  transition: box-shadow 0.2s ease;
 }
 
-/* Category header - always visible */
+/* Category header - matches desktop .cards__expander style */
 .mobile-board__category-header {
-  display: flex;
-  align-items: center;
+  display: block;
   width: 100%;
-  padding: 0.75rem 1rem;
+  padding: 0;
   background: transparent;
   border: none;
   cursor: pointer;
   text-align: left;
+}
+
+/* Expander row - matches desktop collapsed column style */
+.mobile-board__category-expander {
+  display: flex;
+  align-items: center;
   gap: 0.75rem;
-  border-left: 4px solid var(--category-color, var(--color-ink-lighter));
-  transition: background-color 0.15s ease;
-  
-  &:hover {
-    background: var(--color-ink-lightest);
-  }
+  padding: 0.75rem 1rem;
+  font-size: var(--text-x-small);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  background: linear-gradient(to right, var(--card-color), var(--column-color) 80%);
+  border-radius: 1.25rem;
+  transition: filter 0.15s ease;
   
   &:active {
-    background: var(--color-ink-lighter);
+    filter: brightness(0.95);
   }
 }
 
-/* Card count badge */
+/* Card count badge - matches desktop .cards__expander-count */
 .mobile-board__category-count {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  min-width: 1.75rem;
-  height: 1.75rem;
-  padding: 0 0.5rem;
-  font-size: 0.75rem;
+  min-width: 2rem;
+  height: 2rem;
+  font-size: var(--text-x-small);
   font-weight: 600;
-  background: var(--category-color, var(--color-ink-lighter));
-  color: var(--color-ink-inverted);
+  background: var(--color-canvas);
+  color: var(--color-ink-dark);
   border-radius: 999px;
 }
 
 /* Category title */
 .mobile-board__category-title {
   flex: 1;
-  font-size: 0.9375rem;
-  font-weight: 500;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
   color: var(--color-ink-dark);
 }
 
-/* Chevron indicator */
-.mobile-board__category-chevron {
-  font-size: 1.25rem;
+/* Collapse icon - hidden when collapsed, shown when expanded */
+.mobile-board__category-collapse-icon {
+  --icon-size: 1em;
+  
+  opacity: 0;
+  transform: scale(1.5);
+  transition: opacity 0.15s ease, transform 0.15s ease;
   color: var(--color-ink);
-  transition: transform 0.3s ease;
-  font-weight: 300;
 }
 
 /* Expanded state */
 .mobile-board__category--expanded {
-  border-color: var(--category-color, var(--color-ink-lighter));
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
   
-  .mobile-board__category-header {
-    background: color-mix(in srgb, var(--category-color) 8%, transparent);
-    border-bottom: 1px solid var(--color-ink-lighter);
+  .mobile-board__category-expander {
+    border-radius: 1.25rem 1.25rem 0 0;
   }
   
-  .mobile-board__category-chevron {
-    transform: rotate(90deg);
+  .mobile-board__category-collapse-icon {
+    opacity: 0.66;
+    transform: scale(1);
   }
 }
 
@@ -225,6 +235,8 @@
   opacity: 0;
   overflow: hidden;
   padding: 0 0.5rem;
+  background: var(--column-color);
+  border-radius: 0 0 1.25rem 1.25rem;
   
   .mobile-board__category--expanded & {
     padding: 0.5rem;
@@ -251,12 +263,135 @@
 
 /* Drag over highlight for category rows */
 .mobile-board__category--drag-over {
-  border-color: var(--category-color, var(--color-selected));
-  background: color-mix(in srgb, var(--category-color) 10%, var(--color-canvas));
-  box-shadow: 0 0 0 2px color-mix(in srgb, var(--category-color) 30%, transparent);
+  box-shadow: 0 0 0 3px var(--card-color);
   
-  .mobile-board__category-header {
-    background: color-mix(in srgb, var(--category-color) 15%, transparent);
+  .mobile-board__category-expander {
+    filter: brightness(1.1);
+  }
+}
+
+/* ==========================================================================
+   Mobile Board - Column Edit Form
+   ========================================================================== */
+
+.mobile-board__category-edit {
+  display: none;
+  padding: 0.75rem;
+  background: var(--column-color);
+  border-top: 1px solid color-mix(in srgb, var(--card-color) 30%, transparent);
+  
+  .mobile-board__category--expanded & {
+    display: block;
+  }
+  
+  /* Only show for editable categories (columns) */
+  .mobile-board__category:not(.mobile-board__category--editable) & {
+    display: none !important;
+  }
+}
+
+.mobile-board__edit-form {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.mobile-board__edit-name-row {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.mobile-board__edit-input {
+  flex: 1;
+  font-size: var(--text-small);
+  padding: 0.5rem 0.75rem;
+}
+
+.mobile-board__edit-colors {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.25rem;
+}
+
+.mobile-board__color-option {
+  position: relative;
+  cursor: pointer;
+  
+  input[type="radio"] {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+  }
+}
+
+.mobile-board__color-swatch {
+  display: block;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 0.5rem;
+  background: var(--option-color);
+  border: 2px solid transparent;
+  transition: border-color 0.15s ease, transform 0.15s ease;
+  
+  input[type="radio"]:checked + & {
+    border-color: var(--color-ink-dark);
+    transform: scale(1.1);
+  }
+  
+  input[type="radio"]:focus + & {
+    outline: 2px solid var(--color-selected);
+    outline-offset: 2px;
+  }
+}
+
+.mobile-board__edit-actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 0.25rem;
+}
+
+/* ==========================================================================
+   Mobile Board - Add Column Button
+   ========================================================================== */
+
+.mobile-board__add-column {
+  position: relative;
+  display: flex;
+  justify-content: center;
+  margin-top: 0.5rem;
+}
+
+.mobile-board__add-column-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  height: 3rem;
+  background: transparent;
+  border: 2px dashed var(--color-ink-lighter);
+  border-radius: 1.25rem;
+  color: var(--color-ink);
+  cursor: pointer;
+  transition: all 0.15s ease;
+  
+  .icon {
+    --icon-size: 1.5rem;
+    opacity: 0.5;
+    transition: opacity 0.15s ease;
+  }
+  
+  &:hover, &:focus {
+    border-color: var(--color-ink);
+    background: var(--color-ink-lightest);
+    
+    .icon {
+      opacity: 1;
+    }
+  }
+  
+  &:active {
+    transform: scale(0.98);
   }
 }
 
