@@ -5,23 +5,35 @@ import { isTouchDevice } from "helpers/touch_helpers"
  * Calendar Zoom Controller
  * Enables pinch-to-zoom functionality on the calendar for mobile devices.
  * Maintains aspect ratio and scales all elements proportionally.
+ * Persists zoom level across page navigations using sessionStorage.
  */
 export default class extends Controller {
   static values = {
     minScale: { type: Number, default: 0.5 },
     maxScale: { type: Number, default: 2.0 },
-    initialScale: { type: Number, default: 1.0 }
+    initialScale: { type: Number, default: 1.0 },
+    // Sensitivity factor to slow down zoom (lower = slower)
+    sensitivity: { type: Number, default: 0.4 }
   }
+
+  // Storage key for persisting zoom level
+  static STORAGE_KEY = "fizzy_calendar_zoom"
 
   connect() {
     if (!isTouchDevice()) return
 
-    this.scale = this.initialScaleValue
-    this.lastScale = 1
+    // Restore saved zoom level or use initial
+    this.scale = this.#loadSavedScale()
+    this.lastScale = this.scale
     this.initialDistance = 0
     this.isPinching = false
 
     this.#bindEvents()
+    
+    // Apply saved scale on connect
+    if (this.scale !== 1) {
+      this.#applyScale(this.scale)
+    }
   }
 
   disconnect() {
@@ -59,6 +71,33 @@ export default class extends Controller {
   }
 
   // ========================================
+  // Persistence
+  // ========================================
+
+  #loadSavedScale() {
+    try {
+      const saved = sessionStorage.getItem(this.constructor.STORAGE_KEY)
+      if (saved) {
+        const scale = parseFloat(saved)
+        if (!isNaN(scale) && scale >= this.minScaleValue && scale <= this.maxScaleValue) {
+          return scale
+        }
+      }
+    } catch (e) {
+      // sessionStorage not available
+    }
+    return this.initialScaleValue
+  }
+
+  #saveScale() {
+    try {
+      sessionStorage.setItem(this.constructor.STORAGE_KEY, this.scale.toString())
+    } catch (e) {
+      // sessionStorage not available
+    }
+  }
+
+  // ========================================
   // Standard Touch Events (Android, etc.)
   // ========================================
 
@@ -77,14 +116,21 @@ export default class extends Controller {
     event.preventDefault()
 
     const currentDistance = this.#getDistance(event.touches[0], event.touches[1])
-    const scaleChange = currentDistance / this.initialDistance
+    const rawScaleChange = currentDistance / this.initialDistance
     
-    this.#applyScale(this.lastScale * scaleChange)
+    // Apply sensitivity to slow down the zoom
+    // Convert scale change to a delta, apply sensitivity, then convert back
+    const scaleDelta = (rawScaleChange - 1) * this.sensitivityValue
+    const adjustedScaleChange = 1 + scaleDelta
+    
+    this.#applyScale(this.lastScale * adjustedScaleChange)
   }
 
   #handleTouchEnd(event) {
     if (event.touches.length < 2) {
       this.isPinching = false
+      // Save scale when pinch ends
+      this.#saveScale()
     }
   }
 
@@ -99,11 +145,18 @@ export default class extends Controller {
 
   #handleGestureChange(event) {
     event.preventDefault()
-    this.#applyScale(this.lastScale * event.scale)
+    
+    // Apply sensitivity to slow down the zoom for Safari gestures too
+    const rawScaleChange = event.scale
+    const scaleDelta = (rawScaleChange - 1) * this.sensitivityValue
+    const adjustedScaleChange = 1 + scaleDelta
+    
+    this.#applyScale(this.lastScale * adjustedScaleChange)
   }
 
   #handleGestureEnd(event) {
-    // Scale is already applied
+    // Save scale when gesture ends
+    this.#saveScale()
   }
 
   // ========================================
@@ -120,28 +173,27 @@ export default class extends Controller {
     // Clamp scale to min/max values
     this.scale = Math.min(Math.max(newScale, this.minScaleValue), this.maxScaleValue)
 
-    // Apply transform to the calendar main area
-    const main = this.element.querySelector(".calendar__main")
-    if (main) {
-      main.style.transform = `scale(${this.scale})`
-      main.style.transformOrigin = "top left"
-      
-      // Adjust the container width to account for scaling
-      // This ensures scrolling still works properly
-      const baseWidth = main.scrollWidth / this.scale
-      main.style.minWidth = `${baseWidth * this.scale}px`
-    }
+    // Apply transform to the ENTIRE calendar (including sidebar)
+    // This ensures month/year scales together with the rest
+    this.element.style.transform = `scale(${this.scale})`
+    this.element.style.transformOrigin = "top left"
+    
+    // Adjust the container size to account for scaling
+    // This ensures the calendar takes up the correct space and scrolling works
+    this.element.style.width = `${100 / this.scale}%`
+    this.element.style.height = `${100 / this.scale}%`
 
     // Add visual indicator for current zoom level
     this.#updateZoomIndicator()
   }
 
   #updateZoomIndicator() {
-    let indicator = this.element.querySelector(".calendar__zoom-indicator")
+    // Use a fixed position indicator outside the scaled element
+    let indicator = document.getElementById("calendar-zoom-indicator")
     
     if (!indicator) {
       indicator = document.createElement("div")
-      indicator.className = "calendar__zoom-indicator"
+      indicator.id = "calendar-zoom-indicator"
       indicator.style.cssText = `
         position: fixed;
         bottom: 80px;
@@ -157,7 +209,7 @@ export default class extends Controller {
         pointer-events: none;
         transition: opacity 0.3s ease;
       `
-      this.element.appendChild(indicator)
+      document.body.appendChild(indicator)
     }
 
     indicator.textContent = `${Math.round(this.scale * 100)}%`
@@ -170,15 +222,14 @@ export default class extends Controller {
     }, 1500)
   }
 
-  // Double-tap to reset zoom
+  // Double-tap to reset zoom (can be called from action)
   resetZoom() {
     this.scale = this.initialScaleValue
-    const main = this.element.querySelector(".calendar__main")
-    if (main) {
-      main.style.transform = ""
-      main.style.transformOrigin = ""
-      main.style.minWidth = ""
-    }
+    this.element.style.transform = ""
+    this.element.style.transformOrigin = ""
+    this.element.style.width = ""
+    this.element.style.height = ""
+    this.#saveScale()
     this.#updateZoomIndicator()
   }
 }
