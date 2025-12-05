@@ -506,84 +506,92 @@
 
 /* ==========================================================================
    Responsive Design - Mobile
+   Keep the same aspect ratio as desktop, enable horizontal scroll
    ========================================================================== */
 
 @media (max-width: 768px) {
   .calendar {
-    flex-direction: column;
+    /* Keep horizontal layout like desktop */
+    flex-direction: row;
     border-radius: 0;
     margin: 0 calc(-1 * var(--size-s));
-    --cal-cell-padding: 8px;
+    --cal-cell-padding: 10px;
     /* Full viewport height minus header */
     min-height: calc(100vh - 60px);
     min-height: calc(100dvh - 60px);
+    /* Allow horizontal scrolling */
+    overflow-x: auto;
+    overflow-y: hidden;
+    -webkit-overflow-scrolling: touch;
   }
   
-  /* Sidebar becomes horizontal bar on mobile */
+  /* Keep sidebar on the left, rotated like desktop */
   .calendar__sidebar {
-    width: 100%;
-    flex-direction: row;
-    justify-content: flex-start;
-    padding: var(--size-xs) var(--size-m);
-    border-right: none;
-    border-bottom: 1px solid var(--cal-border);
-    gap: 0.3em;
+    width: var(--cal-sidebar-width);
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: var(--size-m) 0;
+    border-right: 1px solid var(--cal-border);
+    border-bottom: none;
     flex-shrink: 0;
   }
   
+  /* Keep month/year rotated like desktop */
   .calendar__month,
   .calendar__year {
-    writing-mode: horizontal-tb;
-    transform: none;
-    font-size: 14px;
+    writing-mode: vertical-rl;
+    text-orientation: mixed;
+    transform: rotate(180deg);
+    font-size: 18px;
   }
   
   .calendar__main {
     flex: 1;
     display: flex;
     flex-direction: column;
+    /* Set minimum width to maintain aspect ratio - prevents squishing */
+    min-width: 700px;
     overflow: hidden;
   }
   
   .calendar__header {
-    --cal-header-height: 36px;
+    --cal-header-height: 40px;
     flex-shrink: 0;
   }
   
   .calendar__day-name {
-    font-size: 10px;
+    font-size: 14px;
     letter-spacing: 0.05em;
   }
   
   .calendar__body {
     flex: 1;
-    overflow-x: auto;
     overflow-y: auto;
     -webkit-overflow-scrolling: touch;
   }
   
   .calendar__day {
-    min-height: 80px;
-    min-width: 44px;
+    min-height: 90px;
   }
 
   .calendar__date-wrapper {
     margin-bottom: var(--size-xs);
-    min-height: 20px;
+    min-height: 24px;
   }
 
   .calendar__date {
-    font-size: 11px;
+    font-size: 14px;
   }
   
   .calendar__card-count {
-    display: none;
+    font-size: 12px;
   }
 
   .calendar__card {
-    font-size: 9px;
-    padding: 4px 8px;
-    border-radius: 10px;
+    font-size: 14px;
+    padding: 6px 10px;
+    border-radius: 12px;
     /* Prevent browser context menu on long-press */
     -webkit-touch-callout: none;
     -webkit-user-select: none;
@@ -594,73 +602,82 @@
   /* Always show card titles on mobile - essential for usability */
   .calendar__card-title {
     display: block;
-    font-size: 9px;
-    line-height: 1.2;
+    font-size: 14px;
+    line-height: 1.3;
   }
   
   .calendar__cards {
-    gap: 4px;
+    gap: 6px;
     flex-direction: column;
   }
   
   .calendar__more {
-    font-size: 9px;
-    padding: 3px 8px;
+    font-size: 14px;
+    padding: 6px 12px;
   }
   
   .calendar__drop-zone {
-    padding: var(--size-xs);
+    padding: var(--size-s);
   }
   
   .calendar__drop-icon .icon {
-    width: 12px;
-    height: 12px;
+    width: 16px;
+    height: 16px;
   }
 }
 
-/* Extra small mobile - keep cards readable */
+/* Extra small mobile - slightly smaller but still readable */
 @media (max-width: 480px) {
   .calendar {
-    --cal-cell-padding: 6px;
+    --cal-cell-padding: 8px;
+    --cal-sidebar-width: 40px;
   }
   
   .calendar__sidebar {
-    padding: var(--size-xs) var(--size-s);
+    padding: var(--size-s) 0;
   }
   
   .calendar__month,
   .calendar__year {
-    font-size: 13px;
+    font-size: 16px;
+  }
+  
+  .calendar__main {
+    /* Slightly smaller minimum width for very small phones */
+    min-width: 600px;
+  }
+  
+  .calendar__header {
+    --cal-header-height: 36px;
   }
   
   .calendar__day {
-    min-height: 70px;
-    min-width: 40px;
+    min-height: 80px;
   }
   
   .calendar__day-name {
-    font-size: 9px;
+    font-size: 13px;
   }
   
   .calendar__date {
-    font-size: 10px;
+    font-size: 13px;
   }
   
   .calendar__date-wrapper {
-    min-height: 16px;
-    margin-bottom: 2px;
+    min-height: 20px;
+    margin-bottom: 4px;
   }
   
   .calendar__card {
-    font-size: 8px;
-    padding: 3px 6px;
-    border-radius: 8px;
+    font-size: 13px;
+    padding: 5px 8px;
+    border-radius: 10px;
   }
   
   /* Keep card titles visible - truncate with ellipsis */
   .calendar__card-title {
     display: block;
-    font-size: 8px;
+    font-size: 13px;
     max-width: 100%;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -668,13 +685,13 @@
   }
   
   .calendar__cards {
-    gap: 3px;
+    gap: 5px;
     flex-direction: column;
   }
   
   .calendar__more {
-    font-size: 8px;
-    padding: 2px 5px;
+    font-size: 13px;
+    padding: 5px 10px;
   }
 }
 
