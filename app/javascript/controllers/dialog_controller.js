@@ -1,6 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
 import { orient } from "helpers/orientation_helpers"
-import { isTouchDevice } from "helpers/touch_helpers"
 
 export default class extends Controller {
   static targets = [ "dialog" ]
@@ -60,9 +59,12 @@ export default class extends Controller {
     Array.from(this.dialogTarget.querySelectorAll("turbo-frame")).forEach(frame => { frame.loading = "eager" })
   }
 
-  // Focus search input on desktop only (not touch devices where it would open keyboard)
+  // Focus search input on desktop only (not touch-primary devices where it would open keyboard)
   #autofocusDesktopInputs() {
-    if (isTouchDevice()) return
+    // Use CSS media query to check if device has hover capability (mouse/trackpad)
+    // This is more reliable than checking for touch support since many laptops have both
+    const hasHover = window.matchMedia("(any-hover: hover)").matches
+    if (!hasHover) return
     
     const input = this.dialogTarget.querySelector("[data-autofocus-desktop]")
     if (input) {

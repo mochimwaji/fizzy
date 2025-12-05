@@ -320,6 +320,9 @@ export default class extends Controller {
     
     // Optimistically move the card to the new day
     if (card && targetDay && sourceDay !== targetDay) {
+      const targetCardsContainer = targetDay.querySelector(".calendar__cards")
+      const sourceCardsContainer = sourceDay?.querySelector(".calendar__cards")
+      
       // Clone the card for animation
       const cardClone = card.cloneNode(true)
       cardClone.classList.remove("calendar__card--dragging")
@@ -327,9 +330,17 @@ export default class extends Controller {
       cardClone.style.opacity = "0"
       cardClone.style.transform = "scale(0.9)"
       
-      // Add to target day
-      const cardsContainer = targetDay.querySelector(".calendar__day-cards") || targetDay
-      cardsContainer.appendChild(cardClone)
+      // Find the right insertion point - before the "more" button or drop zone
+      const moreButton = targetCardsContainer?.querySelector(".calendar__more")
+      const dropZone = targetCardsContainer?.querySelector(".calendar__drop-zone")
+      const insertBefore = moreButton || dropZone
+      
+      if (targetCardsContainer && insertBefore) {
+        targetCardsContainer.insertBefore(cardClone, insertBefore)
+      } else if (targetCardsContainer) {
+        // Prepend as first card if no other cards exist
+        targetCardsContainer.prepend(cardClone)
+      }
       
       // Animate in
       requestAnimationFrame(() => {
@@ -343,9 +354,9 @@ export default class extends Controller {
       card.style.transform = "scale(0.8)"
       setTimeout(() => card.remove(), 200)
       
-      // Update day counts
-      this.#updateDayCount(sourceDay, -1)
-      this.#updateDayCount(targetDay, 1)
+      // Update the "+X more" button counts
+      this.#updateMoreButton(sourceCardsContainer, -1)
+      this.#updateMoreButton(targetCardsContainer, 1)
     }
     
     // Send request to server - Turbo Stream will handle any additional updates
@@ -364,14 +375,29 @@ export default class extends Controller {
     }
   }
   
-  #updateDayCount(day, delta) {
-    if (!day) return
-    const countEl = day.querySelector(".calendar__day-count")
-    if (countEl) {
-      const current = parseInt(countEl.textContent) || 0
-      const newCount = Math.max(0, current + delta)
-      countEl.textContent = newCount
-      countEl.style.display = newCount > 0 ? "" : "none"
+  #updateMoreButton(container, delta) {
+    if (!container) return
+    
+    const moreButton = container.querySelector(".calendar__more")
+    const moreText = container.querySelector(".calendar__more-text")
+    
+    if (moreText) {
+      // Parse current count from "+X more" format
+      const match = moreText.textContent.match(/\+(\d+)\s+more/)
+      if (match) {
+        const currentCount = parseInt(match[1]) || 0
+        const newCount = Math.max(0, currentCount + delta)
+        
+        if (newCount > 0) {
+          moreText.textContent = `+${newCount} more`
+        } else if (moreButton) {
+          // Hide the button if count reaches 0
+          moreButton.style.display = "none"
+        }
+      }
+    } else if (delta > 0 && moreButton) {
+      // If adding to a day that had a hidden "more" button, show it
+      moreButton.style.display = ""
     }
   }
 }
