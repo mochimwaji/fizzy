@@ -16,15 +16,34 @@ export default class extends Controller {
     event.dataTransfer.effectAllowed = "move"
     event.dataTransfer.setData("text/plain", card.dataset.cardId)
     
+    // Create a custom drag image
+    const dragImage = card.cloneNode(true)
+    dragImage.style.position = "absolute"
+    dragImage.style.top = "-1000px"
+    dragImage.style.transform = "rotate(3deg) scale(1.05)"
+    dragImage.style.boxShadow = "0 8px 24px rgba(0, 0, 0, 0.25)"
+    dragImage.style.opacity = "0.95"
+    dragImage.style.width = `${card.offsetWidth}px`
+    document.body.appendChild(dragImage)
+    event.dataTransfer.setDragImage(dragImage, card.offsetWidth / 2, card.offsetHeight / 2)
+    
+    // Clean up drag image after a frame
+    setTimeout(() => dragImage.remove(), 0)
+    
     // Add dragging class after a frame to avoid affecting drag image
     requestAnimationFrame(() => {
       card.classList.add("calendar__card--dragging")
+      this.sourceDay.classList.add("calendar__day--source")
     })
   }
   
   dragEnd(event) {
     if (this.draggedCard) {
       this.draggedCard.classList.remove("calendar__card--dragging")
+    }
+    
+    if (this.sourceDay) {
+      this.sourceDay.classList.remove("calendar__day--source")
     }
     
     // Clear all drop target highlights
@@ -44,6 +63,11 @@ export default class extends Controller {
   dragEnter(event) {
     const day = event.target.closest(".calendar__day")
     if (!day || day === this.sourceDay) return
+    
+    // Clear other highlights first
+    this.dayTargets.forEach(d => {
+      if (d !== day) d.classList.remove("calendar__day--drop-target")
+    })
     
     day.classList.add("calendar__day--drop-target")
   }
@@ -75,6 +99,13 @@ export default class extends Controller {
     // Build the URL for updating the due date
     const url = this.updateUrlValue.replace("__CARD_ID__", cardId)
     
+    // Add a subtle animation to the dropped card placeholder
+    if (this.draggedCard) {
+      this.draggedCard.style.transition = "all 0.3s ease"
+      this.draggedCard.style.opacity = "0"
+      this.draggedCard.style.transform = "scale(0.8)"
+    }
+    
     // Send PATCH request to update due date
     const response = await patch(url, {
       body: JSON.stringify({ due_date: { due_on: newDate } }),
@@ -86,7 +117,6 @@ export default class extends Controller {
     
     if (response.ok) {
       // Reload the calendar to show updated positions
-      // The turbo stream from the controller will handle this
       window.Turbo.visit(window.location.href, { action: "replace" })
     }
   }

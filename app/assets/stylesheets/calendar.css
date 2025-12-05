@@ -1,167 +1,247 @@
+/* ==========================================================================
+   Calendar View - Modern, Clean Design
+   ========================================================================== */
+
 /* Calendar Navigation */
 .calendar-nav {
   display: flex;
   align-items: center;
-  gap: var(--size-xs);
+  gap: var(--size-s);
 }
 
 .calendar-nav__btn {
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   flex-shrink: 0;
   border-radius: var(--rounded);
-  background-color: transparent;
+  background-color: var(--color-paper-dark);
   color: var(--color-ink-light);
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: all 0.2s ease;
 }
 
 .calendar-nav__btn:hover {
-  background-color: var(--color-paper-dark);
-  color: var(--color-ink);
+  background-color: var(--color-accent);
+  color: white;
+  transform: scale(1.05);
 }
 
 .calendar-nav__btn .icon {
-  width: 16px;
-  height: 16px;
+  width: 18px;
+  height: 18px;
 }
 
 .calendar-nav__current {
-  font-weight: var(--weight-semi-bold);
-  font-size: var(--size-m);
+  font-weight: var(--weight-bold);
+  font-size: var(--size-l);
   color: var(--color-ink);
-  padding: var(--size-xs) var(--size-s);
+  padding: var(--size-xs) var(--size-m);
   border-radius: var(--rounded);
   transition: background-color 0.15s ease;
   white-space: nowrap;
   text-align: center;
-  min-width: 120px;
+  min-width: 160px;
 }
 
 .calendar-nav__current:hover {
   background-color: var(--color-paper-dark);
 }
 
-/* Calendar Grid */
+/* ==========================================================================
+   Calendar Grid
+   ========================================================================== */
+
 .calendar {
-  padding: var(--size-m);
+  padding: var(--size-l);
+  max-width: 1400px;
+  margin: 0 auto;
 }
 
 .calendar__header {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
-  margin-bottom: var(--size-xs);
+  gap: var(--size-xs);
+  margin-bottom: var(--size-s);
+  padding: 0 var(--size-xs);
 }
 
 .calendar__day-name {
   text-align: center;
-  font-weight: var(--weight-semi-bold);
+  font-weight: var(--weight-bold);
   color: var(--color-ink-light);
-  padding: var(--size-xs);
+  padding: var(--size-s) var(--size-xs);
   font-size: var(--size-s);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
 }
 
 .calendar__body {
   display: grid;
   grid-template-columns: repeat(7, 1fr);
-  gap: 1px;
-  background-color: var(--color-paper-dark);
-  border: 1px solid var(--color-paper-dark);
-  border-radius: var(--rounded);
+  gap: var(--size-xs);
 }
+
+/* ==========================================================================
+   Day Cells
+   ========================================================================== */
 
 .calendar__day {
   background-color: var(--color-paper);
-  min-height: 120px;
-  padding: var(--size-xs);
+  min-height: 140px;
+  padding: var(--size-s);
   display: flex;
   flex-direction: column;
   overflow: hidden;
+  border-radius: var(--rounded);
+  border: 1px solid var(--color-paper-dark);
+  transition: all 0.2s ease;
+  position: relative;
+}
+
+.calendar__day:hover {
+  border-color: var(--color-ink-lighter);
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
 }
 
 .calendar__day--other-month {
   background-color: var(--color-paper-light);
+  opacity: 0.5;
 }
 
-.calendar__day--other-month .calendar__date {
-  color: var(--color-ink-light);
+.calendar__day--other-month:hover {
+  opacity: 0.7;
+}
+
+.calendar__day--weekend {
+  background-color: var(--color-paper-light);
 }
 
 .calendar__day--today {
-  background-color: var(--color-highlight-faint);
+  background: linear-gradient(135deg, var(--color-highlight-faint) 0%, var(--color-paper) 100%);
+  border-color: var(--color-accent);
+  box-shadow: 0 0 0 1px var(--color-accent), 0 2px 12px rgba(0, 0, 0, 0.08);
+}
+
+.calendar__day--source {
+  opacity: 0.6;
+  border-style: dashed;
+}
+
+/* Date Header */
+.calendar__date-wrapper {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: var(--size-s);
 }
 
 .calendar__date {
-  font-size: var(--size-s);
-  font-weight: var(--weight-semi-bold);
-  margin-bottom: var(--size-xs);
+  font-size: var(--size-m);
+  font-weight: var(--weight-bold);
+  color: var(--color-ink);
+  line-height: 1;
 }
 
-.calendar__date-badge {
+.calendar__date--today {
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 24px;
-  height: 24px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  background-color: var(--color-accent);
-  color: var(--color-paper);
+  background: var(--color-accent);
+  color: white;
+  font-weight: var(--weight-bold);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
 }
+
+.calendar__card-count {
+  font-size: var(--size-xs);
+  color: var(--color-ink-light);
+  background: var(--color-paper-dark);
+  padding: 2px 6px;
+  border-radius: var(--rounded);
+  font-weight: var(--weight-medium);
+}
+
+/* ==========================================================================
+   Card List
+   ========================================================================== */
 
 .calendar__cards {
   display: flex;
   flex-direction: column;
-  gap: 2px;
+  gap: var(--size-xs);
   flex-grow: 1;
   overflow: hidden;
+  position: relative;
 }
+
+/* ==========================================================================
+   Card Items
+   ========================================================================== */
 
 .calendar__card {
   display: flex;
   align-items: center;
-  gap: var(--size-s);
-  padding: 2px var(--size-xs);
+  gap: var(--size-m);
+  padding: var(--size-xs) var(--size-s);
   background-color: var(--color-paper-dark);
-  border-radius: var(--rounded-s);
-  font-size: var(--size-xs);
+  border-radius: var(--rounded);
+  font-size: var(--size-s);
   text-decoration: none;
   color: var(--color-ink);
-  transition: background-color 0.15s ease, opacity 0.15s ease, transform 0.15s ease;
+  transition: all 0.2s ease;
   max-width: 100%;
   overflow: hidden;
   cursor: grab;
+  border: 1px solid transparent;
 }
 
 .calendar__card:hover {
   background-color: var(--color-paper-darker);
+  border-color: var(--color-ink-lighter);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
 }
 
 .calendar__card:active {
   cursor: grabbing;
+  transform: scale(1.02);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+  z-index: 10;
 }
 
+/* Dragging State */
 .calendar__card--dragging {
-  opacity: 0.5;
+  opacity: 0.3;
+  transform: scale(0.95);
+  box-shadow: none;
 }
 
+/* Overdue Cards */
 .calendar__card--overdue {
   background-color: var(--color-danger-faint);
+  border-left: 3px solid var(--color-danger);
 }
 
 .calendar__card--overdue:hover {
   background-color: var(--color-danger-light);
 }
 
-.calendar__card-board {
-  width: 8px;
-  height: 8px;
-  border-radius: 2px;
+/* Card Color Indicator */
+.calendar__card-indicator {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
   flex-shrink: 0;
+  background-color: var(--card-color);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
 }
 
+/* Card Title */
 .calendar__card-title {
   flex: 1;
   min-width: 0;
@@ -169,23 +249,36 @@
   overflow: hidden;
   text-overflow: ellipsis;
   text-align: left;
+  font-weight: var(--weight-medium);
 }
+
+/* ==========================================================================
+   Overflow / Show More
+   ========================================================================== */
 
 .calendar__more {
   font-size: var(--size-xs);
-  color: var(--color-ink-light);
-  padding: 2px var(--size-xs);
+  color: var(--color-accent);
+  padding: var(--size-xs) var(--size-s);
   cursor: pointer;
-  transition: color 0.15s ease;
-  background: none;
-  border: none;
-  text-align: left;
-  width: 100%;
+  transition: all 0.15s ease;
+  background: var(--color-paper-dark);
+  border: 1px dashed var(--color-ink-lighter);
+  border-radius: var(--rounded);
+  text-align: center;
+  font-weight: var(--weight-semi-bold);
+  margin-top: var(--size-xs);
 }
 
 .calendar__more:hover {
-  color: var(--color-ink);
-  text-decoration: underline;
+  background-color: var(--color-accent);
+  color: white;
+  border-style: solid;
+  border-color: var(--color-accent);
+}
+
+.calendar__more-text {
+  display: block;
 }
 
 /* Hidden cards (overflow) */
@@ -193,9 +286,33 @@
   display: none;
 }
 
+/* Drop zone (shown when dragging) */
+.calendar__drop-zone {
+  display: none;
+  align-items: center;
+  justify-content: center;
+  padding: var(--size-m);
+  margin-top: auto;
+  border: 2px dashed var(--color-accent);
+  border-radius: var(--rounded);
+  background: var(--color-highlight-faint);
+  color: var(--color-accent);
+}
+
+.calendar__drop-icon {
+  opacity: 0.7;
+}
+
+.calendar__drop-icon .icon {
+  width: 20px;
+  height: 20px;
+}
+
 /* Expanded day state */
 .calendar__day--expanded {
   min-height: auto;
+  z-index: 5;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.12);
 }
 
 .calendar__day--expanded .calendar__cards {
@@ -207,43 +324,134 @@
 }
 
 .calendar__day--expanded .calendar__more {
-  color: var(--color-ink-light);
+  background-color: var(--color-ink-lighter);
+  color: var(--color-ink);
+  border-color: var(--color-ink-lighter);
 }
 
-/* Drag and drop states */
+/* ==========================================================================
+   Drag and Drop States
+   ========================================================================== */
+
 .calendar__day--drop-target {
   background-color: var(--color-highlight-faint);
-  outline: 2px dashed var(--color-accent);
-  outline-offset: -2px;
+  border: 2px dashed var(--color-accent);
+  transform: scale(1.02);
+  box-shadow: 
+    0 0 0 4px rgba(0, 0, 0, 0.03),
+    0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 10;
+}
+
+.calendar__day--drop-target .calendar__date,
+.calendar__day--drop-target .calendar__date--today {
+  color: var(--color-accent);
+  background: none;
+}
+
+.calendar__day--drop-target .calendar__drop-zone {
+  display: flex;
+  animation: pulse 1s ease-in-out infinite;
+}
+
+@keyframes pulse {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* ==========================================================================
+   Responsive Design
+   ========================================================================== */
+
+@media (max-width: 1024px) {
+  .calendar {
+    padding: var(--size-m);
+  }
+  
+  .calendar__day {
+    min-height: 120px;
+    padding: var(--size-xs);
+  }
+  
+  .calendar__card {
+    padding: var(--size-xs);
+    gap: var(--size-s);
+    font-size: var(--size-xs);
+  }
+  
+  .calendar__card-indicator {
+    width: 8px;
+    height: 8px;
+  }
 }
 
 @media (max-width: 768px) {
-  .calendar__day {
-    min-height: 80px;
-    padding: 2px;
+  .calendar {
+    padding: var(--size-s);
   }
-
+  
+  .calendar__header {
+    margin-bottom: var(--size-xs);
+  }
+  
   .calendar__day-name {
     font-size: var(--size-xs);
-    padding: 2px;
+    padding: var(--size-xs);
+  }
+  
+  .calendar__body {
+    gap: 2px;
+  }
+  
+  .calendar__day {
+    min-height: 80px;
+    padding: var(--size-xs);
+    border-radius: var(--rounded-s);
   }
 
   .calendar__date {
+    font-size: var(--size-s);
+  }
+  
+  .calendar__date-wrapper {
+    margin-bottom: var(--size-xs);
+  }
+  
+  .calendar__date--today {
+    width: 22px;
+    height: 22px;
     font-size: var(--size-xs);
+  }
+  
+  .calendar__card-count {
+    display: none;
   }
 
   .calendar__card {
-    font-size: 10px;
-    padding: 1px 2px;
+    font-size: 11px;
+    padding: 3px var(--size-xs);
+    gap: var(--size-xs);
   }
 
-  .calendar__card-board {
+  .calendar__card-indicator {
     width: 6px;
     height: 6px;
   }
+  
+  .calendar__more {
+    font-size: 10px;
+    padding: var(--size-xs);
+  }
+  
+  .calendar__drop-zone {
+    padding: var(--size-s);
+  }
 }
 
-/* Calendar Card Modal */
+/* ==========================================================================
+   Calendar Card Modal
+   ========================================================================== */
+
 .calendar-modal {
   position: fixed;
   inset: 0;
@@ -253,7 +461,7 @@
   justify-content: center;
   opacity: 0;
   pointer-events: none;
-  transition: opacity 0.2s ease;
+  transition: opacity 0.25s ease;
 }
 
 .calendar-modal--open {
@@ -268,8 +476,8 @@
 .calendar-modal__backdrop {
   position: absolute;
   inset: 0;
-  background-color: rgba(0, 0, 0, 0.6);
-  backdrop-filter: blur(2px);
+  background-color: rgba(0, 0, 0, 0.5);
+  backdrop-filter: blur(4px);
 }
 
 .calendar-modal__container {
@@ -279,12 +487,12 @@
   max-height: 90vh;
   background-color: var(--color-paper);
   border-radius: var(--rounded-l);
-  box-shadow: var(--shadow-l);
+  box-shadow: 0 24px 48px rgba(0, 0, 0, 0.2);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  transform: scale(0.95) translateY(10px);
-  transition: transform 0.2s ease;
+  transform: scale(0.9) translateY(20px);
+  transition: transform 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
 }
 
 .calendar-modal--open .calendar-modal__container {
@@ -292,7 +500,7 @@
 }
 
 .calendar-modal--closing .calendar-modal__container {
-  transform: scale(0.95) translateY(10px);
+  transform: scale(0.9) translateY(20px);
 }
 
 .calendar-modal__header {
@@ -331,11 +539,11 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  width: 32px;
-  height: 32px;
+  width: 36px;
+  height: 36px;
   border-radius: var(--rounded);
   color: var(--color-ink-light);
-  transition: background-color 0.15s ease, color 0.15s ease;
+  transition: all 0.15s ease;
 }
 
 .calendar-modal__actions .btn--plain:hover {
