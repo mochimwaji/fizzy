@@ -374,14 +374,13 @@ export default class extends Controller {
           cardClone.style.transform = "scale(1)"
         })
         
-        // If target is expanded and there's a more button, we need to mark this card
-        // as hidden (for when it collapses) if there's already a visible card
+        // If target is expanded and there's already a visible card, we need to mark this card
+        // as hidden (for when it collapses)
         if (isTargetExpanded && visibleCardsInTarget >= 1) {
           cardClone.classList.add("calendar__card--hidden")
           cardClone.setAttribute("data-calendar-expand-target", "hidden")
-          if (moreButton) {
-            this.#incrementMoreCount(moreButton, 1)
-          }
+          // Don't update the more button here - it shows "Show less" when expanded
+          // The count will be correct when collapse happens based on hidden class count
         }
       }
       
@@ -429,6 +428,7 @@ export default class extends Controller {
     const hiddenCards = container.querySelectorAll(".calendar__card--hidden")
     const visibleCards = allCards.length - hiddenCards.length
     const moreButton = container.querySelector(".calendar__more")
+    const isExpanded = day?.classList.contains("calendar__day--expanded")
     
     // If no cards at all remain, remove the more button and collapse the day
     if (allCards.length === 0) {
@@ -441,6 +441,18 @@ export default class extends Controller {
       return
     }
     
+    // If day is expanded, don't modify the more button - it shows "Show less"
+    // The correct count will be calculated when the day collapses
+    if (isExpanded) {
+      // If no more hidden cards remain, remove the button entirely
+      if (hiddenCards.length === 0 && moreButton) {
+        moreButton.remove()
+        day.classList.remove("calendar__day--expanded")
+      }
+      return
+    }
+    
+    // Day is collapsed - handle normally
     // If the removed card was hidden, just decrement the count
     if (wasHiddenCard && moreButton) {
       this.#decrementMoreCount(moreButton)
