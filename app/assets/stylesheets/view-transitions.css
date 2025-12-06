@@ -14,29 +14,32 @@
 /* Smooth, comfortable default transition - not too fast, not too slow */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 300ms;
-  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation-duration: 200ms;
+  animation-timing-function: ease-out;
+  /* Prevent any stretching by containing the snapshot */
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
-/* Old page fades out quickly */
+/* Old page fades out */
 ::view-transition-old(root) {
-  animation-name: fade-out-smooth;
+  animation-name: fade-out-quick;
 }
 
-/* New page fades in with slight delay for overlap */
+/* New page fades in */
 ::view-transition-new(root) {
-  animation-name: fade-in-smooth;
+  animation-name: fade-in-quick;
 }
 
-@keyframes fade-out-smooth {
-  0% { opacity: 1; }
-  100% { opacity: 0; }
+@keyframes fade-out-quick {
+  from { opacity: 1; }
+  to { opacity: 0; }
 }
 
-@keyframes fade-in-smooth {
-  0% { opacity: 0; }
-  30% { opacity: 0; }
-  100% { opacity: 1; }
+@keyframes fade-in-quick {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
 /* ==========================================================================
@@ -45,21 +48,28 @@
 
 /* Forward navigation - new page slides in from right */
 @media (any-hover: none) {
+  /* Use simpler, faster transitions on mobile to prevent stretching */
+  ::view-transition-old(root),
+  ::view-transition-new(root) {
+    animation-duration: 200ms;
+    animation-timing-function: ease-out;
+  }
+  
   html[data-nav-direction="forward"]::view-transition-old(root) {
-    animation: slide-out-left 350ms cubic-bezier(0.4, 0, 0.2, 1);
+    animation: mobile-slide-out-left 200ms ease-out;
   }
   
   html[data-nav-direction="forward"]::view-transition-new(root) {
-    animation: slide-in-right 350ms cubic-bezier(0.4, 0, 0.2, 1);
+    animation: mobile-slide-in-right 200ms ease-out;
   }
   
   /* Back navigation - new page slides in from left */
   html[data-nav-direction="back"]::view-transition-old(root) {
-    animation: slide-out-right 350ms cubic-bezier(0.4, 0, 0.2, 1);
+    animation: mobile-slide-out-right 200ms ease-out;
   }
   
   html[data-nav-direction="back"]::view-transition-new(root) {
-    animation: slide-in-left 350ms cubic-bezier(0.4, 0, 0.2, 1);
+    animation: mobile-slide-in-left 200ms ease-out;
   }
   
   /* Restoration visits should be instant */
@@ -69,21 +79,22 @@
   }
 }
 
-@keyframes slide-out-left {
+/* Mobile-specific animations - smaller transform values, faster */
+@keyframes mobile-slide-out-left {
   from { 
     opacity: 1; 
     transform: translateX(0); 
   }
   to { 
     opacity: 0; 
-    transform: translateX(-30%); 
+    transform: translateX(-15%); 
   }
 }
 
-@keyframes slide-in-right {
+@keyframes mobile-slide-in-right {
   from { 
     opacity: 0; 
-    transform: translateX(30%); 
+    transform: translateX(15%); 
   }
   to { 
     opacity: 1; 
@@ -91,21 +102,21 @@
   }
 }
 
-@keyframes slide-out-right {
+@keyframes mobile-slide-out-right {
   from { 
     opacity: 1; 
     transform: translateX(0); 
   }
   to { 
     opacity: 0; 
-    transform: translateX(30%); 
+    transform: translateX(15%); 
   }
 }
 
-@keyframes slide-in-left {
+@keyframes mobile-slide-in-left {
   from { 
     opacity: 0; 
-    transform: translateX(-30%); 
+    transform: translateX(-15%); 
   }
   to { 
     opacity: 1; 
@@ -187,10 +198,19 @@
     isolation: auto;
   }
   
-  /* Ensure smooth rendering */
+  /* Ensure smooth rendering - constrain to viewport */
   ::view-transition-old(root),
   ::view-transition-new(root) {
-    height: 100%;
+    /* Constrain to viewport exactly to prevent stretching */
+    height: 100vh;
+    width: 100vw;
+    overflow: hidden;
+    object-fit: cover;
+    object-position: top center;
+  }
+  
+  /* Ensure the transition group fills the viewport correctly */
+  ::view-transition-group(root) {
     overflow: hidden;
   }
 }

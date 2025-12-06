@@ -410,17 +410,35 @@ export default class extends Controller {
     setTimeout(() => {
       card.remove()
       
-      // After removal, check if we need to reveal a hidden card
-      if (!wasHidden && sourceCardsContainer) {
-        this.#handleSourceCardRemoval(sourceCardsContainer, sourceDay, isExpanded)
+      // Always check if we need to clean up the more button or reveal cards
+      if (sourceCardsContainer) {
+        this.#handleSourceCardRemoval(sourceCardsContainer, sourceDay, isExpanded, wasHidden)
       }
     }, 200)
   }
   
-  #handleSourceCardRemoval(container, day, wasExpanded) {
+  #handleSourceCardRemoval(container, day, wasExpanded, wasHiddenCard) {
+    const allCards = container.querySelectorAll(".calendar__card")
     const hiddenCards = container.querySelectorAll(".calendar__card--hidden")
     const visibleCards = container.querySelectorAll(".calendar__card:not(.calendar__card--hidden)")
     const moreButton = container.querySelector(".calendar__more")
+    
+    // If no cards at all remain, remove the more button and collapse the day
+    if (allCards.length === 0) {
+      if (moreButton) {
+        moreButton.remove()
+      }
+      if (day) {
+        day.classList.remove("calendar__day--expanded")
+      }
+      return
+    }
+    
+    // If expanded and was a hidden card that got removed (shown due to expand), decrement count
+    if (wasExpanded && wasHiddenCard && moreButton) {
+      this.#decrementMoreCount(moreButton)
+      return
+    }
     
     // If no visible cards remain but there are hidden ones, reveal one
     if (visibleCards.length === 0 && hiddenCards.length > 0) {
