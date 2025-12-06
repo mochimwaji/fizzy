@@ -21,7 +21,7 @@ export default class extends Controller {
     // We don't modify the hidden class - just toggle the expanded state
     
     if (this.hasToggleTarget) {
-      this.toggleTarget.textContent = "Show less"
+      this.#setToggleText("Show less")
     }
   }
   
@@ -35,15 +35,22 @@ export default class extends Controller {
     
     if (this.hasToggleTarget) {
       if (hiddenCards.length > 0) {
-        this.toggleTarget.textContent = `+${hiddenCards.length} more`
+        this.#setToggleText(`+${hiddenCards.length} more`)
       } else {
         // No hidden cards, remove the button
-        this.toggleTarget.closest(".calendar__more")?.remove()
+        this.toggleTarget.remove()
       }
     }
   }
-}
-      }
+  
+  #setToggleText(text) {
+    // Find the text span inside the button, or update button directly
+    const textSpan = this.toggleTarget.querySelector(".calendar__more-text")
+    if (textSpan) {
+      textSpan.textContent = text
+    } else {
+      // If no span exists (e.g., button was created without one), wrap text in span
+      this.toggleTarget.innerHTML = `<span class="calendar__more-text">${text}</span>`
     }
   }
 }

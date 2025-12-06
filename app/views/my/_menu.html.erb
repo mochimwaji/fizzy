@@ -16,9 +16,10 @@
         navigable_list_focus_on_selection_value: false,
         navigable_list_actionable_items_value: true,
         turbo_permanent: true } do %>
-    <%= turbo_frame_tag "my_menu", src: my_menu_path, loading: :lazy, target: "_top" do %>
-      <% # Passing empty block to avoid double-render  %>
-      <%= render("my/menus/jump") { } %>
+    <%= turbo_frame_tag "my_menu", src: my_menu_path, loading: :lazy, target: "_top", class: "nav__frame" do %>
+      <div class="nav__loading">
+        <div class="nav__loading-spinner"></div>
+      </div>
     <% end %>
   <% end %>
 </nav>
