@@ -2,8 +2,9 @@ import { Turbo } from "@hotwired/turbo-rails"
 
 // Configure Turbo for smoother mobile navigation
 document.addEventListener("DOMContentLoaded", () => {
-  // Set a shorter progress bar delay to give instant feedback
-  Turbo.setProgressBarDelay(500)
+  // Disable the progress bar entirely - we use view transitions instead
+  // Setting a very high delay effectively disables it
+  Turbo.setProgressBarDelay(99999)
   
   // Enable View Transitions support if available
   if (document.startViewTransition) {

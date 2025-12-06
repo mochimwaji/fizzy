@@ -710,13 +710,15 @@
 .calendar-modal {
   position: fixed;
   inset: 0;
-  z-index: 1000;
+  z-index: 9999; /* Higher than everything including view transitions */
   display: flex;
   align-items: center;
   justify-content: center;
   opacity: 0;
   pointer-events: none;
   transition: opacity 0.3s ease;
+  /* Ensure this creates its own stacking context at the top level */
+  isolation: isolate;
 }
 
 .calendar-modal--open {

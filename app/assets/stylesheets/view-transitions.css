@@ -126,42 +126,36 @@
 
 /* ==========================================================================
    Named Element Transitions (Persistent UI)
+   
+   Note: We intentionally don't use view-transition-name on #header and 
+   #footer_frames because:
+   1. It creates stacking contexts that interfere with fixed position modals
+   2. It can cause stretching/morphing artifacts during navigation
+   3. The simple root-level fade/slide works better for consistent transitions
    ========================================================================== */
 
-/* Main content area */
+/* Main content area - only transition the content, not the whole page structure */
+/* Disabled: This causes stacking context issues with modals
 #main {
   view-transition-name: main-content;
 }
+*/
 
 ::view-transition-group(main-content) {
   animation-duration: 200ms;
-  animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+  animation-timing-function: ease-out;
 }
 
-/* Header stays in place */
+/* Header - no view-transition-name to avoid stacking context and stretching issues */
 #header {
-  view-transition-name: header;
+  position: relative;
+  z-index: 100;
 }
 
-::view-transition-group(header) {
-  animation-duration: 150ms;
-}
-
-::view-transition-old(header),
-::view-transition-new(header) {
-  /* Header cross-fades without movement */
-  animation: none;
-  mix-blend-mode: normal;
-}
-
-/* Footer frames are permanent, shouldn't transition */
-#footer_frames {
-  view-transition-name: footer-frames;
-}
-
-::view-transition-old(footer-frames),
-::view-transition-new(footer-frames) {
-  animation: none;
+/* When calendar modal is open, push header and footer behind it */
+body:has(.calendar-modal--open) #header,
+body:has(.calendar-modal--open) #footer_frames {
+  z-index: 1;
 }
 
 /* ==========================================================================

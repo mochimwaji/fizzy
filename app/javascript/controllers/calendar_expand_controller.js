@@ -17,10 +17,8 @@ export default class extends Controller {
   expand(day) {
     day.classList.add("calendar__day--expanded")
     
-    // Show all hidden cards
-    this.hiddenTargets.forEach(card => {
-      card.classList.remove("calendar__card--hidden")
-    })
+    // CSS handles showing hidden cards via .calendar__day--expanded .calendar__card--hidden
+    // We don't modify the hidden class - just toggle the expanded state
     
     if (this.hasToggleTarget) {
       this.toggleTarget.textContent = "Show less"
@@ -30,34 +28,21 @@ export default class extends Controller {
   collapse(day) {
     day.classList.remove("calendar__day--expanded")
     
-    // Get all cards in this container
+    // CSS will automatically hide cards with .calendar__card--hidden class
+    // Update the button text to show current hidden count
     const container = this.element
-    const allCards = container.querySelectorAll(".calendar__card")
-    
-    // Keep only the first card visible, hide the rest
-    let visibleCount = 0
-    let hiddenCount = 0
-    
-    allCards.forEach(card => {
-      if (visibleCount === 0) {
-        // Keep the first card visible
-        card.classList.remove("calendar__card--hidden")
-        card.removeAttribute("data-calendar-expand-target")
-        visibleCount++
-      } else {
-        // Hide all subsequent cards
-        card.classList.add("calendar__card--hidden")
-        card.setAttribute("data-calendar-expand-target", "hidden")
-        hiddenCount++
-      }
-    })
+    const hiddenCards = container.querySelectorAll(".calendar__card--hidden")
     
     if (this.hasToggleTarget) {
-      if (hiddenCount > 0) {
-        this.toggleTarget.textContent = `+${hiddenCount} more`
+      if (hiddenCards.length > 0) {
+        this.toggleTarget.textContent = `+${hiddenCards.length} more`
       } else {
         // No hidden cards, remove the button
         this.toggleTarget.closest(".calendar__more")?.remove()
+      }
+    }
+  }
+}
       }
     }
   }

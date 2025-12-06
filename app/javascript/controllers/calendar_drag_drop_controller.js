@@ -323,14 +323,12 @@ export default class extends Controller {
       const targetCardsContainer = targetDay.querySelector(".calendar__cards")
       const sourceCardsContainer = sourceDay?.querySelector(".calendar__cards")
       
-      // Get all visible cards in target (not hidden, not the more button)
-      const visibleCardsInTarget = targetCardsContainer?.querySelectorAll(".calendar__card:not(.calendar__card--hidden)") || []
-      const moreButton = targetCardsContainer?.querySelector(".calendar__more")
-      const isExpanded = targetDay.classList.contains("calendar__day--expanded")
-      
-      // Count total cards in target (visible + hidden) for proper counting
+      // Count cards properly - hidden class is always present on hidden cards, even when expanded
       const allCardsInTarget = targetCardsContainer?.querySelectorAll(".calendar__card") || []
       const hiddenCardsInTarget = targetCardsContainer?.querySelectorAll(".calendar__card--hidden") || []
+      const visibleCardsInTarget = allCardsInTarget.length - hiddenCardsInTarget.length
+      const moreButton = targetCardsContainer?.querySelector(".calendar__more")
+      const isTargetExpanded = targetDay.classList.contains("calendar__day--expanded")
       
       // Create a clone of the dragged card
       const cardClone = card.cloneNode(true)
@@ -339,9 +337,27 @@ export default class extends Controller {
       // Find the insertion point - before the more button or drop zone
       const insertBeforeElement = moreButton || targetCardsContainer?.querySelector(".calendar__drop-zone")
       
-      if (visibleCardsInTarget.length === 0 || isExpanded) {
-        // No visible cards OR we're expanded - show the card
+      // Determine if the new card should be visible or hidden
+      // Rule: Only 1 visible card per day when collapsed, all visible when expanded
+      const shouldBeHidden = visibleCardsInTarget >= 1 && !isTargetExpanded
+      
+      if (shouldBeHidden) {
+        // Add as hidden card and update +X more
+        cardClone.classList.add("calendar__card--hidden")
+        cardClone.setAttribute("data-calendar-expand-target", "hidden")
+        
+        if (insertBeforeElement) {
+          targetCardsContainer.insertBefore(cardClone, insertBeforeElement)
+        } else if (targetCardsContainer) {
+          targetCardsContainer.appendChild(cardClone)
+        }
+        
+        // Update or create +X more button
+        this.#updateMoreButtonForAdd(targetCardsContainer, moreButton)
+      } else {
+        // Add as visible card
         cardClone.classList.remove("calendar__card--hidden")
+        cardClone.removeAttribute("data-calendar-expand-target")
         cardClone.style.transition = "all 0.3s ease"
         cardClone.style.opacity = "0"
         cardClone.style.transform = "scale(0.9)"
@@ -358,24 +374,15 @@ export default class extends Controller {
           cardClone.style.transform = "scale(1)"
         })
         
-        // If we're expanded, also increment the +X more count (since when collapsed it will be hidden)
-        if (isExpanded && moreButton) {
-          this.#incrementMoreCount(moreButton, 1)
+        // If target is expanded and there's a more button, we need to mark this card
+        // as hidden (for when it collapses) if there's already a visible card
+        if (isTargetExpanded && visibleCardsInTarget >= 1) {
+          cardClone.classList.add("calendar__card--hidden")
+          cardClone.setAttribute("data-calendar-expand-target", "hidden")
+          if (moreButton) {
+            this.#incrementMoreCount(moreButton, 1)
+          }
         }
-      } else {
-        // Target already has a visible card - add as hidden and update +X more
-        cardClone.classList.add("calendar__card--hidden")
-        // Also mark as a hidden target for the expand controller
-        cardClone.setAttribute("data-calendar-expand-target", "hidden")
-        
-        if (insertBeforeElement) {
-          targetCardsContainer.insertBefore(cardClone, insertBeforeElement)
-        } else if (targetCardsContainer) {
-          targetCardsContainer.appendChild(cardClone)
-        }
-        
-        // Update or create +X more button
-        this.#updateMoreButtonForAdd(targetCardsContainer, moreButton)
       }
       
       // Handle source - remove card and possibly reveal a hidden one
@@ -420,7 +427,7 @@ export default class extends Controller {
   #handleSourceCardRemoval(container, day, wasExpanded, wasHiddenCard) {
     const allCards = container.querySelectorAll(".calendar__card")
     const hiddenCards = container.querySelectorAll(".calendar__card--hidden")
-    const visibleCards = container.querySelectorAll(".calendar__card:not(.calendar__card--hidden)")
+    const visibleCards = allCards.length - hiddenCards.length
     const moreButton = container.querySelector(".calendar__more")
     
     // If no cards at all remain, remove the more button and collapse the day
@@ -434,14 +441,15 @@ export default class extends Controller {
       return
     }
     
-    // If expanded and was a hidden card that got removed (shown due to expand), decrement count
-    if (wasExpanded && wasHiddenCard && moreButton) {
+    // If the removed card was hidden, just decrement the count
+    if (wasHiddenCard && moreButton) {
       this.#decrementMoreCount(moreButton)
       return
     }
     
-    // If no visible cards remain but there are hidden ones, reveal one
-    if (visibleCards.length === 0 && hiddenCards.length > 0) {
+    // A visible card was removed - we need to reveal a hidden card if any
+    if (hiddenCards.length > 0) {
+      // Reveal the first hidden card
       const cardToReveal = hiddenCards[0]
       cardToReveal.classList.remove("calendar__card--hidden")
       cardToReveal.removeAttribute("data-calendar-expand-target")
@@ -453,13 +461,10 @@ export default class extends Controller {
         cardToReveal.style.opacity = "1"
       })
       
-      // Update the +X more count
+      // Decrement the +X more count
       if (moreButton) {
         this.#decrementMoreCount(moreButton)
       }
-    } else if (moreButton && !wasExpanded) {
-      // Just decrement the count if we didn't reveal a card
-      this.#decrementMoreCount(moreButton)
     }
   }
   

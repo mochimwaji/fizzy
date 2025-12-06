@@ -101,7 +101,7 @@
   }
 
   .turbo-progress-bar {
-    visibility: hidden;
+    display: none !important;
   }
 
   /* Nicer scrollbars on Chrome 29+. This is intended for Windows machines, but */
