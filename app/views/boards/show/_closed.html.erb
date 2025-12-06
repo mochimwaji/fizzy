@@ -1,11 +1,10 @@
-<%= column_tag id: "closed-cards", name: "Done", drop_url: columns_card_drops_closure_path("__id__"), class: "cards--closed", style: "--card-color: #{board.closed_color};",
+<%= column_tag id: "closed-cards", name: "Done", drop_url: columns_card_drops_closure_path("__id__"), class: "cards--closed", style: "--card-color: var(--color-card-complete);",
   data: {
     drag_and_strum_target: "container",
     collapsible_columns_target: "column",
     action: "focus->collapsible-columns#focusOnColumn"
   } do %>
   <header class="cards__header">
-    <%= render "boards/show/menu/system_category", board: board, category_type: "closed", category_name: "Done", current_color: board.closed_color %>
     <%= render "boards/show/expander", title: "Done", count: board.cards.closed.count, column_id: "closed-cards" %>
     <%= render "boards/show/menu/maximize", column_path: board_columns_closed_path(board) %>
   </header>

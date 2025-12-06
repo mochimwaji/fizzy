@@ -148,7 +148,6 @@ ActiveRecord::Schema[8.2].define(version: 2025_12_05_205224) do
     t.datetime "created_at", null: false
     t.uuid "creator_id", null: false
     t.string "name", limit: 255, null: false
-    t.json "system_category_colors"
     t.datetime "updated_at", null: false
     t.index ["account_id"], name: "index_boards_on_account_id"
     t.index ["creator_id"], name: "index_boards_on_creator_id"

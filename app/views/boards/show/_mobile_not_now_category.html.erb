@@ -1,5 +1,5 @@
 <%# Not Now mobile category - extracted for Turbo Stream updates %>
-<div class="mobile-board__category mobile-board__category--system" 
+<div class="mobile-board__category" 
      id="mobile-category-not-now"
      data-mobile-board-target="category"
      data-drag-and-drop-target="container"
@@ -7,7 +7,7 @@
      data-category-type="not_now"
      data-category-id="not_now"
      data-category-name="Not Now"
-     style="--card-color: <%= board.not_now_color %>;">
+     style="--card-color: var(--color-card-1);">
   <div class="mobile-board__category-header" 
        data-action="click->mobile-board#toggle"
        data-mobile-board-target="header"
@@ -18,42 +18,6 @@
       <span class="mobile-board__category-title">Not Now</span>
       <%= icon_tag "collapse", class: "mobile-board__category-collapse-icon" %>
     </div>
-    <button class="mobile-board__config-button" 
-            data-action="click->mobile-board#toggleConfig:stop"
-            data-mobile-board-target="configButton"
-            title="Customize color">
-      <%= icon_tag "settings" %>
-    </button>
-  </div>
-  
-  <%# Color picker form for system category %>
-  <div class="mobile-board__category-edit" data-mobile-board-target="editForm">
-    <%= form_with url: board_system_category_colors_path(board), 
-                  method: :patch,
-                  data: { 
-                    controller: "form", 
-                    action: "turbo:submit-end->mobile-board#handleEditSubmit" 
-                  },
-                  class: "mobile-board__edit-form" do |form| %>
-      <%= form.hidden_field :category, value: "not_now" %>
-      <div class="mobile-board__edit-colors">
-        <% Color::COLORS.each do |color| %>
-          <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
-            <%= form.radio_button :color, color.value, checked: (board.not_now_color == color.value) %>
-            <span class="mobile-board__color-swatch"></span>
-          </label>
-        <% end %>
-        <% Color::MOBILE_EXTRA_COLORS.each do |color| %>
-          <label class="mobile-board__color-option" style="--option-color: <%= color.value %>" title="<%= color.name %>">
-            <%= form.radio_button :color, color.value, checked: (board.not_now_color == color.value) %>
-            <span class="mobile-board__color-swatch"></span>
-          </label>
-        <% end %>
-      </div>
-      <div class="mobile-board__edit-actions">
-        <%= form.submit "Save", class: "btn btn--small" %>
-      </div>
-    <% end %>
   </div>
   
   <div class="mobile-board__category-cards" 
