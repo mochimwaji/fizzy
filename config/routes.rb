@@ -42,7 +42,7 @@ Rails.application.routes.draw do
       resources :columns
       
       # System category color customization
-      resource :system_category_colors, only: :update, module: :boards
+      resource :system_category_colors, only: :update
     end
 
     resources :cards, only: :create
