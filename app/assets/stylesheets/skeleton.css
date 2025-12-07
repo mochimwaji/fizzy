@@ -7,6 +7,7 @@
   0% {
     background-position: -200% 0;
   }
+
   100% {
     background-position: 200% 0;
   }
@@ -14,12 +15,10 @@
 
 /* Skeleton placeholder styles */
 .skeleton {
-  background: linear-gradient(
-    90deg,
-    var(--color-bg-card) 0%,
-    var(--color-bg-hover) 50%,
-    var(--color-bg-card) 100%
-  );
+  background: linear-gradient(90deg,
+      var(--color-bg-card) 0%,
+      var(--color-bg-hover) 50%,
+      var(--color-bg-card) 100%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s infinite;
   border-radius: 4px;
@@ -28,12 +27,10 @@
 /* Dark mode skeleton */
 @media (prefers-color-scheme: dark) {
   .skeleton {
-    background: linear-gradient(
-      90deg,
-      oklch(var(--lch-ink-darker)) 0%,
-      oklch(var(--lch-ink-dark)) 50%,
-      oklch(var(--lch-ink-darker)) 100%
-    );
+    background: linear-gradient(90deg,
+        oklch(var(--lch-ink-darker)) 0%,
+        oklch(var(--lch-ink-dark)) 50%,
+        oklch(var(--lch-ink-darker)) 100%);
     background-size: 200% 100%;
   }
 }
@@ -84,23 +81,25 @@
   border-radius: 3px;
 }
 
-.skeleton-card__line:nth-child(1) { width: 100%; }
-.skeleton-card__line:nth-child(2) { width: 85%; }
-.skeleton-card__line:nth-child(3) { width: 70%; }
+.skeleton-card__line:nth-child(1) {
+  width: 100%;
+}
+
+.skeleton-card__line:nth-child(2) {
+  width: 85%;
+}
+
+.skeleton-card__line:nth-child(3) {
+  width: 70%;
+}
 
 /* ==========================================================================
    Turbo Frame Loading States
    ========================================================================== */
 
-/* Frame loading indicator */
-turbo-frame[busy]::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: var(--color-bg-card);
-  opacity: 0.6;
-  z-index: 1;
-}
+/* Frame loading indicator - disabled to prevent white flash */
+/* Note: The busy overlay caused visible flashing during frame updates.
+   We rely on skeleton placeholders where needed instead. */
 
 /* Minimal spinner for small frames */
 turbo-frame[busy].frame-spinner::after {
@@ -119,11 +118,13 @@ turbo-frame[busy].frame-spinner::after {
 }
 
 @keyframes spinner {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* Frame with skeleton placeholder */
-turbo-frame[busy].frame-skeleton > * {
+turbo-frame[busy].frame-skeleton>* {
   visibility: hidden;
 }
 
@@ -131,12 +132,10 @@ turbo-frame[busy].frame-skeleton::after {
   content: "";
   position: absolute;
   inset: var(--block-space);
-  background: linear-gradient(
-    90deg,
-    var(--color-bg-card) 0%,
-    var(--color-bg-hover) 50%,
-    var(--color-bg-card) 100%
-  );
+  background: linear-gradient(90deg,
+      var(--color-bg-card) 0%,
+      var(--color-bg-hover) 50%,
+      var(--color-bg-card) 100%);
   background-size: 200% 100%;
   animation: skeleton-shimmer 1.5s infinite;
   border-radius: 4px;
@@ -257,8 +256,13 @@ button:active {
 }
 
 @keyframes success-flash {
-  0% { background-color: var(--color-success-subtle); }
-  100% { background-color: transparent; }
+  0% {
+    background-color: var(--color-success-subtle);
+  }
+
+  100% {
+    background-color: transparent;
+  }
 }
 
 /* Optimistic card states */
@@ -281,6 +285,7 @@ button:active {
     opacity: 0;
     transform: translateY(-10px) scale(0.95);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);

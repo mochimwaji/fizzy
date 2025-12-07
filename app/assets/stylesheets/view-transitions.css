@@ -54,31 +54,31 @@
   /* Use simpler, faster transitions on mobile to prevent stretching */
   ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation-duration: 350ms;
+    animation-duration: 250ms;
     animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
   }
   
   /* Forward: Old page stays, dims slightly. New page slides over from right. */
   html[data-nav-direction="forward"]::view-transition-old(root) {
-    animation: mobile-fade-out-dim 350ms cubic-bezier(0.32, 0.72, 0, 1);
+    animation: mobile-fade-out-dim 250ms cubic-bezier(0.32, 0.72, 0, 1);
     z-index: 1;
   }
   
   html[data-nav-direction="forward"]::view-transition-new(root) {
-    animation: mobile-slide-in-right 350ms cubic-bezier(0.32, 0.72, 0, 1);
+    animation: mobile-slide-in-right 250ms cubic-bezier(0.32, 0.72, 0, 1);
     z-index: 2;
     box-shadow: -5px 0 25px rgba(0,0,0,0.15);
   }
   
   /* Back: Old page slides out to right. New page stays, undims. */
   html[data-nav-direction="back"]::view-transition-old(root) {
-    animation: mobile-slide-out-right 350ms cubic-bezier(0.32, 0.72, 0, 1);
+    animation: mobile-slide-out-right 250ms cubic-bezier(0.32, 0.72, 0, 1);
     z-index: 2;
     box-shadow: -5px 0 25px rgba(0,0,0,0.15);
   }
   
   html[data-nav-direction="back"]::view-transition-new(root) {
-    animation: mobile-fade-in-dim 350ms cubic-bezier(0.32, 0.72, 0, 1);
+    animation: mobile-fade-in-dim 250ms cubic-bezier(0.32, 0.72, 0, 1);
     z-index: 1;
   }
   
@@ -249,16 +249,9 @@ turbo-frame[complete] > * {
    Fallback Animations (for browsers without View Transitions)
    ========================================================================== */
 
-/* Loading state feedback */
-html.is-loading {
-  cursor: wait;
-}
-
-html.is-loading main {
-  opacity: 0.8;
-  transition: opacity 0.2s ease;
-  filter: grayscale(0.2);
-}
+/* Loading state feedback - kept minimal to avoid visible dimming */
+/* Note: We intentionally don't dim the page during loading as it causes
+   visible jarring effects. View Transitions handle the animation. */
 
 /* Fallback navigation animation if View Transitions aren't supported */
 @supports not (view-transition-name: none) {

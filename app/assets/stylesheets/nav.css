@@ -48,8 +48,7 @@
         0 0 0 1px oklch(var(--lch-ink-darkest) / 0.1),
         0 0.1em 0.2em -0.1em oklch(var(--lch-ink-darkest) / 0.05),
         0 0.2em 0.4em -0.2em oklch(var(--lch-ink-darkest) / 0.05),
-        0 0.3em 0.6em -0.3em oklch(var(--lch-ink-darkest) / 0.05)
-      ;
+        0 0.3em 0.6em -0.3em oklch(var(--lch-ink-darkest) / 0.05);
       display: grid;
       height: 1.5em;
       inline-size: 1.5em;
@@ -78,51 +77,52 @@
     --panel-size: 45ch;
     --popup-display: grid;
     --nav-section-gap: 2px;
-    --nav-animation-duration: 280ms;
+    --nav-animation-duration: 200ms;
 
     block-size: auto;
     box-shadow: 0 0 0 1px oklch(var(--lch-blue-medium) / 5%),
-                0 0.2em 0.2em oklch(var(--lch-blue-medium) / 5%),
-                0 0.4em 0.4em oklch(var(--lch-blue-medium) / 5%),
-                0 0.8em 0.8em oklch(var(--lch-blue-medium) / 5%);
+      0 0.2em 0.2em oklch(var(--lch-blue-medium) / 5%),
+      0 0.4em 0.4em oklch(var(--lch-blue-medium) / 5%),
+      0 0.8em 0.8em oklch(var(--lch-blue-medium) / 5%);
     grid-template-rows: auto 1fr auto;
     gap: var(--nav-section-gap);
     max-block-size: calc(100vh - var(--block-space) - var(--footer-height));
     overflow: hidden;
-    
+
     /* Override popup animation with more elaborate nav-specific animation */
     opacity: 0;
     transform: scale(0.92) translateX(-50%) translateY(-8px);
     transform-origin: top left;
     transition: var(--nav-animation-duration) cubic-bezier(0.32, 0.72, 0, 1) allow-discrete;
     transition-property: display, opacity, overlay, transform;
-    
+
     &::backdrop {
       background-color: var(--color-always-black);
       opacity: 0;
       transition: var(--nav-animation-duration) cubic-bezier(0.32, 0.72, 0, 1) allow-discrete;
       transition-property: display, opacity, overlay;
     }
-    
+
     &[open] {
       opacity: 1;
       transform: scale(1) translateX(-50%) translateY(0);
-      
+
       &::backdrop {
         opacity: 0.5;
       }
     }
-    
+
     @starting-style {
       &[open] {
         opacity: 0;
         transform: scale(0.92) translateX(-50%) translateY(-8px);
       }
-      
+
       &[open]::backdrop {
         opacity: 0;
       }
     }
+
     padding-block-end: 0;
     scrollbar-gutter: stable both-edges;
     z-index: var(--z-nav);
@@ -136,7 +136,8 @@
     display: flex;
     flex-direction: column;
     gap: var(--nav-section-gap);
-    margin-inline: calc(-1 * var(--block-space)); /* space for scrollbar */
+    margin-inline: calc(-1 * var(--block-space));
+    /* space for scrollbar */
     overflow: auto;
     padding-block-end: var(--nav-section-gap);
     padding-inline: var(--block-space);

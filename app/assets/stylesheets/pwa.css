@@ -35,17 +35,18 @@
 
 /* Improve touch targets for draggable items */
 @media (any-hover: none) {
+
   /* Cards in columns should have larger touch targets */
   .card {
     min-height: 64px;
   }
-  
+
   /* Calendar cards need bigger touch targets */
   .calendar__card {
     min-height: 32px;
     padding: 8px 12px;
   }
-  
+
   /* Ensure buttons meet 44x44 minimum touch target */
   .btn--circle,
   .btn--icon {
@@ -56,13 +57,20 @@
 
 /* Visual feedback for long-press on touch devices */
 @media (any-hover: none) {
+
   .card,
   .calendar__card {
     transition: transform 0.15s ease, box-shadow 0.15s ease;
-    
+
     &:active {
       transform: scale(0.98);
     }
+  }
+
+  /* Subtle feedback when tapping links */
+  a:active:not(.btn):not(.card) {
+    opacity: 0.7;
+    transition: opacity 50ms ease;
   }
 }
 
@@ -85,26 +93,27 @@
    ========================================================================== */
 
 @media (display-mode: standalone) {
+
   /* Slightly larger tap targets in PWA mode */
   .btn {
     min-height: 40px;
   }
-  
+
   /* Remove browser-specific elements in PWA */
   .browser-only {
     display: none !important;
   }
-  
+
   /* Prevent pull-to-refresh interfering with app gestures */
   body {
     overscroll-behavior-y: contain;
   }
-  
+
   /* Safe area handling for notched devices */
   .header {
     padding-top: calc(var(--block-space-half) + env(safe-area-inset-top));
   }
-  
+
   .bar {
     padding-bottom: calc(var(--block-space) + env(safe-area-inset-bottom));
   }
@@ -119,18 +128,19 @@
   display: none;
   padding: 0.5rem;
   padding-bottom: 2rem;
-  
+
   @media (any-hover: none) {
     display: block;
   }
-  
+
   @media (max-width: 519px) {
     display: block;
   }
 }
 
 /* Hide desktop columns on mobile */
-@media (any-hover: none), (max-width: 519px) {
+@media (any-hover: none),
+(max-width: 519px) {
   .card-columns {
     display: none !important;
   }
@@ -143,7 +153,7 @@
 /* Category row container - matches desktop .cards collapsed style */
 .mobile-board__category {
   --column-color: color-mix(in srgb, var(--card-color) 15%, var(--color-canvas));
-  
+
   position: relative;
   margin-bottom: 0.5rem;
   background: var(--color-canvas);
@@ -178,11 +188,11 @@
   background: linear-gradient(to right, var(--card-color), var(--column-color) 80%);
   border-radius: 1.25rem;
   transition: filter 0.15s ease;
-  
+
   &:active {
     filter: brightness(0.95);
   }
-  
+
   .mobile-board__category--expanded & {
     border-radius: 1.25rem 0 0 0;
   }
@@ -203,24 +213,25 @@
   color: var(--color-ink);
   opacity: 0.6;
   transition: opacity 0.15s ease, background-color 0.15s ease;
-  
+
   .mobile-board__category--editable & {
     display: flex;
   }
-  
+
   .mobile-board__category--expanded & {
     border-radius: 0 1.25rem 0 0;
   }
-  
-  &:hover, &:focus {
+
+  &:hover,
+  &:focus {
     opacity: 1;
   }
-  
+
   &.mobile-board__config-button--active {
     opacity: 1;
     background: color-mix(in srgb, var(--card-color) 30%, var(--column-color));
   }
-  
+
   .icon {
     --icon-size: 1.25rem;
   }
@@ -252,7 +263,7 @@
 /* Collapse icon - hidden when collapsed, shown when expanded */
 .mobile-board__category-collapse-icon {
   --icon-size: 1em;
-  
+
   opacity: 0;
   transform: scale(1.5);
   transition: opacity 0.15s ease, transform 0.15s ease;
@@ -262,7 +273,7 @@
 /* Expanded state */
 .mobile-board__category--expanded {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  
+
   .mobile-board__category-collapse-icon {
     opacity: 0.66;
     transform: scale(1);
@@ -278,11 +289,11 @@
   background: var(--column-color);
   border-radius: 0 0 1.25rem 1.25rem;
   transition: grid-template-rows 0.3s ease-out, opacity 0.3s ease-out, padding 0.3s ease-out;
-  
-  > * {
+
+  >* {
     overflow: hidden;
   }
-  
+
   .mobile-board__category--expanded & {
     grid-template-rows: 1fr;
     opacity: 1;
@@ -302,7 +313,7 @@
 /* Cards within the mobile board */
 .mobile-board .card {
   margin-bottom: 0.5rem;
-  
+
   &:last-child {
     margin-bottom: 0;
   }
@@ -311,7 +322,7 @@
 /* Drag over highlight for category rows */
 .mobile-board__category--drag-over {
   box-shadow: 0 0 0 3px var(--card-color);
-  
+
   .mobile-board__category-expander {
     filter: brightness(1.1);
   }
@@ -326,7 +337,7 @@
   padding: 0.75rem;
   background: var(--column-color);
   border-top: 1px solid color-mix(in srgb, var(--card-color) 30%, transparent);
-  
+
   /* Only show when both expanded AND visible class is set */
   &.mobile-board__category-edit--visible {
     display: block;
@@ -359,7 +370,7 @@
 .mobile-board__color-option {
   position: relative;
   cursor: pointer;
-  
+
   input[type="radio"] {
     position: absolute;
     opacity: 0;
@@ -376,13 +387,13 @@
   background: var(--option-color);
   border: 2px solid transparent;
   transition: border-color 0.15s ease, transform 0.15s ease;
-  
-  input[type="radio"]:checked + & {
+
+  input[type="radio"]:checked+& {
     border-color: var(--color-ink-dark);
     transform: scale(1.1);
   }
-  
-  input[type="radio"]:focus + & {
+
+  input[type="radio"]:focus+& {
     outline: 2px solid var(--color-selected);
     outline-offset: 2px;
   }
@@ -417,22 +428,23 @@
   color: var(--color-ink);
   cursor: pointer;
   transition: all 0.15s ease;
-  
+
   .icon {
     --icon-size: 1.5rem;
     opacity: 0.5;
     transition: opacity 0.15s ease;
   }
-  
-  &:hover, &:focus {
+
+  &:hover,
+  &:focus {
     border-color: var(--color-ink);
     background: var(--color-ink-lightest);
-    
+
     .icon {
       opacity: 1;
     }
   }
-  
+
   &:active {
     transform: scale(0.98);
   }
@@ -443,24 +455,25 @@
    ========================================================================== */
 
 .card--mobile-preview {
+
   /* Hide meta information (author, dates, assignees) */
   .card__footer {
     display: none;
   }
-  
+
   /* Hide column stages sidebar */
   .card__stages {
     display: none;
   }
-  
+
   /* Simplify the card body */
   .card__body {
     justify-content: flex-start;
   }
-  
+
   /* Make the card more compact */
   padding: 0.5rem 0.75rem;
-  
+
   /* Ensure the card is still clickable */
   .card__link {
     position: absolute;
@@ -476,11 +489,11 @@
 /* Hide tabs on desktop, show on mobile/touch */
 .mobile-column-tabs {
   display: none;
-  
+
   @media (any-hover: none) {
     display: block;
   }
-  
+
   @media (max-width: 519px) {
     display: block;
   }
@@ -490,15 +503,17 @@
   display: flex;
   overflow-x: auto;
   scroll-behavior: smooth;
-  scrollbar-width: none; /* Firefox */
+  scrollbar-width: none;
+  /* Firefox */
   -webkit-overflow-scrolling: touch;
   gap: 0.25rem;
   padding: 0.5rem var(--main-padding);
   background: var(--color-canvas);
   border-bottom: 1px solid var(--color-ink-lighter);
-  
+
   &::-webkit-scrollbar {
-    display: none; /* Chrome/Safari */
+    display: none;
+    /* Chrome/Safari */
   }
 }
 
@@ -514,10 +529,10 @@
   background: var(--color-ink-lightest);
   border: 2px solid transparent;
   transition: all 0.15s ease;
-  
+
   /* Use the tab color as an accent */
   border-left: 3px solid var(--tab-color, var(--color-card-default));
-  
+
   &:hover {
     background: var(--color-ink-lighter);
   }
@@ -593,20 +608,43 @@
 }
 
 @keyframes slideOutLeft {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(-50px); opacity: 0; }
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(-50px);
+    opacity: 0;
+  }
 }
 
 @keyframes slideOutRight {
-  from { transform: translateX(0); opacity: 1; }
-  to { transform: translateX(50px); opacity: 0; }
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+
+  to {
+    transform: translateX(50px);
+    opacity: 0;
+  }
 }
 
 /* Long-press preparing-to-drag animation */
 @keyframes prepareToDrag {
-  0% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-  100% { transform: scale(1.02); box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15); }
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.02);
+  }
+
+  100% {
+    transform: scale(1.02);
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+  }
 }
 
 .drag-and-drop__preparing {
@@ -630,13 +668,13 @@
 @media (any-hover: none) {
   .cards--grid {
     touch-action: pan-y;
-    
+
     .card {
       /* Ensure cards are visible and touch-friendly */
       min-height: 64px;
     }
   }
-  
+
   /* Make sure swipe navigation doesn't conflict with card interactions */
   .cards--grid .card {
     touch-action: manipulation;

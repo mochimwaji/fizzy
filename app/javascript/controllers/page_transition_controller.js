@@ -21,9 +21,6 @@ export default class extends Controller {
 
   // Called before Turbo visits a new page
   rememberPosition(event) {
-    // Add loading state immediately to give feedback during network request
-    document.documentElement.classList.add("is-loading")
-
     // Save current scroll position
     sessionStorage.setItem("scrollY", window.scrollY.toString())
 
@@ -63,11 +60,10 @@ export default class extends Controller {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         document.documentElement.classList.remove("is-navigating")
-        document.documentElement.classList.remove("is-loading")
         // Keep the direction attribute for a moment to ensure the animation finishes
         setTimeout(() => {
-           document.documentElement.removeAttribute("data-nav-direction")
-        }, 400)
+          document.documentElement.removeAttribute("data-nav-direction")
+        }, 300)
       })
     })
 
