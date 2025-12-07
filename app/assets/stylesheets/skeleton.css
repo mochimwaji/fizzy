@@ -340,24 +340,20 @@ a.is-pending {
   display: contents;
 }
 
-/* Skeleton container during navigation */
+/* Skeleton container during navigation - overlays content */
 .skeleton-container {
   display: none;
 }
 
 .skeleton-container--active {
   display: block;
-  animation: skeleton-fade-in 100ms ease-out;
-}
-
-@keyframes skeleton-fade-in {
-  from {
-    opacity: 0;
-  }
-
-  to {
-    opacity: 1;
-  }
+  position: fixed;
+  inset: 0;
+  top: var(--header-height, 3rem);
+  bottom: var(--footer-height, 3.5rem);
+  background: var(--color-canvas);
+  z-index: 50;
+  overflow: hidden;
 }
 
 /* Base skeleton page layout */

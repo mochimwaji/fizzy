@@ -4,7 +4,7 @@ import { delay, nextEvent } from "helpers/timing_helpers"
 import { keepingScrollPosition } from "helpers/scroll_helpers"
 import { get } from "@rails/request.js"
 
-const DELAY_BEFORE_OBSERVING = 100
+const DELAY_BEFORE_OBSERVING = 0
 
 export default class extends Controller {
   static targets = ["paginationLink"]

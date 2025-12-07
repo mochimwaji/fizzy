@@ -54,30 +54,21 @@ export default class extends Controller {
         const mainContent = document.getElementById("main-content")
         if (!mainContent) return
 
-        // Clone skeleton and show it
+        // Clone skeleton and show it as fixed overlay
         const skeleton = template.content.cloneNode(true)
         const skeletonContainer = document.createElement("div")
         skeletonContainer.id = "active-skeleton"
         skeletonContainer.className = "skeleton-container skeleton-container--active"
         skeletonContainer.appendChild(skeleton)
 
-        // Insert skeleton at start of frame (visible during load)
-        const main = mainContent.querySelector("main")
-        if (main) {
-            main.style.opacity = "0"
-            main.insertAdjacentElement("beforebegin", skeletonContainer)
-        }
+        // Insert skeleton as overlay (fixed positioned in CSS)
+        document.body.appendChild(skeletonContainer)
     }
 
     #hideSkeleton() {
         const skeleton = document.getElementById("active-skeleton")
         if (skeleton) {
             skeleton.remove()
-        }
-
-        const main = document.querySelector("#main-content main")
-        if (main) {
-            main.style.opacity = ""
         }
     }
 

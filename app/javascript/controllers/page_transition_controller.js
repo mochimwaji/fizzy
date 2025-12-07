@@ -57,14 +57,10 @@ export default class extends Controller {
   finishRender(event) {
     // Remove transition class after the view transition completes
     // Use requestAnimationFrame to ensure we're in the next paint cycle
+    // Remove transition classes immediately on next paint
     requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        document.documentElement.classList.remove("is-navigating")
-        // Keep the direction attribute for a moment to ensure the animation finishes
-        setTimeout(() => {
-          document.documentElement.removeAttribute("data-nav-direction")
-        }, 300)
-      })
+      document.documentElement.classList.remove("is-navigating")
+      document.documentElement.removeAttribute("data-nav-direction")
     })
 
     // Update current path
