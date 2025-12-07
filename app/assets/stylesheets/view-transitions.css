@@ -49,7 +49,8 @@
    ========================================================================== */
 
 /* Forward navigation - new page slides in from right */
-@media (any-hover: none) {
+/* Removed media query to ensure animations run on all devices */
+/* @media (any-hover: none) { */
   /* Use simpler, faster transitions on mobile to prevent stretching */
   ::view-transition-old(root),
   ::view-transition-new(root) {
@@ -86,7 +87,7 @@
   html[data-nav-direction="restore"]::view-transition-new(root) {
     animation: none;
   }
-}
+/* } */
 
 /* Mobile-specific animations - Stacked effect */
 @keyframes mobile-fade-out-dim {
@@ -241,5 +242,29 @@ turbo-frame[complete] > * {
 @media (any-hover: none) {
   turbo-frame > * {
     animation: none;
+  }
+}
+
+/* ==========================================================================
+   Fallback Animations (for browsers without View Transitions)
+   ========================================================================== */
+
+/* Loading state feedback */
+html.is-loading {
+  cursor: wait;
+}
+
+html.is-loading main {
+  opacity: 0.8;
+  transition: opacity 0.2s ease;
+  filter: grayscale(0.2);
+}
+
+/* Fallback navigation animation if View Transitions aren't supported */
+@supports not (view-transition-name: none) {
+  html.is-navigating main {
+    opacity: 0;
+    transform: translateY(10px);
+    transition: opacity 0.3s ease, transform 0.3s ease;
   }
 }
