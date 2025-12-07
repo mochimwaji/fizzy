@@ -1,0 +1,71 @@
+<% # Skeleton templates for instant navigation feedback %>
+<% # These are hidden by default and shown by spa-shell controller during navigation %>
+
+<template id="skeleton-board">
+  <div class="skeleton-page skeleton-page--board">
+    <div class="skeleton skeleton-title skeleton-title--large"></div>
+    <div class="skeleton-categories">
+      <div class="skeleton skeleton-card skeleton-card--category"></div>
+      <div class="skeleton skeleton-card skeleton-card--category"></div>
+      <div class="skeleton skeleton-card skeleton-card--category"></div>
+      <div class="skeleton skeleton-card skeleton-card--category"></div>
+    </div>
+  </div>
+</template>
+
+<template id="skeleton-card">
+  <div class="skeleton-page skeleton-page--card">
+    <div class="skeleton skeleton-title skeleton-title--large"></div>
+    <div class="skeleton skeleton-line skeleton-line--long"></div>
+    <div class="skeleton skeleton-line skeleton-line--medium"></div>
+    <div class="skeleton skeleton-line skeleton-line--short"></div>
+    <div class="skeleton-spacer"></div>
+    <div class="skeleton skeleton-line skeleton-line--long"></div>
+    <div class="skeleton skeleton-line skeleton-line--medium"></div>
+  </div>
+</template>
+
+<template id="skeleton-events">
+  <div class="skeleton-page skeleton-page--events">
+    <div class="skeleton skeleton-title skeleton-title--medium"></div>
+    <div class="skeleton-events-list">
+      <div class="skeleton skeleton-card skeleton-card--event"></div>
+      <div class="skeleton skeleton-card skeleton-card--event"></div>
+      <div class="skeleton skeleton-card skeleton-card--event"></div>
+      <div class="skeleton skeleton-card skeleton-card--event"></div>
+      <div class="skeleton skeleton-card skeleton-card--event"></div>
+    </div>
+  </div>
+</template>
+
+<template id="skeleton-calendar">
+  <div class="skeleton-page skeleton-page--calendar">
+    <div class="skeleton skeleton-title skeleton-title--medium"></div>
+    <div class="skeleton-calendar-grid">
+      <% 35.times do %>
+        <div class="skeleton skeleton-card skeleton-card--day"></div>
+      <% end %>
+    </div>
+  </div>
+</template>
+
+<template id="skeleton-settings">
+  <div class="skeleton-page skeleton-page--settings">
+    <div class="skeleton skeleton-title skeleton-title--medium"></div>
+    <div class="skeleton-settings-list">
+      <div class="skeleton skeleton-line skeleton-line--long"></div>
+      <div class="skeleton skeleton-line skeleton-line--long"></div>
+      <div class="skeleton skeleton-line skeleton-line--long"></div>
+      <div class="skeleton skeleton-line skeleton-line--long"></div>
+    </div>
+  </div>
+</template>
+
+<template id="skeleton-default">
+  <div class="skeleton-page skeleton-page--default">
+    <div class="skeleton skeleton-title skeleton-title--medium"></div>
+    <div class="skeleton skeleton-line skeleton-line--long"></div>
+    <div class="skeleton skeleton-line skeleton-line--medium"></div>
+    <div class="skeleton skeleton-line skeleton-line--short"></div>
+  </div>
+</template>

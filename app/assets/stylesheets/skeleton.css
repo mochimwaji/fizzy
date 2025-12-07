@@ -330,3 +330,129 @@ a.is-pending {
   opacity: 0.6;
   pointer-events: none;
 }
+
+/* ==========================================================================
+   SPA Shell Skeleton Pages
+   ========================================================================== */
+
+/* Main content frame styling */
+.main-content-frame {
+  display: contents;
+}
+
+/* Skeleton container during navigation */
+.skeleton-container {
+  display: none;
+}
+
+.skeleton-container--active {
+  display: block;
+  animation: skeleton-fade-in 100ms ease-out;
+}
+
+@keyframes skeleton-fade-in {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+/* Base skeleton page layout */
+.skeleton-page {
+  padding: var(--block-space) var(--main-padding);
+  max-inline-size: 100dvw;
+  text-align: center;
+}
+
+/* Skeleton title variations */
+.skeleton-title--large {
+  height: 2em;
+  width: 50%;
+  margin-inline: auto;
+  margin-block-end: var(--block-space-double);
+}
+
+.skeleton-title--medium {
+  height: 1.5em;
+  width: 40%;
+  margin-inline: auto;
+  margin-block-end: var(--block-space);
+}
+
+/* Skeleton line variations */
+.skeleton-line--long {
+  width: 90%;
+  margin-inline: auto;
+}
+
+.skeleton-line--medium {
+  width: 70%;
+  margin-inline: auto;
+}
+
+.skeleton-line--short {
+  width: 45%;
+  margin-inline: auto;
+}
+
+.skeleton-spacer {
+  height: var(--block-space);
+}
+
+/* Board page skeleton */
+.skeleton-categories {
+  display: flex;
+  flex-direction: column;
+  gap: var(--block-space);
+  margin-block-start: var(--block-space);
+}
+
+.skeleton-card--category {
+  height: 3rem;
+  border-radius: 8px;
+}
+
+/* Events page skeleton */
+.skeleton-events-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--block-space-half);
+}
+
+.skeleton-card--event {
+  height: 4rem;
+  border-radius: 8px;
+}
+
+/* Calendar page skeleton */
+.skeleton-calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 2px;
+  margin-block-start: var(--block-space);
+}
+
+.skeleton-card--day {
+  aspect-ratio: 1;
+  min-height: 2.5rem;
+  border-radius: 4px;
+}
+
+/* Settings page skeleton */
+.skeleton-settings-list {
+  display: flex;
+  flex-direction: column;
+  gap: var(--block-space);
+  max-width: 40ch;
+  margin-inline: auto;
+}
+
+/* Card page skeleton */
+.skeleton-page--card {
+  text-align: left;
+  max-width: 65ch;
+  margin-inline: auto;
+}

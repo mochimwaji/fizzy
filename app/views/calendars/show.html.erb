@@ -7,17 +7,17 @@
 
   <div class="header__actions header__actions--end">
     <nav class="calendar-nav" aria-label="Calendar navigation">
-      <%= link_to calendar_path(date: @date.prev_month), class: "calendar-nav__btn", data: { controller: "tooltip", tooltip_content_value: "Previous month" } do %>
+      <%= link_to calendar_path(date: @date.prev_month), class: "calendar-nav__btn", data: { turbo_frame: "main-content", controller: "tooltip", tooltip_content_value: "Previous month" } do %>
         <%= icon_tag "arrow-left" %>
         <span class="for-screen-reader">Previous month</span>
       <% end %>
 
-      <%= link_to calendar_path, class: "calendar-nav__btn", data: { controller: "tooltip", tooltip_content_value: "Today" } do %>
+      <%= link_to calendar_path, class: "calendar-nav__btn", data: { turbo_frame: "main-content", controller: "tooltip", tooltip_content_value: "Today" } do %>
         <%= icon_tag "calendar" %>
         <span class="for-screen-reader">Today</span>
       <% end %>
 
-      <%= link_to calendar_path(date: @date.next_month), class: "calendar-nav__btn", data: { controller: "tooltip", tooltip_content_value: "Next month" } do %>
+      <%= link_to calendar_path(date: @date.next_month), class: "calendar-nav__btn", data: { turbo_frame: "main-content", controller: "tooltip", tooltip_content_value: "Next month" } do %>
         <%= icon_tag "arrow-right" %>
         <span class="for-screen-reader">Next month</span>
       <% end %>
@@ -51,3 +51,5 @@
 </div>
 
 <%= turbo_frame_tag "calendar_card_modal" %>
+
+

@@ -2,7 +2,7 @@
 <html lang="en">
   <%= render "layouts/shared/head" %>
 
-  <body data-controller="local-time timezone-cookie turbo-navigation page-transition instant-prefetch" data-action="turbo:morph@window->local-time#refreshAll turbo:before-visit@document->turbo-navigation#rememberLocation turbo:before-visit@document->page-transition#rememberPosition turbo:before-render@document->page-transition#prepareRender turbo:render@document->page-transition#finishRender popstate@window->page-transition#handlePopstate turbo:visit@document->page-transition#handleRestore">
+  <body data-controller="local-time timezone-cookie turbo-navigation page-transition instant-prefetch spa-shell" data-action="turbo:morph@window->local-time#refreshAll turbo:before-visit@document->turbo-navigation#rememberLocation turbo:before-visit@document->page-transition#rememberPosition turbo:before-render@document->page-transition#prepareRender turbo:render@document->page-transition#finishRender popstate@window->page-transition#handlePopstate turbo:visit@document->page-transition#handleRestore turbo:before-frame-render@document->spa-shell#showSkeleton turbo:frame-render@document->spa-shell#hideSkeleton">
     <header class="header <%= @header_class %>" id="header">
       <a href="#main" class="header__skip-navigation btn" data-turbo="false">Skip to main content</a>
       <%= render "my/menu" if Current.user %>
@@ -12,9 +12,15 @@
     <%= render "layouts/shared/flash" %>
     <%= render "layouts/shared/time_zone" if Current.user %>
 
-    <main id="main">
-      <%= yield %>
-    </main>
+    <%# SPA Shell: Main content frame - only this swaps on navigation %>
+    <turbo-frame id="main-content" data-turbo-action="advance" class="main-content-frame">
+      <main id="main">
+        <%= yield %>
+      </main>
+    </turbo-frame>
+
+    <%# Skeleton templates for instant navigation feedback %>
+    <%= render "layouts/shared/skeletons" %>
 
     <footer id="footer">
       <%= yield :footer %>
