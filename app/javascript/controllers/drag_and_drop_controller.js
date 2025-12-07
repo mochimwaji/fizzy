@@ -132,6 +132,7 @@ export default class extends Controller {
     this.touchCurrentPosition = position
     this.potentialDragItem = item
     this.isDragging = false
+    this.isPreparing = true
 
     // Calculate offset from touch point to item's top-left
     const rect = item.getBoundingClientRect()
@@ -141,7 +142,9 @@ export default class extends Controller {
     }
 
     // Add preparing-to-drag visual feedback immediately
+    // The CSS class includes touch-action: none to prevent scroll
     item.classList.add("drag-and-drop__preparing")
+    document.body.classList.add("touch-dragging")
     
     // Dispatch event to notify mobile-columns controller that we might be dragging
     this.element.dispatchEvent(new CustomEvent("drag-prepare-start", { bubbles: true }))
@@ -158,18 +161,37 @@ export default class extends Controller {
 
     this.touchCurrentPosition = position
 
-    // If we haven't started dragging yet
-    if (!this.isDragging) {
+    // If we're preparing (long-press timer running), prevent scroll
+    if (this.isPreparing && this.longPressTimer) {
       // Check if moved too much before long-press completed (user is scrolling)
-      if (this.longPressTimer && exceedsDragThreshold(this.touchStartPosition, position)) {
+      if (exceedsDragThreshold(this.touchStartPosition, position)) {
         this.#cancelLongPress()
         return
       }
+      // Prevent scroll while preparing
+      preventTouchDefault(event)
       return
     }
 
-    // We're actively dragging
+    // If we haven't started dragging yet and not preparing, let scroll happen
+    if (!this.isDragging) {
+      return
+    }
+
+    // We're actively dragging - prevent scroll
     preventTouchDefault(event)
+
+    // Throttle expensive operations using requestAnimationFrame
+    if (this.moveRafId) return
+    
+    this.moveRafId = requestAnimationFrame(() => {
+      this.moveRafId = null
+      this.#processTouchMove(position)
+    })
+  }
+
+  #processTouchMove(position) {
+    if (!this.isDragging || !this.dragPreview) return
 
     // Move the preview
     moveDragPreview(this.dragPreview, position, this.touchOffset)
@@ -259,6 +281,7 @@ export default class extends Controller {
 
   #startTouchDrag(item, position) {
     this.isDragging = true
+    this.isPreparing = false
     this.dragItem = item
     this.sourceContainer = this.#containerContaining(item)
 
@@ -355,10 +378,15 @@ export default class extends Controller {
       this.longPressTimer = null
     }
     
+    this.isPreparing = false
+    
     // Remove preparing class from potential drag item
     if (this.potentialDragItem) {
       this.potentialDragItem.classList.remove("drag-and-drop__preparing")
     }
+    
+    // Remove body class
+    document.body.classList.remove("touch-dragging")
     
     // Notify that drag preparation was cancelled
     this.element.dispatchEvent(new CustomEvent("drag-prepare-end", { bubbles: true }))
@@ -367,10 +395,21 @@ export default class extends Controller {
   #cleanupTouch() {
     this.#cancelLongPress()
     this.#stopAutoScroll()
+    
+    // Cancel any pending animation frame
+    if (this.moveRafId) {
+      cancelAnimationFrame(this.moveRafId)
+      this.moveRafId = null
+    }
+    
+    // Remove body class
+    document.body.classList.remove("touch-dragging")
+    
     this.touchStartPosition = null
     this.touchCurrentPosition = null
     this.potentialDragItem = null
     this.isDragging = false
+    this.isPreparing = false
     this.dragPreview = null
     this.currentDropTarget = null
     this.currentTabTarget = null

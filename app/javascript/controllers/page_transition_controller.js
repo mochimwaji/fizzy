@@ -54,11 +54,14 @@ export default class extends Controller {
 
   // Called after Turbo finishes rendering
   finishRender(event) {
-    // Remove transition class
-    setTimeout(() => {
-      document.documentElement.classList.remove("is-navigating")
-      document.documentElement.removeAttribute("data-nav-direction")
-    }, 300) // Match transition duration
+    // Remove transition class after the view transition completes
+    // Use requestAnimationFrame to ensure we're in the next paint cycle
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        document.documentElement.classList.remove("is-navigating")
+        document.documentElement.removeAttribute("data-nav-direction")
+      })
+    })
 
     // Update current path
     this.currentPath = window.location.pathname

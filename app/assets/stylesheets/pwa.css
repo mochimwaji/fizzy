@@ -613,6 +613,10 @@
   animation: prepareToDrag 0.3s ease-out forwards;
   z-index: 10;
   position: relative;
+  touch-action: none;
+  -webkit-touch-callout: none;
+  user-select: none;
+  -webkit-user-select: none;
 }
 
 /* Touch drag preview floating card */

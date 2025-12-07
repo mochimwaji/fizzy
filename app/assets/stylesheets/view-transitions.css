@@ -235,9 +235,11 @@ turbo-frame:not([busy]) {
   transition: opacity 150ms ease;
 }
 
-/* Smooth content appearance */
-turbo-frame > * {
-  animation: content-appear 200ms ease-out;
+/* Only animate frame content on initial load, not on navigation - desktop only */
+@media (any-hover: hover) {
+  turbo-frame[src]:not([complete]) > * {
+    animation: content-appear 200ms ease-out;
+  }
 }
 
 @keyframes content-appear {
@@ -254,4 +256,11 @@ turbo-frame > * {
 /* Disable animation for already-loaded content */
 turbo-frame[complete] > * {
   animation: none;
+}
+
+/* Disable frame animations on mobile to prevent flashing */
+@media (any-hover: none) {
+  turbo-frame > * {
+    animation: none;
+  }
 }
