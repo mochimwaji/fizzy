@@ -47,11 +47,11 @@ export default class extends Controller {
       })
     }
 
-    // Use requestIdleCallback if available, otherwise setTimeout
+    // Use requestIdleCallback if available, otherwise immediate
     if ("requestIdleCallback" in window) {
       requestIdleCallback(prefetchAll, { timeout: 2000 })
     } else {
-      setTimeout(prefetchAll, 1000)
+      prefetchAll()
     }
   }
 

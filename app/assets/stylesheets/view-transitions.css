@@ -14,7 +14,7 @@
 /* Smooth, comfortable default transition - not too fast, not too slow */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 200ms;
+  animation-duration: 10ms;
   animation-timing-function: ease-out;
   /* Prevent any stretching by containing the snapshot */
   width: 100%;
@@ -64,31 +64,31 @@
 /* Use simpler, faster transitions on mobile to prevent stretching */
 ::view-transition-old(root),
 ::view-transition-new(root) {
-  animation-duration: 150ms;
+  animation-duration: 10ms;
   animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
 }
 
 /* Forward: Old page stays, dims slightly. New page slides over from right. */
 html[data-nav-direction="forward"]::view-transition-old(root) {
-  animation: mobile-fade-out-dim 150ms cubic-bezier(0.32, 0.72, 0, 1);
+  animation: mobile-fade-out-dim 10ms cubic-bezier(0.32, 0.72, 0, 1);
   z-index: 1;
 }
 
 html[data-nav-direction="forward"]::view-transition-new(root) {
-  animation: mobile-slide-in-right 150ms cubic-bezier(0.32, 0.72, 0, 1);
+  animation: mobile-slide-in-right 10ms cubic-bezier(0.32, 0.72, 0, 1);
   z-index: 2;
   box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
 }
 
 /* Back: Old page slides out to right. New page stays, undims. */
 html[data-nav-direction="back"]::view-transition-old(root) {
-  animation: mobile-slide-out-right 150ms cubic-bezier(0.32, 0.72, 0, 1);
+  animation: mobile-slide-out-right 10ms cubic-bezier(0.32, 0.72, 0, 1);
   z-index: 2;
   box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
 }
 
 html[data-nav-direction="back"]::view-transition-new(root) {
-  animation: mobile-fade-in-dim 150ms cubic-bezier(0.32, 0.72, 0, 1);
+  animation: mobile-fade-in-dim 10ms cubic-bezier(0.32, 0.72, 0, 1);
   z-index: 1;
 }
 
@@ -167,7 +167,7 @@ html[data-nav-direction="restore"]::view-transition-new(root) {
 */
 
 ::view-transition-group(main-content) {
-  animation-duration: 200ms;
+  animation-duration: 10ms;
   animation-timing-function: ease-out;
 }
 
@@ -194,7 +194,7 @@ body:has(.calendar-modal--open) #footer_frames {
 
 /* Card expand animation */
 ::view-transition-group(card) {
-  animation-duration: 250ms;
+  animation-duration: 10ms;
   animation-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
 }
 
@@ -299,7 +299,7 @@ turbo-frame[complete]>* {
   html.is-navigating main {
     opacity: 0;
     transform: translateY(10px);
-    transition: opacity 0.3s ease, transform 0.3s ease;
+    transition: opacity 10ms ease, transform 10ms ease;
   }
 }
 
