@@ -152,10 +152,8 @@ html.is-navigating main {
 }
 
 /* Instant feedback on link click */
-a:active {
-  opacity: 0.7;
-  transition: opacity 50ms ease;
-}
+/* Removed opacity change to prevent flickering on mobile */
+/* a:active { opacity: 0.7; } */
 
 /* Button active state */
 .btn:active,

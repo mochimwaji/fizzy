@@ -2,7 +2,7 @@
 <html lang="en">
   <%= render "layouts/shared/head" %>
 
-  <body data-controller="local-time timezone-cookie turbo-navigation page-transition instant-prefetch" data-action="turbo:morph@window->local-time#refreshAll turbo:before-visit@document->turbo-navigation#rememberLocation turbo:before-visit@document->page-transition#rememberPosition turbo:before-render@document->page-transition#prepareRender turbo:render@document->page-transition#finishRender popstate@window->page-transition#handlePopstate turbo:visit@document->page-transition#handleRestore">
+  <body data-controller="local-time timezone-cookie turbo-navigation page-transition" data-action="turbo:morph@window->local-time#refreshAll turbo:before-visit@document->turbo-navigation#rememberLocation turbo:before-visit@document->page-transition#rememberPosition turbo:before-render@document->page-transition#prepareRender turbo:render@document->page-transition#finishRender popstate@window->page-transition#handlePopstate turbo:visit@document->page-transition#handleRestore">
     <header class="header <%= @header_class %>" id="header">
       <a href="#main" class="header__skip-navigation btn" data-turbo="false">Skip to main content</a>
       <%= render "my/menu" if Current.user %>

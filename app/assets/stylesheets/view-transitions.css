@@ -20,6 +20,8 @@
   width: 100%;
   height: 100%;
   object-fit: contain;
+  /* Ensure no transparency during transition */
+  background: var(--color-canvas);
 }
 
 /* Old page fades out */
@@ -225,15 +227,9 @@ html {
 }
 
 /* Turbo frames fade in when loaded */
-turbo-frame[busy] {
-  opacity: 0.6;
-  transition: opacity 150ms ease;
-}
-
-turbo-frame:not([busy]) {
-  opacity: 1;
-  transition: opacity 150ms ease;
-}
+/* Removed opacity transition to prevent flickering */
+/* turbo-frame[busy] { opacity: 0.6; transition: opacity 150ms ease; } */
+/* turbo-frame:not([busy]) { opacity: 1; transition: opacity 150ms ease; } */
 
 /* Only animate frame content on initial load, not on navigation - desktop only */
 @media (any-hover: hover) {
