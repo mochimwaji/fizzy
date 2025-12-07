@@ -35,13 +35,23 @@
 }
 
 @keyframes fade-out-quick {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
 }
 
 @keyframes fade-in-quick {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 /* ==========================================================================
@@ -51,63 +61,92 @@
 /* Forward navigation - new page slides in from right */
 /* Removed media query to ensure animations run on all devices */
 /* @media (any-hover: none) { */
-  /* Use simpler, faster transitions on mobile to prevent stretching */
-  ::view-transition-old(root),
-  ::view-transition-new(root) {
-    animation-duration: 250ms;
-    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
-  }
-  
-  /* Forward: Old page stays, dims slightly. New page slides over from right. */
-  html[data-nav-direction="forward"]::view-transition-old(root) {
-    animation: mobile-fade-out-dim 250ms cubic-bezier(0.32, 0.72, 0, 1);
-    z-index: 1;
-  }
-  
-  html[data-nav-direction="forward"]::view-transition-new(root) {
-    animation: mobile-slide-in-right 250ms cubic-bezier(0.32, 0.72, 0, 1);
-    z-index: 2;
-    box-shadow: -5px 0 25px rgba(0,0,0,0.15);
-  }
-  
-  /* Back: Old page slides out to right. New page stays, undims. */
-  html[data-nav-direction="back"]::view-transition-old(root) {
-    animation: mobile-slide-out-right 250ms cubic-bezier(0.32, 0.72, 0, 1);
-    z-index: 2;
-    box-shadow: -5px 0 25px rgba(0,0,0,0.15);
-  }
-  
-  html[data-nav-direction="back"]::view-transition-new(root) {
-    animation: mobile-fade-in-dim 250ms cubic-bezier(0.32, 0.72, 0, 1);
-    z-index: 1;
-  }
-  
-  /* Restoration visits should be instant */
-  html[data-nav-direction="restore"]::view-transition-old(root),
-  html[data-nav-direction="restore"]::view-transition-new(root) {
-    animation: none;
-  }
+/* Use simpler, faster transitions on mobile to prevent stretching */
+::view-transition-old(root),
+::view-transition-new(root) {
+  animation-duration: 250ms;
+  animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
+}
+
+/* Forward: Old page stays, dims slightly. New page slides over from right. */
+html[data-nav-direction="forward"]::view-transition-old(root) {
+  animation: mobile-fade-out-dim 250ms cubic-bezier(0.32, 0.72, 0, 1);
+  z-index: 1;
+}
+
+html[data-nav-direction="forward"]::view-transition-new(root) {
+  animation: mobile-slide-in-right 250ms cubic-bezier(0.32, 0.72, 0, 1);
+  z-index: 2;
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+}
+
+/* Back: Old page slides out to right. New page stays, undims. */
+html[data-nav-direction="back"]::view-transition-old(root) {
+  animation: mobile-slide-out-right 250ms cubic-bezier(0.32, 0.72, 0, 1);
+  z-index: 2;
+  box-shadow: -5px 0 25px rgba(0, 0, 0, 0.15);
+}
+
+html[data-nav-direction="back"]::view-transition-new(root) {
+  animation: mobile-fade-in-dim 250ms cubic-bezier(0.32, 0.72, 0, 1);
+  z-index: 1;
+}
+
+/* Restoration visits should be instant */
+html[data-nav-direction="restore"]::view-transition-old(root),
+html[data-nav-direction="restore"]::view-transition-new(root) {
+  animation: none;
+}
+
 /* } */
 
 /* Mobile-specific animations - Stacked effect */
 @keyframes mobile-fade-out-dim {
-  from { opacity: 1; transform: scale(1); filter: brightness(1); }
-  to { opacity: 1; transform: scale(0.95); filter: brightness(0.9); }
+  from {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(0.95);
+    filter: brightness(0.9);
+  }
 }
 
 @keyframes mobile-slide-in-right {
-  from { transform: translateX(100%); }
-  to { transform: translateX(0); }
+  from {
+    transform: translateX(100%);
+  }
+
+  to {
+    transform: translateX(0);
+  }
 }
 
 @keyframes mobile-slide-out-right {
-  from { transform: translateX(0); }
-  to { transform: translateX(100%); }
+  from {
+    transform: translateX(0);
+  }
+
+  to {
+    transform: translateX(100%);
+  }
 }
 
 @keyframes mobile-fade-in-dim {
-  from { opacity: 1; transform: scale(0.95); filter: brightness(0.9); }
-  to { opacity: 1; transform: scale(1); filter: brightness(1); }
+  from {
+    opacity: 1;
+    transform: scale(0.95);
+    filter: brightness(0.9);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+    filter: brightness(1);
+  }
 }
 
 /* ==========================================================================
@@ -166,18 +205,19 @@ body:has(.calendar-modal--open) #footer_frames {
 @media (any-hover: none) {
   /* Reduce motion for users who prefer it */
   @media (prefers-reduced-motion: reduce) {
+
     ::view-transition-old(root),
     ::view-transition-new(root),
     ::view-transition-group(*) {
       animation-duration: 0.01ms !important;
     }
   }
-  
+
   /* Prevent content shift during transitions */
   ::view-transition-image-pair(root) {
     isolation: auto;
   }
-  
+
   /* Ensure smooth rendering - constrain to viewport */
   ::view-transition-old(root),
   ::view-transition-new(root) {
@@ -188,7 +228,7 @@ body:has(.calendar-modal--open) #footer_frames {
     object-fit: cover;
     object-position: top center;
   }
-  
+
   /* Ensure the transition group fills the viewport correctly */
   ::view-transition-group(root) {
     overflow: hidden;
@@ -217,7 +257,7 @@ html {
 
 /* Only animate frame content on initial load, not on navigation - desktop only */
 @media (any-hover: hover) {
-  turbo-frame[src]:not([complete]) > * {
+  turbo-frame[src]:not([complete])>* {
     animation: content-appear 200ms ease-out;
   }
 }
@@ -227,6 +267,7 @@ html {
     opacity: 0;
     transform: translateY(4px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0);
@@ -234,13 +275,13 @@ html {
 }
 
 /* Disable animation for already-loaded content */
-turbo-frame[complete] > * {
+turbo-frame[complete]>* {
   animation: none;
 }
 
 /* Disable frame animations on mobile to prevent flashing */
 @media (any-hover: none) {
-  turbo-frame > * {
+  turbo-frame>* {
     animation: none;
   }
 }
@@ -260,4 +301,9 @@ turbo-frame[complete] > * {
     transform: translateY(10px);
     transition: opacity 0.3s ease, transform 0.3s ease;
   }
+}
+
+/* GPU acceleration hints during navigation */
+html.is-navigating main {
+  will-change: transform, opacity;
 }

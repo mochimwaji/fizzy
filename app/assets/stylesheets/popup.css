@@ -43,6 +43,7 @@
 
   /* Hide lists when all the items within are hidden */
   .popup__section {
+
     &:not(:has(.popup__list)),
     &:not(:has(.popup__list > *)),
     &:has(.popup__item[hidden]):not(:has(.popup__item:not([hidden]))) {
@@ -173,7 +174,7 @@
 
   .popup--animated {
     opacity: 0;
-    transform: scale(0.2) translateX(-50%);
+    transform: scale(0.95) translateX(-50%);
     transform-origin: top left;
     transition: var(--dialog-duration) allow-discrete;
     transition-property: display, opacity, overlay, transform;
@@ -198,7 +199,7 @@
     @starting-style {
       &[open] {
         opacity: 0;
-        transform: scale(0.2) translateX(-50%);
+        transform: scale(0.95) translateX(-50%);
       }
 
       &[open]::backdrop {

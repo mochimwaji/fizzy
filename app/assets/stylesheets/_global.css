@@ -39,9 +39,9 @@
 
   /* Shadows */
   --shadow: 0 0 0 1px oklch(var(--lch-black) / 5%),
-            0 0.2em 0.2em oklch(var(--lch-black) / 5%),
-            0 0.4em 0.4em oklch(var(--lch-black) / 5%),
-            0 0.8em 0.8em oklch(var(--lch-black) / 5%);
+  0 0.2em 0.2em oklch(var(--lch-black) / 5%),
+  0 0.4em 0.4em oklch(var(--lch-black) / 5%),
+  0 0.8em 0.8em oklch(var(--lch-black) / 5%);
 
   /* Components */
   --btn-size: 2.65em;
@@ -55,7 +55,7 @@
   --focus-ring: var(--focus-ring-size) solid var(--focus-ring-color);
 
   /* Dialogs */
-  --dialog-duration: 150ms;
+  --dialog-duration: 100ms;
 
   /* Easing functions from https://easingwizard.com/ */
   --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
@@ -219,7 +219,8 @@
   --color-card-7: oklch(var(--lch-purple-medium));
   --color-card-8: oklch(var(--lch-pink-medium));
   --color-card-9: oklch(var(--lch-red-medium));
-  --color-card-10: oklch(65% 0.18 55);  /* Orange */
+  --color-card-10: oklch(65% 0.18 55);
+  /* Orange */
   --color-card-11: oklch(var(--lch-green-medium));
   --color-card-12: oklch(var(--lch-blue-medium));
 
@@ -337,10 +338,10 @@
     --color-highlight: oklch(var(--lch-blue-lighter));
 
     --shadow: 0 0 0 1px oklch(var(--lch-black) / 0.42),
-              0 .2em 1.6em -0.8em oklch(var(--lch-black) / 0.6),
-              0 .4em 2.4em -1em oklch(var(--lch-black) / 0.7),
-              0 .4em .8em -1.2em oklch(var(--lch-black) / 0.8),
-              0 .8em 1.2em -1.6em oklch(var(--lch-black) / 0.9),
-              0 1.2em 1.6em -2em oklch(var(--lch-black) / 1);
+      0 .2em 1.6em -0.8em oklch(var(--lch-black) / 0.6),
+      0 .4em 2.4em -1em oklch(var(--lch-black) / 0.7),
+      0 .4em .8em -1.2em oklch(var(--lch-black) / 0.8),
+      0 .8em 1.2em -1.6em oklch(var(--lch-black) / 0.9),
+      0 1.2em 1.6em -2em oklch(var(--lch-black) / 1);
   }
 }

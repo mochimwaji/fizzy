@@ -4,10 +4,10 @@ import { delay, nextEvent } from "helpers/timing_helpers"
 import { keepingScrollPosition } from "helpers/scroll_helpers"
 import { get } from "@rails/request.js"
 
-const DELAY_BEFORE_OBSERVING = 400
+const DELAY_BEFORE_OBSERVING = 100
 
 export default class extends Controller {
-  static targets = [ "paginationLink" ]
+  static targets = ["paginationLink"]
   static values = {
     paginateOnIntersection: { type: Boolean, default: false },
     discardFrame: Boolean,
@@ -47,7 +47,7 @@ export default class extends Controller {
 
   // Private
 
-  #intersect = ([ entry ]) => {
+  #intersect = ([entry]) => {
     if (entry?.isIntersecting && entry.intersectionRatio === 1) {
       this.#loadPaginationLink(entry.target)
     }

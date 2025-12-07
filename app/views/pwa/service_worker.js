@@ -37,13 +37,13 @@ self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return
 
   const url = new URL(event.request.url)
-  
+
   // For assets (JS, CSS, images), use cache-first strategy
   if (isAssetRequest(event.request)) {
     event.respondWith(
       caches.match(event.request).then((cached) => {
         if (cached) return cached
-        
+
         return fetch(event.request).then((response) => {
           // Cache the asset for future use
           if (response.ok) {
@@ -59,34 +59,41 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // For HTML pages, use stale-while-revalidate to return cache instantly
-  // and refresh in the background for seamless navigation
+  // For HTML pages, race cache and network for fastest response
+  // This ensures instant navigation if cached, but fresh content wins if network is fast
   if (event.request.mode === 'navigate' || event.request.destination === 'document') {
     event.respondWith(
-      caches.match(event.request).then((cached) => {
-        const networkFetch = fetch(event.request, { cache: 'no-cache' })
-          .then((response) => {
-            if (response.ok) {
-              const clone = response.clone()
-              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone))
-            }
-            return response
-          })
-          .catch(() => cached)
-
-        return cached || networkFetch
+      Promise.race([
+        // Return cache immediately if available
+        caches.match(event.request).then(cached => {
+          if (cached) return cached
+          // If not cached, wait for network
+          return new Promise(() => { }) // Never resolves, lets network win
+        }),
+        // Fetch from network
+        fetch(event.request).then(response => {
+          // Update cache in background
+          if (response.ok) {
+            const clone = response.clone()
+            caches.open(CACHE_NAME).then(cache => cache.put(event.request, clone))
+          }
+          return response
+        })
+      ]).catch(() => {
+        // If both fail, try cache as fallback
+        return caches.match(event.request)
       })
     )
     return
   }
-  
+
   // For prefetch requests, cache aggressively
-  if (event.request.headers.get('Purpose') === 'prefetch' || 
-      event.request.headers.get('Sec-Purpose') === 'prefetch') {
+  if (event.request.headers.get('Purpose') === 'prefetch' ||
+    event.request.headers.get('Sec-Purpose') === 'prefetch') {
     event.respondWith(
       caches.match(event.request).then((cached) => {
         if (cached) return cached
-        
+
         return fetch(event.request).then((response) => {
           if (response.ok) {
             const clone = response.clone()
@@ -105,15 +112,15 @@ self.addEventListener('fetch', (event) => {
 function isAssetRequest(request) {
   const url = new URL(request.url)
   const path = url.pathname
-  
+
   // Check for common asset extensions
   return /\.(js|css|png|jpg|jpeg|gif|svg|woff|woff2|ttf|eot|ico)(\?.*)?$/.test(path) ||
-         path.startsWith('/assets/')
+    path.startsWith('/assets/')
 }
 
 self.addEventListener("push", async (event) => {
   const data = await event.data.json()
-  event.waitUntil(Promise.all([ showNotification(data), updateBadgeCount(data.options) ]))
+  event.waitUntil(Promise.all([showNotification(data), updateBadgeCount(data.options)]))
 })
 
 async function showNotification({ title, options }) {
