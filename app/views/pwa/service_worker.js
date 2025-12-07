@@ -1,5 +1,5 @@
-const CACHE_NAME = 'fizzy-v1'
-const STATIC_CACHE_NAME = 'fizzy-static-v1'
+const CACHE_NAME = 'fizzy-v2'
+const STATIC_CACHE_NAME = 'fizzy-static-v2'
 
 // Assets to cache on install (app shell)
 const STATIC_ASSETS = [
@@ -59,21 +59,23 @@ self.addEventListener('fetch', (event) => {
     return
   }
 
-  // For HTML pages, use network-first with cache fallback
-  if (event.request.destination === 'document') {
+  // For HTML pages, use stale-while-revalidate to return cache instantly
+  // and refresh in the background for seamless navigation
+  if (event.request.mode === 'navigate' || event.request.destination === 'document') {
     event.respondWith(
-      fetch(event.request, { cache: 'no-cache' })
-        .then((response) => {
-          // Cache successful responses for offline use
-          if (response.ok) {
-            const clone = response.clone()
-            caches.open(CACHE_NAME).then((cache) => {
-              cache.put(event.request, clone)
-            })
-          }
-          return response
-        })
-        .catch(() => caches.match(event.request))
+      caches.match(event.request).then((cached) => {
+        const networkFetch = fetch(event.request, { cache: 'no-cache' })
+          .then((response) => {
+            if (response.ok) {
+              const clone = response.clone()
+              caches.open(CACHE_NAME).then((cache) => cache.put(event.request, clone))
+            }
+            return response
+          })
+          .catch(() => cached)
+
+        return cached || networkFetch
+      })
     )
     return
   }

@@ -14,6 +14,25 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 })
 
+// Wrap Turbo renders in the View Transitions API when available.
+// This keeps document navigations smooth and avoids flash/flicker when swapping bodies.
+document.addEventListener("turbo:before-render", (event) => {
+  if (!document.startViewTransition) return
+
+  const target = event.target
+  if (target instanceof Element && target.tagName === "TURBO-FRAME") return
+  if (event.detail.renderOptions?.preview) return
+
+  const originalRender = event.detail.render
+
+  event.detail.render = (currentElement, newElement) => {
+    const transition = document.startViewTransition(() => originalRender(currentElement, newElement))
+    // Avoid unhandled rejections if the transition is interrupted
+    transition.finished.catch(() => {})
+    return transition.finished
+  }
+})
+
 // Prevent scroll restoration issues during view transitions
 document.addEventListener("turbo:before-visit", (event) => {
   // Store scroll position before navigation
