@@ -424,8 +424,8 @@ export default class extends Controller {
   // ========================================
 
   #autoScrollPage(position) {
-    const edgeSize = 80 // pixels from edge to start scrolling
-    const maxSpeed = 20 // max scroll speed per frame
+    const edgeSize = 60 // pixels from edge to start scrolling
+    const maxSpeed = 15 // max scroll speed per frame
     const viewportHeight = window.innerHeight
     
     let scrollSpeed = 0

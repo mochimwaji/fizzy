@@ -29,6 +29,9 @@ export function preventContextMenu(element) {
   element.style.webkitTouchCallout = "none"
   element.style.webkitUserSelect = "none"
   element.style.userSelect = "none"
+  // Ensure scrolling is allowed but double-tap zoom is disabled
+  // This helps prevent browser confusion during drag initiation
+  element.style.touchAction = "manipulation"
 }
 
 // Get touch position from event
@@ -132,18 +135,11 @@ export function removeDragPreview(preview) {
 export function getElementAtTouch(position, excludeElement) {
   if (!position) return null
   
-  // Temporarily hide the preview to get element underneath
-  if (excludeElement) {
-    excludeElement.style.display = "none"
-  }
+  // Note: excludeElement (preview) should have pointer-events: none
+  // so we don't need to hide/show it to get the element underneath.
+  // This avoids layout thrashing.
   
-  const element = document.elementFromPoint(position.x, position.y)
-  
-  if (excludeElement) {
-    excludeElement.style.display = ""
-  }
-  
-  return element
+  return document.elementFromPoint(position.x, position.y)
 }
 
 // Prevent default touch behaviors (scrolling) during drag

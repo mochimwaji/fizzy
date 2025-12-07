@@ -1,6 +1,7 @@
 @layer base {
   html {
     font-size: 100%;
+    background-color: var(--color-canvas);
 
     @media (min-width: 100ch) {
       font-size: 1.1875rem;
