@@ -53,25 +53,32 @@
   /* Use simpler, faster transitions on mobile to prevent stretching */
   ::view-transition-old(root),
   ::view-transition-new(root) {
-    animation-duration: 200ms;
-    animation-timing-function: ease-out;
+    animation-duration: 350ms;
+    animation-timing-function: cubic-bezier(0.32, 0.72, 0, 1);
   }
   
+  /* Forward: Old page stays, dims slightly. New page slides over from right. */
   html[data-nav-direction="forward"]::view-transition-old(root) {
-    animation: mobile-slide-out-left 200ms ease-out;
+    animation: mobile-fade-out-dim 350ms cubic-bezier(0.32, 0.72, 0, 1);
+    z-index: 1;
   }
   
   html[data-nav-direction="forward"]::view-transition-new(root) {
-    animation: mobile-slide-in-right 200ms ease-out;
+    animation: mobile-slide-in-right 350ms cubic-bezier(0.32, 0.72, 0, 1);
+    z-index: 2;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.15);
   }
   
-  /* Back navigation - new page slides in from left */
+  /* Back: Old page slides out to right. New page stays, undims. */
   html[data-nav-direction="back"]::view-transition-old(root) {
-    animation: mobile-slide-out-right 200ms ease-out;
+    animation: mobile-slide-out-right 350ms cubic-bezier(0.32, 0.72, 0, 1);
+    z-index: 2;
+    box-shadow: -5px 0 25px rgba(0,0,0,0.15);
   }
   
   html[data-nav-direction="back"]::view-transition-new(root) {
-    animation: mobile-slide-in-left 200ms ease-out;
+    animation: mobile-fade-in-dim 350ms cubic-bezier(0.32, 0.72, 0, 1);
+    z-index: 1;
   }
   
   /* Restoration visits should be instant */
@@ -81,49 +88,25 @@
   }
 }
 
-/* Mobile-specific animations - smaller transform values, faster */
-@keyframes mobile-slide-out-left {
-  from { 
-    opacity: 1; 
-    transform: translateX(0); 
-  }
-  to { 
-    opacity: 0; 
-    transform: translateX(-15%); 
-  }
+/* Mobile-specific animations - Stacked effect */
+@keyframes mobile-fade-out-dim {
+  from { opacity: 1; transform: scale(1); filter: brightness(1); }
+  to { opacity: 1; transform: scale(0.95); filter: brightness(0.9); }
 }
 
 @keyframes mobile-slide-in-right {
-  from { 
-    opacity: 0; 
-    transform: translateX(15%); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateX(0); 
-  }
+  from { transform: translateX(100%); }
+  to { transform: translateX(0); }
 }
 
 @keyframes mobile-slide-out-right {
-  from { 
-    opacity: 1; 
-    transform: translateX(0); 
-  }
-  to { 
-    opacity: 0; 
-    transform: translateX(15%); 
-  }
+  from { transform: translateX(0); }
+  to { transform: translateX(100%); }
 }
 
-@keyframes mobile-slide-in-left {
-  from { 
-    opacity: 0; 
-    transform: translateX(-15%); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateX(0); 
-  }
+@keyframes mobile-fade-in-dim {
+  from { opacity: 1; transform: scale(0.95); filter: brightness(0.9); }
+  to { opacity: 1; transform: scale(1); filter: brightness(1); }
 }
 
 /* ==========================================================================

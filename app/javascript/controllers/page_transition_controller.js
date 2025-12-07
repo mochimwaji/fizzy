@@ -34,7 +34,8 @@ export default class extends Controller {
     const direction = this.#determineDirection(currentPath, targetPath)
 
     // Set the direction class on the document for CSS transitions
-    document.documentElement.setAttribute("data-nav-direction", direction)
+    // IMPORTANT: This must be set BEFORE the view transition starts
+    document.documentElement.dataset.navDirection = direction
 
     // Update navigation stack
     if (direction === "forward") {
@@ -59,7 +60,10 @@ export default class extends Controller {
     requestAnimationFrame(() => {
       requestAnimationFrame(() => {
         document.documentElement.classList.remove("is-navigating")
-        document.documentElement.removeAttribute("data-nav-direction")
+        // Keep the direction attribute for a moment to ensure the animation finishes
+        setTimeout(() => {
+           document.documentElement.removeAttribute("data-nav-direction")
+        }, 400)
       })
     })
 
@@ -70,7 +74,7 @@ export default class extends Controller {
   // Called when a popstate event occurs (browser back/forward)
   handlePopstate(event) {
     // Browser back/forward always gets the "back" transition
-    document.documentElement.setAttribute("data-nav-direction", "back")
+    document.documentElement.dataset.navDirection = "back"
   }
 
   // Called when the page loads from cache (restoration visit)
@@ -80,7 +84,7 @@ export default class extends Controller {
     this.currentPath = window.location.pathname
 
     // Restoration visits should be instant (no animation)
-    document.documentElement.setAttribute("data-nav-direction", "restore")
+    document.documentElement.dataset.navDirection = "restore"
   }
 
   // Determine navigation direction based on URL structure
